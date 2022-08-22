@@ -57,7 +57,7 @@ router.post("/", async (req, res) => {
             process.env.JWT_SECRET
           );
           res.status(201).send({
-            message: `Account created successfully.Welcome to momos,${username}.`,
+            message: `Account created successfully.Welcome to momos.`,
             token: "Bearer " + token,
             user: {
               username,

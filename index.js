@@ -8,8 +8,10 @@ app.use(express.json());
 app.use(cors());
 app.set("trust proxy", 1);
 
-const register = require("./routes/Auth/Register");
+const register = require("./routes/Auth/register");
+const login = require("./routes/Auth/login");
 
+app.use("/auth/login", login);
 app.use("/auth/register", register);
 app.get("/", (req, res) => {
   res.send("Hello World");
