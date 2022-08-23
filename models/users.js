@@ -35,23 +35,23 @@ module.exports = (sequelize, DataTypes) => {
       defaultValue: "active",
     },
   });
-  // users.associate = (models) => {
-  //   users.hasMany(models.posts, {
-  //     foreignKey: "userId",
-  //     onDelete: "CASCADE",
-  //   });
-  //   users.hasMany(models.likes, {
-  //     foreignKey: "userId",
-  //     onDelete: "CASCADE",
-  //   });
-  //   users.hasMany(models.notis, {
-  //     foreignKey: "userId",
-  //     onDelete: "CASCADE",
-  //   });
-  //   // users.hasMany(models.Comments, {
-  //   //   foreignKey: "userId",
-  //   //   onDelete: "CASCADE",
-  //   // });
-  // };
+  users.associate = (models) => {
+    users.hasMany(models.posts, {
+      foreignKey: "postUser",
+      onDelete: "CASCADE",
+    });
+    // users.hasMany(models.likes, {
+    //   foreignKey: "userId",
+    //   onDelete: "CASCADE",
+    // });
+    // users.hasMany(models.notis, {
+    //   foreignKey: "userId",
+    //   onDelete: "CASCADE",
+    // });
+    // users.hasMany(models.Comments, {
+    //   foreignKey: "userId",
+    //   onDelete: "CASCADE",
+    // });
+  };
   return users;
 };

@@ -4,14 +4,7 @@ const router = require("express").Router();
 const { users } = require("../../models");
 const bcrypt = require("bcryptjs");
 const { sign } = require("jsonwebtoken");
-const avatarColor = [
-  "008AB8",
-  "49CC1F",
-  "D10DDA",
-  "CC3333",
-  "CC6699",
-  "FFCC33",
-];
+const avatarColor = ["008AB8", "CC3333", "CC6699", "FFCC33"];
 
 router.post("/", async (req, res) => {
   const { username, password } = req.body;
@@ -21,11 +14,11 @@ router.post("/", async (req, res) => {
   } else if (/^\s*$/.test(username) || /^\s*$/.test(password)) {
     res.status(400).send("Please fill all fields");
   } else if (!/^[a-zA-Z0-9]+$/.test(username)) {
-    res.status(400).send("username can only contain letters and numbers");
+    res.status(400).send("Username can only contain letters and numbers");
   } else if (username.length < 4 || username.length > 15) {
-    res.status(400).send("username must be between 4 and 15 characters");
+    res.status(400).send("Username must be between 4 and 15 characters");
   } else if (password.length < 4) {
-    res.status(400).send("password must be at least 4 characters");
+    res.status(400).send("Password must be at least 4 characters");
   } else {
     try {
       const user = await users.findOne({
@@ -34,7 +27,7 @@ router.post("/", async (req, res) => {
         },
       });
       if (user) {
-        res.status(400).send("username already exists");
+        res.status(400).send("Username already exists");
       } else {
         const randomAvatarColor =
           avatarColor[Math.floor(avatarColor.length * Math.random())];
