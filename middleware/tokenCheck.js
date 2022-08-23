@@ -17,17 +17,21 @@ const tokenCheck = (req, res, next) => {
         id: user.id,
       },
     });
-    if (finduser.status === "active") {
-      req.user = {
-        id: user.id,
-        username: finduser.username,
-        avatar: finduser.avatar,
-      };
-      next();
+    if (finduser) {
+      if (finduser.status === "active") {
+        req.user = {
+          id: user.id,
+          username: finduser.username,
+          avatar: finduser.avatar,
+        };
+        next();
+      } else {
+        return res
+          .status(401)
+          .send("Your account is restricted to perform this action");
+      }
     } else {
-      return res
-        .status(401)
-        .send("Your account is restricted to perform this action");
+      return res.status(401).send("user not found");
     }
   });
 };

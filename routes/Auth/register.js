@@ -4,7 +4,21 @@ const router = require("express").Router();
 const { users } = require("../../models");
 const bcrypt = require("bcryptjs");
 const { sign } = require("jsonwebtoken");
-const avatarColor = ["008AB8", "CC3333", "CC6699", "FFCC33"];
+const avatarColor = [
+  "008AB8",
+  "72139e",
+  "f57505",
+  "CC3333",
+  "CC6699",
+  "139e9e",
+  "11963b",
+  "054d85",
+  "8207f5",
+  "c70c0c",
+  "0cc763",
+  "2f695f",
+  "106cad",
+];
 
 router.post("/", async (req, res) => {
   const { username, password } = req.body;
