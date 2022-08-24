@@ -22,10 +22,10 @@ module.exports = (sequelize, DataTypes) => {
 
       onDelete: "CASCADE",
     });
-    // posts.hasMany(models.likes, {
-    //   foreignKey: "postId",
-    //   onDelete: "CASCADE",
-    // });
+    posts.hasMany(models.likes, {
+      foreignKey: "postId",
+      onDelete: "CASCADE",
+    });
     // posts.hasMany(models.notis, {
     //   foreignKey: "postId",
     //   onDelete: "CASCADE",

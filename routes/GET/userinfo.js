@@ -1,5 +1,4 @@
 "use strict";
-require("dotenv").config();
 const router = require("express").Router();
 
 router.get("/", (req, res) => {

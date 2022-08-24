@@ -1,7 +1,6 @@
 "use strict";
-require("dotenv").config();
 const router = require("express").Router();
-const { posts, users } = require("../../models");
+const { posts, users, likes } = require("../../models");
 
 router.get("/", async (req, res) => {
   try {
@@ -13,6 +12,9 @@ router.get("/", async (req, res) => {
           model: users,
 
           attributes: ["username", "avatar", "verified", "id"],
+        },
+        {
+          model: likes,
         },
       ],
     });
@@ -26,6 +28,7 @@ router.get("/", async (req, res) => {
     }
   } catch (error) {
     res.status(400).send(error);
+    console.log(error);
   }
 });
 

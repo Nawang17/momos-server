@@ -26,12 +26,10 @@ const tokenCheck = (req, res, next) => {
         };
         next();
       } else {
-        return res
-          .status(401)
-          .send("Your account is restricted to perform this action");
+        return res.status(401).send("Your account is restricted");
       }
     } else {
-      return res.status(401).send("user not found");
+      return res.status(401).send("User not found");
     }
   });
 };

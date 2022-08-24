@@ -40,10 +40,10 @@ module.exports = (sequelize, DataTypes) => {
       foreignKey: "postUser",
       onDelete: "CASCADE",
     });
-    // users.hasMany(models.likes, {
-    //   foreignKey: "userId",
-    //   onDelete: "CASCADE",
-    // });
+    users.hasMany(models.likes, {
+      foreignKey: "userId",
+      onDelete: "CASCADE",
+    });
     // users.hasMany(models.notis, {
     //   foreignKey: "userId",
     //   onDelete: "CASCADE",
