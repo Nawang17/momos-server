@@ -20,6 +20,7 @@ const deletepost = require("./routes/DELETE/deletepost");
 const likepost = require("./routes/POST/likepost");
 const likedpost = require("./routes/GET/likedpost");
 const profileinfo = require("./routes/GET/profileinfo");
+const singlepost = require("./routes/GET/singlepost");
 
 app.use("/likedposts", tokenCheck, likedpost);
 app.use("/likepost", tokenCheck, likepost);
@@ -30,6 +31,7 @@ app.use("/newpost", tokenCheck, newpostLimit, newpost);
 app.use("/auth/login", login);
 app.use("/auth/register", register);
 app.use("/profileinfo", profileinfo);
+app.use("/post", singlepost);
 
 app.get("/", (req, res) => {
   res.send("Hello World");
