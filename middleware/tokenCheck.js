@@ -6,7 +6,7 @@ const tokenCheck = (req, res, next) => {
   const token = authHeader && authHeader.split(" ")[1];
 
   if (token == null) {
-    return res.status(401).send("No token, authorization denied");
+    return res.status(401).send("You are not logged in");
   }
   verify(token, process.env.JWT_SECRET, async (err, user) => {
     if (err) {

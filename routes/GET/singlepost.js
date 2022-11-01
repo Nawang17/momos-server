@@ -1,6 +1,6 @@
 "use strict";
 const router = require("express").Router();
-const { posts, users, likes } = require("../../models");
+const { posts, users, likes, comments } = require("../../models");
 
 router.get("/:postid", async (req, res) => {
   const { postid } = req.params;
@@ -8,7 +8,7 @@ router.get("/:postid", async (req, res) => {
     if (!postid) {
       res.status(400).send("postid is required");
     }
-    const singlepost = await posts.findOne({
+    const singlepost = await posts.findAll({
       where: {
         id: postid,
       },
@@ -21,9 +21,18 @@ router.get("/:postid", async (req, res) => {
         {
           model: likes,
         },
+        {
+          model: comments,
+          include: [
+            {
+              model: users,
+              attributes: ["username", "avatar", "verified", "id"],
+            },
+          ],
+        },
       ],
     });
-    if (!singlepost) {
+    if (singlepost.length === 0) {
       res.status(400).send("Post not found");
     } else {
       res.status(200).send({

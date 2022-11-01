@@ -1,6 +1,6 @@
 "use strict";
 const router = require("express").Router();
-const { posts, users, likes } = require("../../models");
+const { posts, users, likes, comments } = require("../../models");
 
 router.get("/", async (req, res) => {
   try {
@@ -15,6 +15,9 @@ router.get("/", async (req, res) => {
         },
         {
           model: likes,
+        },
+        {
+          model: comments,
         },
       ],
     });

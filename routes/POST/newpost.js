@@ -2,7 +2,7 @@
 require("dotenv").config();
 
 const router = require("express").Router();
-const { posts, users, likes } = require("../../models");
+const { posts, users, likes, comments } = require("../../models");
 const { cloudinary } = require("../../utils/cloudinary");
 router.post("/", async (req, res) => {
   const { text, imageblob } = req.body;
@@ -56,6 +56,9 @@ router.post("/", async (req, res) => {
               },
               {
                 model: likes,
+              },
+              {
+                model: comments,
               },
             ],
           });
