@@ -5,10 +5,16 @@ const newpostLimit = rateLimit({
   message: "Too many posts created. Please wait 1 minute to create a new post.", //err messasge
 });
 
+const commentlimit = rateLimit({
+  windowMs: 1 * 60 * 1000, // 1 min
+  max: 5, // limit to 5 requests every 1 min per windows
+  message:
+    "Too many replies created. Please wait 1 minute to write a new reply.", //err messasge
+});
 const signuplimit = rateLimit({
   windowMs: 1 * 60 * 1000, // 1 min
   max: 15, // limit to 15 requests every 1 min per windows
   message: "Too many signup requests. Please try again after 2 minutes.", //err messasge
 });
 
-module.exports = { newpostLimit, signuplimit };
+module.exports = { newpostLimit, signuplimit, commentlimit };

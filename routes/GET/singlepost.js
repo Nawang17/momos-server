@@ -1,6 +1,12 @@
 "use strict";
 const router = require("express").Router();
-const { posts, users, likes, comments } = require("../../models");
+const {
+  posts,
+  users,
+  likes,
+  comments,
+  nestedcomments,
+} = require("../../models");
 
 router.get("/:postid", async (req, res) => {
   const { postid } = req.params;
@@ -27,6 +33,24 @@ router.get("/:postid", async (req, res) => {
             {
               model: users,
               attributes: ["username", "avatar", "verified", "id"],
+            },
+            {
+              model: nestedcomments,
+
+              include: [
+                {
+                  model: users,
+                  as: "user",
+
+                  attributes: ["username", "avatar", "verified", "id"],
+                },
+                {
+                  model: users,
+                  as: "repliedtouser",
+
+                  attributes: ["username", "avatar", "verified", "id"],
+                },
+              ],
             },
           ],
         },

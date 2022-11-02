@@ -9,7 +9,7 @@ app.set("trust proxy", 1);
 app.use(express.json({ limit: "50mb" }));
 app.use(express.urlencoded({ limit: "50mb", extended: true }));
 const { tokenCheck } = require("./middleware/tokenCheck");
-const { newpostLimit } = require("./middleware/rateLimit");
+const { newpostLimit, commentlimit } = require("./middleware/rateLimit");
 
 const register = require("./routes/Auth/register");
 const login = require("./routes/Auth/login");
@@ -23,6 +23,7 @@ const profileinfo = require("./routes/GET/profileinfo");
 const singlepost = require("./routes/GET/singlepost");
 const newcomment = require("./routes/POST/newcomment");
 const deletecomment = require("./routes/DELETE/deletecomment");
+const newnestedcomment = require("./routes/POST/newNestedComment");
 
 app.use("/likedposts", tokenCheck, likedpost);
 app.use("/likepost", tokenCheck, likepost);
@@ -34,8 +35,9 @@ app.use("/auth/login", login);
 app.use("/auth/register", register);
 app.use("/profileinfo", profileinfo);
 app.use("/post", singlepost);
-app.use("/newcomment", tokenCheck, newcomment);
+app.use("/newcomment", tokenCheck, commentlimit, newcomment);
 app.use("/deletecomment", tokenCheck, deletecomment);
+app.use("/newnestedcomment", tokenCheck, newnestedcomment);
 
 app.get("/", (req, res) => {
   res.send("Hello World");
