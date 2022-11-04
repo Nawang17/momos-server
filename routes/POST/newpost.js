@@ -9,11 +9,11 @@ router.post("/", async (req, res) => {
   const sanitizedText = text?.trim().replace(/\n{2,}/g, "\n");
   if (sanitizedText) {
     if (/^\s*$/.test(sanitizedText)) {
-      res.status(400).send("Post cannot be empty");
+      return res.status(400).send("Post cannot be empty");
     }
   }
   if (!sanitizedText && !imageblob) {
-    res.status(400).send("Post cannot be empty");
+    return res.status(400).send("Post cannot be empty");
   } else {
     try {
       const findPost = await posts.findOne({
@@ -23,7 +23,7 @@ router.post("/", async (req, res) => {
         },
       });
       if (findPost && !imageblob) {
-        res.status(400).send("Whoops! You already said that");
+        return res.status(400).send("Whoops! You already said that");
       } else {
         let uploadedResponse;
         if (imageblob) {
@@ -32,7 +32,7 @@ router.post("/", async (req, res) => {
               upload_preset: process.env.CLOUDINARY_UPLOAD_PRESET,
             });
           } catch (error) {
-            res.status(500).send(error);
+            return res.status(500).send(error);
           }
         }
         const newPost = await posts.create({
@@ -63,16 +63,16 @@ router.post("/", async (req, res) => {
             ],
           });
 
-          res.status(201).send({
+          return res.status(201).send({
             message: "Post created successfully",
             newpost: getnewpost,
           });
         } else {
-          res.status(400).send("Something went wrong");
+          return res.status(400).send("Something went wrong");
         }
       }
     } catch (error) {
-      res.status(400).send(error);
+      return res.status(400).send(error);
     }
   }
 });

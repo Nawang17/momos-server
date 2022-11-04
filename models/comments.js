@@ -18,10 +18,10 @@ module.exports = (sequelize, DataTypes) => {
       foreignKey: "commentId",
       onDelete: "CASCADE",
     });
-    // comments.hasMany(models.notis, {
-    //   foreignKey: "commentId",
-    //   onDelete: "CASCADE",
-    // });
+    comments.hasMany(models.notis, {
+      foreignKey: "commentId",
+      onDelete: "CASCADE",
+    });
   };
   return comments;
 };

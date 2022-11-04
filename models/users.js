@@ -56,10 +56,14 @@ module.exports = (sequelize, DataTypes) => {
       foreignKey: "userId",
       onDelete: "CASCADE",
     });
-    // users.hasMany(models.notis, {
-    //   foreignKey: "userId",
-    //   onDelete: "CASCADE",
-    // });
+    users.hasMany(models.notis, {
+      foreignKey: "userId",
+      onDelete: "CASCADE",
+    });
+    users.hasMany(models.notis, {
+      foreignKey: "targetuserId",
+      onDelete: "CASCADE",
+    });
   };
   return users;
 };

@@ -42,7 +42,7 @@ router.delete("/:postId", async (req, res) => {
         }
       }
     } catch (error) {
-      res.status(400).send(error);
+      return res.status(400).send(error);
     }
   }
 });
