@@ -51,8 +51,12 @@ app.get("/", (req, res) => {
   res.send("Hello World");
 });
 
-db.sequelize.sync().then(() => {
-  app.listen(port, () => {
-    console.log(`Server is listening on port ${port}`);
+try {
+  db.sequelize.sync().then(() => {
+    app.listen(port, () => {
+      console.log(`Server is listening on port ${port}`);
+    });
   });
-});
+} catch (error) {
+  console.log(error);
+}
