@@ -21,14 +21,25 @@ module.exports = {
     },
   },
   production: {
-    username: process.env.DB_USERNAME,
-    password: process.env.DB_PASSWORD,
-    database: process.env.DB_DATABASE,
-    host: process.env.DB_HOST,
-    port: process.env.DB_PORT,
+    username: "root",
+    password: "scxiJ0MKxecMcTSoqjIB",
+    database: "railway",
+    host: "containers-us-west-95.railway.app",
     dialect: "mysql",
+    port: 6304,
     dialectOptions: {
       charset: "utf8mb4",
     },
   },
+  // production: {
+  //   username: process.env.DB_USERNAME,
+  //   password: process.env.DB_PASSWORD,
+  //   database: process.env.DB_DATABASE,
+  //   host: process.env.DB_HOST,
+  //   port: process.env.DB_PORT,
+  //   dialect: "mysql",
+  //   dialectOptions: {
+  //     charset: "utf8mb4",
+  //   },
+  // },
 };
