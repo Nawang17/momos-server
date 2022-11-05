@@ -20,23 +20,13 @@ module.exports = {
       charset: "utf8mb4",
     },
   },
-  // production: {
-  //   username: "root",
-  //   password: "scxiJ0MKxecMcTSoqjIB",
-  //   database: "railway",
-  //   host: "containers-us-west-95.railway.app",
-  //   dialect: "mysql",
-  //   port: 6304,
-  //   dialectOptions: {
-  //     charset: "utf8mb4",
-  //   },
-  // },
+
   production: {
     username: process.env.DB_USERNAME,
     password: process.env.DB_PASSWORD,
     database: process.env.DB_DATABASE,
     host: process.env.DB_HOST,
-    port: 6304,
+    port: 6243,
     dialect: "mysql",
     dialectOptions: {
       charset: "utf8mb4",
