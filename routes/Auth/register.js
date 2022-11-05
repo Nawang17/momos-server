@@ -80,5 +80,51 @@ router.post("/", async (req, res) => {
     }
   }
 });
+router.post("/gregister", async (req, res) => {
+  const { username, email, avatar } = req.body;
+
+  if (!username || !email || !avatar) {
+    res.status(400).send("Please fill all fields");
+  } else {
+    try {
+      const sanitizedUsername = username.replace(/\s+/g, "");
+      const user = await users.findOne({
+        where: {
+          username: sanitizedUsername,
+        },
+      });
+      if (user) {
+        return res.status(400).send("Username already exists");
+      } else {
+        const newUser = await users.create({
+          username: sanitizedUsername,
+          email,
+          password: "chI3VkNCCgKO9ZyQ9SJt",
+          avatar,
+        });
+        if (newUser) {
+          const token = sign(
+            {
+              id: newUser.id,
+            },
+            process.env.JWT_SECRET
+          );
+          res.status(201).send({
+            message: `Account created successfully.Welcome to momos.`,
+            token: "Bearer " + token,
+            user: {
+              username: sanitizedUsername,
+              avatar,
+            },
+          });
+        } else {
+          res.status(400).send("Something went wrong");
+        }
+      }
+    } catch (error) {
+      res.status(500).send(error.message);
+    }
+  }
+});
 
 module.exports = router;

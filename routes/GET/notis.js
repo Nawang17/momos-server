@@ -8,6 +8,7 @@ router.get("/", async (req, res) => {
       where: {
         targetuserId: req.user.id,
       },
+      order: [["id", "DESC"]],
       include: [
         {
           model: users,

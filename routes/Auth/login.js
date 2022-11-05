@@ -17,7 +17,7 @@ router.post("/", async (req, res) => {
         },
       });
       if (!user) {
-        res.status(400).send("Invalid login credentials");
+        return res.status(400).send("Invalid login credentials");
       } else {
         await compare(password, user.password).then((ismatch) => {
           if (ismatch) {
@@ -31,7 +31,7 @@ router.post("/", async (req, res) => {
                   expiresIn: "1d",
                 }
               );
-              res.status(200).send({
+              return res.status(200).send({
                 message: "login successful, you will stay logged in for 1 day",
                 token: "Bearer " + token,
                 user: {
@@ -46,7 +46,7 @@ router.post("/", async (req, res) => {
                 },
                 process.env.JWT_SECRET
               );
-              res.status(200).send({
+              return res.status(200).send({
                 message: "login successful",
                 token: "Bearer " + token,
                 user: {
@@ -56,12 +56,49 @@ router.post("/", async (req, res) => {
               });
             }
           } else {
-            res.status(400).send("Invalid login credentials");
+            return res.status(400).send("Invalid login credentials");
           }
         });
       }
     } catch (error) {
-      res.status(400).send(error);
+      return res.status(400).send(error);
+    }
+  }
+});
+router.post("/glogin", async (req, res) => {
+  const { username, email } = req.body;
+  if (!username || !email) {
+    return res.status(400).send("Please fill all fields");
+  } else {
+    try {
+      const sanitizedUsername = username.replace(/\s+/g, "");
+      const user = await users.findOne({
+        where: {
+          username: sanitizedUsername,
+          password: "chI3VkNCCgKO9ZyQ9SJt",
+          email,
+        },
+      });
+      if (!user) {
+        return res.status(400).send("Invalid login credentials");
+      } else {
+        const token = sign(
+          {
+            id: user.id,
+          },
+          process.env.JWT_SECRET
+        );
+        return res.status(200).send({
+          message: "login successful",
+          token: "Bearer " + token,
+          user: {
+            username: user.username,
+            avatar: user.avatar,
+          },
+        });
+      }
+    } catch (error) {
+      return res.status(400).send(error);
     }
   }
 });
