@@ -1,12 +1,12 @@
 "use strict";
 const router = require("express").Router();
-const { posts, users, likes, comments } = require("../../models");
+const { posts, users, likes, comments, follows } = require("../../models");
 
 router.get("/:username", async (req, res) => {
   const { username } = req.params;
   try {
     if (!username) {
-      res.status(400).send("username is required");
+      return res.status(400).send("username is required");
     }
     const userInfo = await users.findOne({
       where: {
@@ -15,9 +15,9 @@ router.get("/:username", async (req, res) => {
       attributes: { exclude: ["password", "updatedAt"] },
     });
     if (!userInfo) {
-      res.status(400).send("User not found");
+      return res.status(400).send("User not found");
     } else if (userInfo.status !== "active") {
-      res.status(400).send("User is inactive");
+      return res.status(400).send("User is inactive");
     } else {
       const userPosts = await posts.findAll({
         where: {
@@ -38,6 +38,7 @@ router.get("/:username", async (req, res) => {
           },
         ],
       });
+
       const findlikedPosts = await likes.findAll({
         where: {
           userId: userInfo.id,
@@ -64,7 +65,7 @@ router.get("/:username", async (req, res) => {
         likedpostsarr.includes(post.id)
       );
 
-      res.status(200).send({
+      return res.status(200).send({
         message: "profile retrieved successfully",
         userPosts,
         userInfo,
@@ -72,8 +73,66 @@ router.get("/:username", async (req, res) => {
       });
     }
   } catch (error) {
-    res.status(400).send(error);
-    console.log(error);
+    return res.status(400).send(error);
+  }
+});
+router.get("/followdata/:username", async (req, res) => {
+  const { username } = req.params;
+  try {
+    if (!username) {
+      return res.status(400).send("username is required");
+    }
+    const userInfo = await users.findOne({
+      where: {
+        username: username,
+      },
+      attributes: { exclude: ["password", "updatedAt"] },
+    });
+    if (!userInfo) {
+      return res.status(400).send("User not found");
+    } else if (userInfo.status !== "active") {
+      return res.status(400).send("User is inactive");
+    } else {
+      const userFollowers = await follows.findAll({
+        where: {
+          followingid: userInfo.id,
+        },
+        include: [
+          {
+            model: users,
+            as: "follower",
+            attributes: ["username", "avatar", "verified", "id"],
+          },
+        ],
+      });
+
+      const userfollowerarr = userFollowers.map((p) => p.follower.username);
+      const userFollowing = await follows.findAll({
+        where: {
+          userid: userInfo.id,
+        },
+        include: [
+          {
+            model: users,
+            as: "following",
+            attributes: ["username", "avatar", "verified", "id"],
+          },
+        ],
+      });
+      const userfollowingarr = userFollowing.map((z) => z.following.username);
+
+      return res.status(200).send({
+        message: "follow data retrieved successfully",
+
+        userFollowing,
+
+        userFollowers,
+        userfollowingarr,
+        userfollowerarr,
+      });
+    }
+  } catch (error) {
+    return res.status(400).send(error);
   }
 });
 

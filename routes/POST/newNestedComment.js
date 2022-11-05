@@ -1,7 +1,6 @@
 "use strict";
 const router = require("express").Router();
-const { users, nestedcomments, comments } = require("../../models");
-const { route } = require("./newpost");
+const { users, nestedcomments, comments, notis } = require("../../models");
 
 router.post("/", async (req, res) => {
   const { text, commentId, replytouserId, postId } = req.body;
@@ -27,6 +26,17 @@ router.post("/", async (req, res) => {
         userId: req.user.id,
         postId,
       });
+      if (req.user.id !== replytouserId) {
+        await notis.create({
+          userId: req.user.id,
+          type: "REPLY",
+          postId,
+          targetuserId: replytouserId,
+          text: sanitizedText,
+          nestedcommentId: createNewNestedComment.id,
+        });
+      }
+
       if (createNewNestedComment) {
         const nestedcomment = await nestedcomments.findOne({
           where: {

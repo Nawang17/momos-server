@@ -37,7 +37,8 @@ router.post("/", async (req, res) => {
         type: "COMMENT",
         postId,
         targetuserId: findpost.postUser,
-        text,
+        text: sanitizedText,
+        commentId: newComment.id,
       });
     }
 

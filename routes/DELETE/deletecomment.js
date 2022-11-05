@@ -34,6 +34,7 @@ router.delete("/:commentid", async (req, res) => {
                 userId: req.user.id,
 
                 type: "COMMENT",
+                commentId: commentid,
               },
             });
           }

@@ -34,6 +34,11 @@ module.exports = (sequelize, DataTypes) => {
       allowNull: false,
       defaultValue: "active",
     },
+    imagekey: {
+      type: DataTypes.STRING,
+      allowNull: true,
+      defaultValue: null,
+    },
   });
   users.associate = (models) => {
     users.hasMany(models.posts, {
@@ -62,6 +67,19 @@ module.exports = (sequelize, DataTypes) => {
     });
     users.hasMany(models.notis, {
       foreignKey: "targetuserId",
+      onDelete: "CASCADE",
+    });
+    users.hasMany(models.follows, {
+      foreignKey: "followerid",
+      onDelete: "CASCADE",
+    });
+
+    users.hasMany(models.follows, {
+      foreignKey: "followingid",
+      onDelete: "CASCADE",
+    });
+    users.hasMany(models.follows, {
+      foreignKey: "userid",
       onDelete: "CASCADE",
     });
   };

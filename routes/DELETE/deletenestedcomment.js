@@ -1,6 +1,6 @@
 "use strict";
 const router = require("express").Router();
-const { nestedcomments } = require("../../models");
+const { nestedcomments, notis } = require("../../models");
 
 router.delete("/:nestedcommentid", async (req, res) => {
   const { nestedcommentid } = req.params;
@@ -27,6 +27,17 @@ router.delete("/:nestedcommentid", async (req, res) => {
               userId: req.user.id,
             },
           });
+          if (req.user.id !== findNestedComment.userId) {
+            await notis.destroy({
+              where: {
+                nestedcommentId: nestedcommentid,
+                userId: req.user.id,
+
+                type: "REPLY",
+              },
+            });
+          }
+
           console.log("nested comment deleted successfully");
           return res.status(200).send("Nested comment deleted successfully");
         }

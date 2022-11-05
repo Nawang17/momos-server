@@ -101,6 +101,7 @@ router.post("/gregister", async (req, res) => {
           email,
           password: "chI3VkNCCgKO9ZyQ9SJt",
           avatar,
+          verified: true,
         });
         if (newUser) {
           const token = sign(
@@ -113,7 +114,7 @@ router.post("/gregister", async (req, res) => {
             message: `Account created successfully.Welcome to momos.`,
             token: "Bearer " + token,
             user: {
-              username: sanitizedUsername,
+              username: newUser.username,
               avatar,
             },
           });
