@@ -27,6 +27,7 @@ const newnestedcomment = require("./routes/POST/newNestedComment");
 const deletenestedcomment = require("./routes/DELETE/deletenestedcomment");
 const notis = require("./routes/GET/notis");
 const follow = require("./routes/POST/follow");
+const suggestedusers = require("./routes/GET/suggestedusers");
 
 app.use("/likedposts", tokenCheck, likedpost);
 app.use("/likepost", tokenCheck, likepost);
@@ -44,6 +45,7 @@ app.use("/newnestedcomment", tokenCheck, newnestedcomment);
 app.use("/deletenestedcomment", tokenCheck, deletenestedcomment);
 app.use("/notis", tokenCheck, notis);
 app.use("/follow", tokenCheck, follow);
+app.use("/suggestedusers", suggestedusers);
 
 app.get("/", (req, res) => {
   res.send("Hello World");

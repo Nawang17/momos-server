@@ -1,35 +1,19 @@
 "use strict";
 const router = require("express").Router();
 const { users, follows } = require("../../models");
-router.get("/", async (req, res) => {
-  const userFollowing = await follows.findAll({
-    where: {
-      userid: req.user.id,
-    },
-    include: [
-      {
-        model: users,
-        as: "following",
-        attributes: ["username", "avatar", "verified", "id"],
-      },
-    ],
-  });
-  const userfollowingarr = userFollowing.map((z) => z.following.username);
-  res.status(200).send({
-    message: "user retrieved successfully",
-    user: {
-      username: req.user.username,
-      avatar: req.user.avatar,
-    },
-    userfollowingarr,
-  });
-});
+const Sequelize = require("sequelize");
+const { Op } = require("sequelize");
 
-router.get("/suggestedusers/:name", async (req, res) => {
+router.get("/:name", async (req, res) => {
   const { name } = req.params;
+  const finduser = await users.findOne({
+    where: {
+      username: name ? name : "no",
+    },
+  });
   const followingarray = await follows.findAll({
     where: {
-      followerid: name ? name : "0",
+      followerid: finduser?.id ? finduser.id : "0",
     },
     include: [
       {
@@ -41,13 +25,14 @@ router.get("/suggestedusers/:name", async (req, res) => {
   });
   const followingarr = followingarray.map((z) => z.following.username);
   const suggestedusers = await users.findAll({
+    order: Sequelize.fn("RAND"),
     where: {
       username: {
         [Op.notIn]: followingarr,
       },
     },
     attributes: ["username", "avatar", "verified", "id"],
-    limit: 5,
+    limit: 30,
   });
   res.status(200).send({
     message: "user retrieved successfully",
