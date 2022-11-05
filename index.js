@@ -52,7 +52,7 @@ app.get("/", (req, res) => {
 });
 
 db.sequelize.sync().then(() => {
-  app.listen(port, async () => {
+  app.listen(port, () => {
     console.log(`Server is listening on port ${port}`);
   });
 });
