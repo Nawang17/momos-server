@@ -14,6 +14,7 @@ const {
   commentlimit,
   followlimit,
   likelimit,
+  nestedcommentlimit,
 } = require("./middleware/rateLimit");
 
 const register = require("./routes/Auth/register");
@@ -46,16 +47,16 @@ app.use("/profileinfo", profileinfo);
 app.use("/post", singlepost);
 app.use("/newcomment", tokenCheck, commentlimit, newcomment);
 app.use("/deletecomment", tokenCheck, deletecomment);
-app.use("/newnestedcomment", tokenCheck, commentlimit, newnestedcomment);
+app.use("/newnestedcomment", tokenCheck, nestedcommentlimit, newnestedcomment);
 app.use("/deletenestedcomment", tokenCheck, deletenestedcomment);
 app.use("/notis", tokenCheck, notis);
 app.use("/follow", tokenCheck, followlimit, follow);
 app.use("/suggestedusers", suggestedusers);
 
 app.get("/", (req, res) => {
-  res.send("Hello World");
+  res.send("momos server ");
 });
-app.get("/hello", (request, response) => response.send(request.ip));
+
 db.sequelize.sync().then(() => {
   app.listen(port, () => {
     console.log(`Server is listening on port ${port}`);
