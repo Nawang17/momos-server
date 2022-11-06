@@ -24,14 +24,12 @@ router.delete("/:commentid", async (req, res) => {
           await comments.destroy({
             where: {
               id: commentid,
-              userId: req.user.id,
             },
           });
           if (findComment.postUser !== req.user.id) {
             await notis.destroy({
               where: {
                 postId: findComment.postId,
-                userId: req.user.id,
 
                 type: "COMMENT",
                 commentId: commentid,

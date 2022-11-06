@@ -24,14 +24,12 @@ router.delete("/:nestedcommentid", async (req, res) => {
           await nestedcomments.destroy({
             where: {
               id: nestedcommentid,
-              userId: req.user.id,
             },
           });
           if (req.user.id !== findNestedComment.userId) {
             await notis.destroy({
               where: {
                 nestedcommentId: nestedcommentid,
-                userId: req.user.id,
 
                 type: "REPLY",
               },

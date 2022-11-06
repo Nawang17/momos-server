@@ -34,7 +34,6 @@ router.delete("/:postId", async (req, res) => {
           await posts.destroy({
             where: {
               id: postId,
-              postUser: req.user.id,
             },
           });
           res.status(200).send("Post deleted successfully");
