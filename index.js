@@ -5,7 +5,7 @@ const db = require("./models");
 const cors = require("cors");
 const port = process.env.PORT || 3001;
 app.use(cors());
-app.set("trust proxy", 3);
+app.set("trust proxy", 4);
 app.use(express.json({ limit: "50mb" }));
 app.use(express.urlencoded({ limit: "50mb", extended: true }));
 const { tokenCheck } = require("./middleware/tokenCheck");
