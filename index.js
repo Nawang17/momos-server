@@ -9,7 +9,12 @@ app.set("trust proxy", 1);
 app.use(express.json({ limit: "50mb" }));
 app.use(express.urlencoded({ limit: "50mb", extended: true }));
 const { tokenCheck } = require("./middleware/tokenCheck");
-const { newpostLimit, commentlimit } = require("./middleware/rateLimit");
+const {
+  newpostLimit,
+  commentlimit,
+  followlimit,
+  likelimit,
+} = require("./middleware/rateLimit");
 
 const register = require("./routes/Auth/register");
 const login = require("./routes/Auth/login");
@@ -30,7 +35,7 @@ const follow = require("./routes/POST/follow");
 const suggestedusers = require("./routes/GET/suggestedusers");
 
 app.use("/likedposts", tokenCheck, likedpost);
-app.use("/likepost", tokenCheck, likepost);
+app.use("/likepost", tokenCheck, likelimit, likepost);
 app.use("/deletepost", tokenCheck, deletepost);
 app.use("/userinfo", tokenCheck, userinfo);
 app.use("/homeposts", homepost);
@@ -41,16 +46,16 @@ app.use("/profileinfo", profileinfo);
 app.use("/post", singlepost);
 app.use("/newcomment", tokenCheck, commentlimit, newcomment);
 app.use("/deletecomment", tokenCheck, deletecomment);
-app.use("/newnestedcomment", tokenCheck, newnestedcomment);
+app.use("/newnestedcomment", tokenCheck, commentlimit.newnestedcomment);
 app.use("/deletenestedcomment", tokenCheck, deletenestedcomment);
 app.use("/notis", tokenCheck, notis);
-app.use("/follow", tokenCheck, follow);
+app.use("/follow", tokenCheck, followlimit, follow);
 app.use("/suggestedusers", suggestedusers);
 
 app.get("/", (req, res) => {
   res.send("Hello World");
 });
-
+app.get("/ip", (request, response) => response.send(request.ip));
 db.sequelize.sync().then(() => {
   app.listen(port, () => {
     console.log(`Server is listening on port ${port}`);
