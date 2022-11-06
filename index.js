@@ -46,7 +46,7 @@ app.use("/profileinfo", profileinfo);
 app.use("/post", singlepost);
 app.use("/newcomment", tokenCheck, commentlimit, newcomment);
 app.use("/deletecomment", tokenCheck, deletecomment);
-app.use("/newnestedcomment", tokenCheck, commentlimit.newnestedcomment);
+app.use("/newnestedcomment", tokenCheck, commentlimit, newnestedcomment);
 app.use("/deletenestedcomment", tokenCheck, deletenestedcomment);
 app.use("/notis", tokenCheck, notis);
 app.use("/follow", tokenCheck, followlimit, follow);
