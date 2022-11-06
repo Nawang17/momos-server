@@ -5,7 +5,7 @@ const db = require("./models");
 const cors = require("cors");
 const port = process.env.PORT || 3001;
 app.use(cors());
-app.set("trust proxy", 1);
+app.set("trust proxy", 2);
 app.use(express.json({ limit: "50mb" }));
 app.use(express.urlencoded({ limit: "50mb", extended: true }));
 const { tokenCheck } = require("./middleware/tokenCheck");
@@ -55,7 +55,7 @@ app.use("/suggestedusers", suggestedusers);
 app.get("/", (req, res) => {
   res.send("Hello World");
 });
-app.get("/ip", (request, response) => response.send(request.ip));
+app.get("/hello", (request, response) => response.send(request.ip));
 db.sequelize.sync().then(() => {
   app.listen(port, () => {
     console.log(`Server is listening on port ${port}`);
