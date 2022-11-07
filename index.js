@@ -15,6 +15,7 @@ const {
   followlimit,
   likelimit,
   nestedcommentlimit,
+  registerlimit,
 } = require("./middleware/rateLimit");
 
 const register = require("./routes/Auth/register");
@@ -42,7 +43,7 @@ app.use("/userinfo", tokenCheck, userinfo);
 app.use("/homeposts", homepost);
 app.use("/newpost", tokenCheck, newpostLimit, newpost);
 app.use("/auth/login", login);
-app.use("/auth/register", register);
+app.use("/auth/register", registerlimit, register);
 app.use("/profileinfo", profileinfo);
 app.use("/post", singlepost);
 app.use("/newcomment", tokenCheck, commentlimit, newcomment);

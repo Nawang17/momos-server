@@ -1,6 +1,6 @@
 const rateLimit = require("express-rate-limit");
 const newpostLimit = rateLimit({
-  windowMs: 1 * 60 * 1000, // 1 min
+  windowMs: 3 * 60 * 1000, // 1 min
   max: 5, // limit to 5 requests every 1 min per windows
   message: "Too many posts created. Please wait 1 minute to create a new post.", //err messasge
 });
@@ -27,15 +27,15 @@ const likelimit = rateLimit({
   max: 35, // limit to 50 requests every 1 min per windows
   message: "Too many like requests. Please wait 1 minute.", //err messasge
 });
-const signuplimit = rateLimit({
-  windowMs: 1 * 60 * 1000, // 1 min
-  max: 15, // limit to 15 requests every 1 min per windows
-  message: "Too many signup requests. Please try again after 2 minutes.", //err messasge
+const registerlimit = rateLimit({
+  windowMs: 50 * 60 * 1000, // 50 min
+  max: 5, // limit to 15 requests every 1 min per windows
+  message: "Too many signup requests. Please try again after 50 minutes.", //err messasge
 });
 
 module.exports = {
   newpostLimit,
-  signuplimit,
+  registerlimit,
   commentlimit,
   followlimit,
   likelimit,
