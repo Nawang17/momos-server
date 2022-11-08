@@ -19,7 +19,7 @@ const avatarColor = [
   "2f695f",
   "106cad",
 ];
-
+const restrictednames = ["ABOUT", "LOGIN", "REGISTER"];
 router.post("/", async (req, res) => {
   const { username, password } = req.body;
 
@@ -31,6 +31,8 @@ router.post("/", async (req, res) => {
     res.status(400).send("Username can only contain letters and numbers");
   } else if (username.length < 4 || username.length > 15) {
     res.status(400).send("Username must be between 4 and 15 characters");
+  } else if (restrictednames.includes(username.toUpperCase())) {
+    return res.status(400).send("Username is not available");
   } else if (password.length < 4) {
     res.status(400).send("Password must be at least 4 characters");
   } else {

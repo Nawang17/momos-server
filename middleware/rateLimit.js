@@ -1,7 +1,7 @@
 const rateLimit = require("express-rate-limit");
 const newpostLimit = rateLimit({
-  windowMs: 2 * 60 * 1000, // 3 min
-  max: 6, // limit to 5 requests every 1 min per windows
+  windowMs: 2 * 60 * 1000, // 2 min
+  max: 6, // limit to 5 requests every 2 min per windows
   message: "Too many posts created. Please wait 2 minute to create a new post.", //err messasge
 });
 
