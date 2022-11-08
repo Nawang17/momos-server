@@ -65,8 +65,8 @@ router.get("/:postid", async (req, res) => {
       });
     }
   } catch (error) {
-    res.status(400).send(error);
     console.log(error);
+    return res.status(400).send("Something went wrong");
   }
 });
 module.exports = router;

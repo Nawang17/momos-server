@@ -12,7 +12,8 @@ router.get("/", async (req, res) => {
     const likedposts = findlikedPosts.map((post) => post.postId);
     res.status(200).send({ likedposts: likedposts });
   } catch (error) {
-    res.status(500).send(error);
+    console.log(error);
+    return res.status(500).send("Something went wrong");
   }
 });
 

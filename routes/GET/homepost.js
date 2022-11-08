@@ -30,8 +30,8 @@ router.get("/", async (req, res) => {
       res.status(400).send("something went wrong");
     }
   } catch (error) {
-    res.status(400).send(error);
     console.log(error);
+    return res.status(500).send("Something went wrong");
   }
 });
 

@@ -6,6 +6,8 @@ router.post("/", async (req, res) => {
   const { followingid } = req.body;
   if (!followingid) {
     return res.status(400).send("followingid is required");
+  } else if (followingid === req.user.id) {
+    return res.status(400).send("You cannot follow yourself");
   } else {
     try {
       const findFollow = await follows.findOne({
@@ -65,7 +67,8 @@ router.post("/", async (req, res) => {
         return res.status(200).send({ followed: true, newFollowing });
       }
     } catch (error) {
-      return res.status(500).send(error);
+      console.log(error);
+      return res.status(500).send("Something went wrong");
     }
   }
 });

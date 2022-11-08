@@ -32,7 +32,7 @@ router.post("/", async (req, res) => {
               upload_preset: process.env.CLOUDINARY_UPLOAD_PRESET,
             });
           } catch (error) {
-            return res.status(500).send(error);
+            return res.status(500).send("error uploading image to cloudinary");
           }
         }
         const newPost = await posts.create({
@@ -72,7 +72,8 @@ router.post("/", async (req, res) => {
         }
       }
     } catch (error) {
-      return res.status(400).send(error);
+      console.log(error);
+      return res.status(500).send("Something went wrong");
     }
   }
 });
