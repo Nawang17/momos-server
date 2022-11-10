@@ -78,7 +78,8 @@ router.post("/", async (req, res) => {
         }
       }
     } catch (error) {
-      res.status(500).send(error.message);
+      console.log(error);
+      return res.status(500).send("Something went wrong");
     }
   }
 });
@@ -125,7 +126,8 @@ router.post("/gregister", async (req, res) => {
         }
       }
     } catch (error) {
-      res.status(500).send(error.message);
+      console.log(error);
+      return res.status(500).send("Something went wrong");
     }
   }
 });

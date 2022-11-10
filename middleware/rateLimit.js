@@ -1,8 +1,9 @@
 const rateLimit = require("express-rate-limit");
 const newpostLimit = rateLimit({
-  windowMs: 2 * 60 * 1000, // 2 min
-  max: 6, // limit to 5 requests every 2 min per windows
-  message: "Too many posts created. Please wait 2 minute to create a new post.", //err messasge
+  windowMs: 1 * 60 * 1000, // 1 min
+  max: 5, // limit to 5 requests every 1 min per windows
+  message: "Too many posts created. Please wait 1 minute to create a new post.", //err messasge
+  skipFailedRequests: true,
 });
 
 const commentlimit = rateLimit({
@@ -10,27 +11,32 @@ const commentlimit = rateLimit({
   max: 5, // limit to 5 requests every 1 min per windows
   message:
     "Too many replies created. Please wait 1 minute to write a new reply.", //err messasge
+  skipFailedRequests: true,
 });
 const nestedcommentlimit = rateLimit({
   windowMs: 1 * 60 * 1000, // 1 min
   max: 5, // limit to 5 requests every 1 min per windows
   message:
     "Too many replies created. Please wait 1 minute to write a new reply.", //err messasge
+  skipFailedRequests: true,
 });
 const followlimit = rateLimit({
   windowMs: 1 * 60 * 1000, // 1 min
-  max: 25, // limit to 30 requests every 1 min per windows
+  max: 25, // limit to 25 requests every 1 min per windows
   message: "Too many follow requests. Please wait 1 minute.", //err messasge
+  skipFailedRequests: true,
 });
 const likelimit = rateLimit({
   windowMs: 1 * 60 * 1000, // 1 min
   max: 35, // limit to 35 requests every 1 min per windows
   message: "Too many like requests. Please wait 1 minute.", //err messasge
+  skipFailedRequests: true,
 });
 const registerlimit = rateLimit({
-  windowMs: 30 * 60 * 1000, // 30 min
-  max: 6, // limit to 6 requests every 1 min per windows
-  message: "Too many signup requests. Please try again after 30 minutes.", //err messasge
+  windowMs: 60 * 60 * 1000, // 1 hour
+  max: 2, // limit to 2 requests every 1 min per windows
+  message: "Too many accounts created, please try again after an hour", //err messasge
+  skipFailedRequests: true,
 });
 
 module.exports = {
