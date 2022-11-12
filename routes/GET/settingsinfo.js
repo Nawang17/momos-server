@@ -73,17 +73,22 @@ router.put("/updateprofileinfo", async (req, res) => {
           if (username !== finduser?.username) {
             if (finduser?.username === "Demo") {
             } else {
-              await users.update(
-                {
-                  username: username,
-                },
-                {
-                  where: {
-                    id: id,
+              try {
+                await users.update(
+                  {
+                    username: username,
                   },
-                }
-              );
-              console.log("username updated successfully");
+                  {
+                    where: {
+                      id: id,
+                    },
+                  }
+                );
+                console.log("username updated successfully");
+              } catch (error) {
+                console.log(error);
+                return res.status(400).send("Something went wrong");
+              }
             }
           }
         }
@@ -98,17 +103,22 @@ router.put("/updateprofileinfo", async (req, res) => {
         description?.trim().replace(/(\r\n|\n|\r)/gm, "") !==
         finduser?.description
       ) {
-        await users.update(
-          {
-            description: description?.trim().replace(/(\r\n|\n|\r)/gm, ""),
-          },
-          {
-            where: {
-              id: id,
+        try {
+          await users.update(
+            {
+              description: description?.trim().replace(/(\r\n|\n|\r)/gm, ""),
             },
-          }
-        );
-        console.log("description updated successfully");
+            {
+              where: {
+                id: id,
+              },
+            }
+          );
+          console.log("description updated successfully");
+        } catch (error) {
+          console.log(error);
+          return res.status(400).send("Something went wrong");
+        }
       }
 
       if (avatar) {
@@ -130,20 +140,25 @@ router.put("/updateprofileinfo", async (req, res) => {
             };
         }
         if (imguploadedResponse) {
-          await users.update(
-            {
-              avatar: imguploadedResponse?.secure_url,
-              imagekey: imguploadedResponse?.public_id,
-            },
-            {
-              where: {
-                id: id,
+          try {
+            await users.update(
+              {
+                avatar: imguploadedResponse?.secure_url,
+                imagekey: imguploadedResponse?.public_id,
               },
-            },
-            {
-              multi: true,
-            }
-          );
+              {
+                where: {
+                  id: id,
+                },
+              },
+              {
+                multi: true,
+              }
+            );
+          } catch (error) {
+            console.log(error);
+            return res.status(400).send("Something went wrong");
+          }
         }
         console.log("avatar updated successfully");
       }
