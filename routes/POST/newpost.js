@@ -5,7 +5,7 @@ const router = require("express").Router();
 const { posts, users, likes, comments } = require("../../models");
 const { cloudinary } = require("../../utils/cloudinary");
 router.post("/", async (req, res) => {
-  const { text, imageblob } = req.body;
+  const { text, imageblob, filetype } = req.body;
   const sanitizedText = text?.trim().replace(/\n{2,}/g, "\n");
   if (sanitizedText) {
     if (/^\s*$/.test(sanitizedText)) {
@@ -27,12 +27,23 @@ router.post("/", async (req, res) => {
       } else {
         let uploadedResponse;
         if (imageblob) {
-          try {
-            uploadedResponse = await cloudinary.uploader.upload(imageblob, {
-              upload_preset: process.env.CLOUDINARY_UPLOAD_PRESET,
-            });
-          } catch (error) {
-            return res.status(500).send("error uploading image to cloudinary");
+          if (filetype === "image") {
+            try {
+              uploadedResponse = await cloudinary.uploader.upload(imageblob, {
+                upload_preset: process.env.CLOUDINARY_UPLOAD_PRESET,
+              });
+            } catch (error) {
+              return res.status(500).send("error uploading image ");
+            }
+          } else if (filetype === "video") {
+            try {
+              uploadedResponse = await cloudinary.uploader.upload(imageblob, {
+                resource_type: "video",
+                upload_preset: process.env.CLOUDINARY_UPLOAD_PRESET,
+              });
+            } catch (error) {
+              return res.status(500).send("error uploading video");
+            }
           }
         }
         const newPost = await posts.create({
@@ -40,6 +51,8 @@ router.post("/", async (req, res) => {
           postUser: req.user.id,
           image: uploadedResponse?.secure_url,
           imagekey: uploadedResponse?.public_id,
+          filetype:
+            uploadedResponse?.resource_type === "video" ? "video" : "image",
         });
         if (newPost) {
           const getnewpost = await posts.findOne({

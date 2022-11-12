@@ -21,15 +21,34 @@ router.delete("/:postId", async (req, res) => {
           res.status(400).send("You are not authorized to delete this post");
         } else {
           if (findPost.imagekey) {
-            await cloudinary.uploader.destroy(
-              findPost.imagekey,
-              (err, result) => {
-                if (err) {
-                  res.status(500).send(err);
+            if (findPost.filetype === "video") {
+              await cloudinary.uploader.destroy(
+                findPost.imagekey,
+                {
+                  resource_type: "video",
+                  upload_preset: process.env.CLOUDINARY_UPLOAD_PRESET,
+                },
+                (err, result) => {
+                  if (err) {
+                    res.status(500).send(err);
+                  }
+                  console.log("video deleted from cloudinary", result);
                 }
-                console.log("Image deleted from cloudinary", result);
-              }
-            );
+              );
+            } else if (findPost.filetype === "image") {
+              await cloudinary.uploader.destroy(
+                findPost.imagekey,
+                {
+                  upload_preset: process.env.CLOUDINARY_UPLOAD_PRESET,
+                },
+                (err, result) => {
+                  if (err) {
+                    res.status(500).send(err);
+                  }
+                  console.log("Image deleted from cloudinary", result);
+                }
+              );
+            }
           }
           await posts.destroy({
             where: {

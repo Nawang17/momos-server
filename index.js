@@ -6,8 +6,8 @@ const cors = require("cors");
 const port = process.env.PORT || 3001;
 app.use(cors());
 app.set("trust proxy", 4);
-app.use(express.json({ limit: "50mb" }));
-app.use(express.urlencoded({ limit: "50mb", extended: true }));
+app.use(express.json({ limit: "100mb" }));
+app.use(express.urlencoded({ limit: "100mb", extended: true }));
 const { tokenCheck } = require("./middleware/tokenCheck");
 const {
   newpostLimit,
@@ -35,6 +35,7 @@ const deletenestedcomment = require("./routes/DELETE/deletenestedcomment");
 const notis = require("./routes/GET/notis");
 const follow = require("./routes/POST/follow");
 const suggestedusers = require("./routes/GET/suggestedusers");
+const settingsinfo = require("./routes/GET/settingsinfo");
 
 app.use("/likedposts", tokenCheck, likedpost);
 app.use("/likepost", tokenCheck, likelimit, likepost);
@@ -53,6 +54,7 @@ app.use("/deletenestedcomment", tokenCheck, deletenestedcomment);
 app.use("/notis", tokenCheck, notis);
 app.use("/follow", tokenCheck, followlimit, follow);
 app.use("/suggestedusers", suggestedusers);
+app.use("/settingsinfo", tokenCheck, settingsinfo);
 
 app.get("/", (req, res) => {
   res.send("momos server ");

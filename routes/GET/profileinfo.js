@@ -1,6 +1,7 @@
 "use strict";
 const router = require("express").Router();
 const { posts, users, likes, comments, follows } = require("../../models");
+const { tokenCheck } = require("../../middleware/tokenCheck");
 
 router.get("/:username", async (req, res) => {
   const { username } = req.params;
@@ -73,7 +74,8 @@ router.get("/:username", async (req, res) => {
       });
     }
   } catch (error) {
-    return res.status(400).send(error);
+    console.log(error);
+    return res.status(400).send("Something went wrong");
   }
 });
 router.get("/followdata/:username", async (req, res) => {
