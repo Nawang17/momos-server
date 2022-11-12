@@ -60,8 +60,13 @@ app.get("/", (req, res) => {
   res.send("momos server ");
 });
 
-db.sequelize.sync().then(() => {
-  app.listen(port, () => {
-    console.log(`Server is listening on port ${port}`);
+db.sequelize
+  .sync()
+  .then(() => {
+    app.listen(port, () => {
+      console.log(`Server is listening on port ${port}`);
+    });
+  })
+  .catch((err) => {
+    console.log(err);
   });
-});
