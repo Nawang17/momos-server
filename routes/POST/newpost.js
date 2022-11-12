@@ -65,8 +65,7 @@ router.post("/", async (req, res) => {
                 : null
               : uploadedResponse?.secure_url,
           imagekey: uploadedResponse?.public_id,
-          filetype:
-            uploadedResponse?.resource_type === "video" ? "video" : "image",
+          filetype,
         });
         if (newPost) {
           const getnewpost = await posts.findOne({
