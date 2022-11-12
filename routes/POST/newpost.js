@@ -34,6 +34,8 @@ router.post("/", async (req, res) => {
                 upload_preset: process.env.CLOUDINARY_UPLOAD_PRESET,
               });
             } catch (error) {
+              console.log(error);
+
               return res.status(500).send("error uploading image ");
             }
           } else if (filetype === "video") {
@@ -51,6 +53,7 @@ router.post("/", async (req, res) => {
                 transformedvidurl = uploadedResponse?.secure_url;
               }
             } catch (error) {
+              console.log(error);
               return res.status(500).send("error uploading video");
             }
           }
