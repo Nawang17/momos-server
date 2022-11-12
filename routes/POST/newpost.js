@@ -42,16 +42,14 @@ router.post("/", async (req, res) => {
                 resource_type: "video",
                 upload_preset: process.env.CLOUDINARY_UPLOAD_PRESET,
               });
-              console.log(uploadedResponse);
-              if (uploadedResponse.width < uploadedResponse.height) {
-                transformedvidurl = uploadedResponse.secure_url.replace(
+              if (uploadedResponse?.width < uploadedResponse?.height) {
+                transformedvidurl = uploadedResponse?.secure_url.replace(
                   "upload/",
                   "upload/ar_1:1,b_black,c_pad/"
                 );
               } else {
-                transformedvidurl = uploadedResponse.secure_url;
+                transformedvidurl = uploadedResponse?.secure_url;
               }
-              console.log(transformedvidurl);
             } catch (error) {
               return res.status(500).send("error uploading video");
             }
@@ -61,8 +59,10 @@ router.post("/", async (req, res) => {
           text: sanitizedText,
           postUser: req.user.id,
           image:
-            uploadedResponse.resource_type === "video"
+            uploadedResponse?.resource_type === "video"
               ? transformedvidurl
+                ? transformedvidurl
+                : null
               : uploadedResponse?.secure_url,
           imagekey: uploadedResponse?.public_id,
           filetype:
