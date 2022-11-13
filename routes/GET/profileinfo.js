@@ -1,7 +1,6 @@
 "use strict";
 const router = require("express").Router();
 const { posts, users, likes, comments, follows } = require("../../models");
-const { tokenCheck } = require("../../middleware/tokenCheck");
 
 router.get("/:username", async (req, res) => {
   const { username } = req.params;
@@ -37,6 +36,14 @@ router.get("/:username", async (req, res) => {
           {
             model: comments,
           },
+          {
+            model: posts,
+            include: [
+              {
+                model: users,
+              },
+            ],
+          },
         ],
       });
 
@@ -59,6 +66,14 @@ router.get("/:username", async (req, res) => {
           },
           {
             model: comments,
+          },
+          {
+            model: posts,
+            include: [
+              {
+                model: users,
+              },
+            ],
           },
         ],
       });

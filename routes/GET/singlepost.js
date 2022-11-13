@@ -25,6 +25,14 @@ router.get("/:postid", async (req, res) => {
           attributes: ["username", "avatar", "verified", "id"],
         },
         {
+          model: posts,
+          include: [
+            {
+              model: users,
+            },
+          ],
+        },
+        {
           model: likes,
         },
         {

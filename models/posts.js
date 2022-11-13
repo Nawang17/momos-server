@@ -20,6 +20,11 @@ module.exports = (sequelize, DataTypes) => {
       allowNull: true,
       defaultValue: null,
     },
+    hasquote: {
+      type: DataTypes.BOOLEAN,
+      allowNull: false,
+      defaultValue: false,
+    },
   });
   posts.associate = (models) => {
     posts.belongsTo(models.users, {
@@ -42,6 +47,9 @@ module.exports = (sequelize, DataTypes) => {
     posts.hasMany(models.notis, {
       foreignKey: "postId",
       onDelete: "CASCADE",
+    });
+    posts.belongsTo(models.posts, {
+      foreignKey: "quoteId",
     });
   };
   return posts;

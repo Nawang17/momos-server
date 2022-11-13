@@ -19,6 +19,14 @@ router.get("/", async (req, res) => {
         {
           model: comments,
         },
+        {
+          model: posts,
+          include: [
+            {
+              model: users,
+            },
+          ],
+        },
       ],
     });
     if (homeposts) {
