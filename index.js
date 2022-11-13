@@ -59,9 +59,9 @@ app.use("/settingsinfo", tokenCheck, settingsinfo);
 app.get("/", (req, res) => {
   res.send("momos server ");
 });
-
+// force: true
 db.sequelize
-  .sync({ force: true })
+  .sync()
   .then(() => {
     app.listen(port, () => {
       console.log(`Server is listening on port ${port}`);
