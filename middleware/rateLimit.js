@@ -28,7 +28,7 @@ const followlimit = rateLimit({
 });
 const likelimit = rateLimit({
   windowMs: 1 * 60 * 1000, // 1 min
-  max: 35, // limit to 35 requests every 1 min per windows
+  max: 50, // limit to 35 requests every 1 min per windows
   message: "Too many like requests. Please wait 1 minute.", //err messasge
   skipFailedRequests: true,
 });
