@@ -4,6 +4,8 @@ const router = require("express").Router();
 const { users } = require("../../models");
 const bcrypt = require("bcryptjs");
 const { sign } = require("jsonwebtoken");
+var Filterer = require("bad-words");
+var filter = new Filterer();
 const avatarColor = [
   "008AB8",
   "72139e",
@@ -19,7 +21,18 @@ const avatarColor = [
   "2f695f",
   "106cad",
 ];
-const restrictednames = ["ABOUT", "LOGIN", "REGISTER"];
+const restrictednames = [
+  "ABOUT",
+  "LOGIN",
+  "REGISTER",
+  "EDITPROFILE",
+  "SETTINGS",
+  "POST",
+  "SEARCH",
+  "USER",
+  "NOTIFICATIONS",
+  "PASSWORD",
+];
 router.post("/", async (req, res) => {
   const { username, password } = req.body;
 
@@ -34,8 +47,11 @@ router.post("/", async (req, res) => {
   } else if (restrictednames.includes(username.toUpperCase())) {
     return res.status(400).send("Username is not available");
   } else if (password.length < 4) {
-    res.status(400).send("Password must be at least 4 characters");
+    return res.status(400).send("Password must be at least 4 characters");
   } else {
+    if (filter.isProfane(username)) {
+      return res.status(400).send("Username is not available");
+    }
     try {
       const user = await users.findOne({
         where: {
@@ -106,7 +122,6 @@ router.post("/gregister", async (req, res) => {
           email,
           password: "chI3VkNCCgKO9ZyQ9SJt",
           avatar,
-          verified: true,
         });
         if (newUser) {
           const token = sign(
