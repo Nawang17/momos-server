@@ -4,7 +4,7 @@ const { posts, users, likes, comments } = require("../../models");
 
 router.get("/", async (req, res) => {
   try {
-    const page = parseInt(req.query.page);
+    const page = parseInt(req.query.page ? req.query.page : 0);
     let postCount;
     await posts.count().then((c) => {
       postCount = c;

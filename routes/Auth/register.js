@@ -88,6 +88,8 @@ router.post("/gregister", async (req, res) => {
 
   if (!username || !email || !avatar) {
     res.status(400).send("Please fill all fields");
+  } else if (!/^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/g.test(email)) {
+    res.status(400).send("Please enter a valid email");
   } else {
     try {
       const sanitizedUsername = username.replace(/\s+/g, "");
