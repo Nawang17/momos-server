@@ -6,8 +6,8 @@ const cors = require("cors");
 const port = process.env.PORT || 3001;
 app.use(cors());
 app.set("trust proxy", 4);
-app.use(express.json({ limit: "100mb" }));
-app.use(express.urlencoded({ limit: "100mb", extended: true }));
+app.use(express.json({ limit: "42mb" }));
+app.use(express.urlencoded({ limit: "42mb", extended: true }));
 const { tokenCheck } = require("./middleware/tokenCheck");
 const {
   newpostLimit,
