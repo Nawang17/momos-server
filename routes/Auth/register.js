@@ -32,6 +32,7 @@ const restrictednames = [
   "USER",
   "NOTIFICATIONS",
   "PASSWORD",
+  "TEST",
 ];
 router.post("/", async (req, res) => {
   const { username, password } = req.body;
@@ -122,6 +123,7 @@ router.post("/gregister", async (req, res) => {
           email,
           password: "chI3VkNCCgKO9ZyQ9SJt",
           avatar,
+          verified: true,
         });
         if (newUser) {
           const token = sign(
