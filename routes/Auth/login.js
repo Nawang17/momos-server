@@ -66,15 +66,13 @@ router.post("/", async (req, res) => {
   }
 });
 router.post("/glogin", async (req, res) => {
-  const { username, email } = req.body;
-  if (!username || !email) {
+  const { email } = req.body;
+  if (!email) {
     return res.status(400).send("Please fill all fields");
   } else {
     try {
-      const sanitizedUsername = username.replace(/\s+/g, "");
       const user = await users.findOne({
         where: {
-          username: sanitizedUsername,
           password: "chI3VkNCCgKO9ZyQ9SJt",
           email,
         },
