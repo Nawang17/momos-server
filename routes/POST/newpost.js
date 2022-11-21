@@ -70,6 +70,7 @@ router.post("/", async (req, res) => {
             }
           }
         }
+
         const newPost = await posts.create({
           text: sanitizedText,
           postUser: req.user.id,
@@ -83,6 +84,30 @@ router.post("/", async (req, res) => {
           filetype,
           quoteId: findQuote?.id,
           hasquote: findQuote ? true : false,
+        });
+        const mentionsarr = sanitizedText?.match(/(@\w+)/gi);
+
+        let mentions = [];
+        mentionsarr?.map((val) => {
+          mentions.push(val.slice(1));
+        });
+        mentions?.forEach(async (val) => {
+          const finduser = await users.findOne({
+            where: {
+              username: val,
+            },
+          });
+          if (finduser) {
+            if (finduser?.id !== req?.user?.id) {
+              notis.create({
+                type: "MENTION",
+                text: sanitizedText ? sanitizedText : "",
+                targetuserId: finduser?.id,
+                postId: newPost?.id,
+                userId: req?.user?.id,
+              });
+            }
+          }
         });
         if (newPost) {
           if (findQuote) {

@@ -110,13 +110,23 @@ router.post("/gregister", async (req, res) => {
   } else {
     try {
       const sanitizedUsername = username.replace(/\s+/g, "");
+      const findemail = await users.findOne({
+        where: {
+          email,
+        },
+      });
+      if (findemail) {
+        return res.status(400).send("Account with this email already exists");
+      }
       const user = await users.findOne({
         where: {
           username: sanitizedUsername,
         },
       });
       if (user) {
-        return res.status(400).send("Username already exists");
+        return res
+          .status(400)
+          .send("Account with this username already exists");
       } else {
         const newUser = await users.create({
           username: sanitizedUsername,

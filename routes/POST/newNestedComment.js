@@ -26,16 +26,6 @@ router.post("/", async (req, res) => {
         userId: req.user.id,
         postId,
       });
-      if (req.user.id !== replytouserId) {
-        await notis.create({
-          userId: req.user.id,
-          type: "REPLY",
-          postId,
-          targetuserId: replytouserId,
-          text: sanitizedText,
-          nestedcommentId: createNewNestedComment.id,
-        });
-      }
 
       if (createNewNestedComment) {
         const nestedcomment = await nestedcomments.findOne({
@@ -57,6 +47,42 @@ router.post("/", async (req, res) => {
             },
           ],
         });
+        if (req.user.id !== replytouserId) {
+          await notis.create({
+            userId: req.user.id,
+            type: "REPLY",
+            postId,
+            targetuserId: replytouserId,
+            text: sanitizedText,
+            nestedcommentId: createNewNestedComment.id,
+          });
+        }
+        const mentionsarr = sanitizedText?.match(/(@\w+)/gi);
+
+        let mentions = [];
+        mentionsarr?.map((val) => {
+          mentions?.push(val.slice(1));
+        });
+        mentions?.forEach(async (val) => {
+          const finduser = await users.findOne({
+            where: {
+              username: val,
+            },
+          });
+          if (finduser) {
+            if (finduser.id !== req.user.id && finduser.id !== replytouserId) {
+              notis.create({
+                type: "MENTION",
+                text: sanitizedText ? sanitizedText : "",
+                targetuserId: finduser.id,
+                postId: postId,
+                userId: req.user.id,
+                nestedcommentId: createNewNestedComment.id,
+              });
+            }
+          }
+        });
+
         return res.status(200).send({
           message: "Nested Comment created successfully",
           nestedcomment,

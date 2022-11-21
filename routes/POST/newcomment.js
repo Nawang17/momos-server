@@ -31,16 +31,6 @@ router.post("/", async (req, res) => {
       postId,
       userId: req.user.id,
     });
-    if (req.user.id !== findpost.postUser) {
-      await notis.create({
-        userId: req.user.id,
-        type: "COMMENT",
-        postId,
-        targetuserId: findpost.postUser,
-        text: sanitizedText,
-        commentId: newComment.id,
-      });
-    }
 
     if (newComment) {
       const comment = await comments.findOne({
@@ -71,6 +61,44 @@ router.post("/", async (req, res) => {
             ],
           },
         ],
+      });
+      if (req.user.id !== findpost.postUser) {
+        await notis.create({
+          userId: req.user.id,
+          type: "COMMENT",
+          postId,
+          targetuserId: findpost.postUser,
+          text: sanitizedText,
+          commentId: newComment.id,
+        });
+      }
+      const mentionsarr = sanitizedText?.match(/(@\w+)/gi);
+
+      let mentions = [];
+      mentionsarr?.map((val) => {
+        mentions?.push(val.slice(1));
+      });
+      mentions?.forEach(async (val) => {
+        const finduser = await users.findOne({
+          where: {
+            username: val,
+          },
+        });
+        if (finduser) {
+          if (
+            finduser.id !== req.user.id &&
+            finduser.id !== findpost.postUser
+          ) {
+            notis.create({
+              type: "MENTION",
+              text: sanitizedText ? sanitizedText : "",
+              targetuserId: finduser.id,
+              postId: postId,
+              userId: req.user.id,
+              commentId: newComment.id,
+            });
+          }
+        }
       });
 
       return res
