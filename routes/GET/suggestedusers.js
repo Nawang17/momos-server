@@ -4,7 +4,7 @@ const { users, follows } = require("../../models");
 const Sequelize = require("sequelize");
 const { Op } = require("sequelize");
 
-router.get("/:name", async (req, res) => {
+router.get("/suggest/:name", async (req, res) => {
   const { name } = req.params;
   const finduser = await users.findOne({
     where: {
@@ -40,4 +40,13 @@ router.get("/:name", async (req, res) => {
   });
 });
 
+router.get("/searchaccounts", async (req, res) => {
+  const findusers = await users.findAll({
+    attributes: ["username", "avatar", "verified"],
+  });
+  res.status(200).send({
+    message: "user retrieved successfully",
+    userAccounts: findusers,
+  });
+});
 module.exports = router;

@@ -107,6 +107,8 @@ router.post("/gregister", async (req, res) => {
     res.status(400).send("Please fill all fields");
   } else if (!/^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/g.test(email)) {
     res.status(400).send("Please enter a valid email");
+  } else if (restrictednames.includes(username.toUpperCase())) {
+    return res.status(400).send("Username is not available");
   } else {
     try {
       const sanitizedUsername = username.replace(/\s+/g, "");
