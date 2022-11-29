@@ -2,7 +2,20 @@
 const router = require("express").Router();
 const { users } = require("../../models");
 const { cloudinary } = require("../../utils/cloudinary");
-const restrictednames = ["ABOUT", "LOGIN", "REGISTER"];
+const restrictednames = [
+  "ABOUT",
+  "LOGIN",
+  "REGISTER",
+  "EDITPROFILE",
+  "SETTINGS",
+  "POST",
+  "SEARCH",
+  "USER",
+  "NOTIFICATIONS",
+  "PASSWORD",
+  "TEST",
+  "SUGGESTEDUSERS",
+];
 router.get("/editprofileinfo", async (req, res) => {
   const { id } = req.user;
   try {
