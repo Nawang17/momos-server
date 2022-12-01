@@ -26,15 +26,6 @@ router.delete("/:nestedcommentid", async (req, res) => {
               id: nestedcommentid,
             },
           });
-          if (req.user.id !== findNestedComment.userId) {
-            await notis.destroy({
-              where: {
-                nestedcommentId: nestedcommentid,
-
-                type: "REPLY",
-              },
-            });
-          }
 
           console.log("nested comment deleted successfully");
           return res.status(200).send("Nested comment deleted successfully");

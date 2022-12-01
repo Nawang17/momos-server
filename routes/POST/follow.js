@@ -24,13 +24,6 @@ router.post("/", async (req, res) => {
             userid: req.user.id,
           },
         });
-        await notis.destroy({
-          where: {
-            userId: req.user.id,
-            type: "FOLLOW",
-            followid: findFollow.id,
-          },
-        });
 
         return res.status(200).send({ followed: false });
       } else {

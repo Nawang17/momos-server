@@ -10,6 +10,10 @@ module.exports = (sequelize) => {
       foreignKey: "postId",
       onDelete: "CASCADE",
     });
+    likes.belongsTo(models.notis, {
+      foreignKey: "likeId",
+      onDelete: "CASCADE",
+    });
     // likes.hasMany(models.notis, {
     //   foreignKey: "likeId",
     //   onDelete: "CASCADE",

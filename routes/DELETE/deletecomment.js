@@ -1,6 +1,6 @@
 "use strict";
 const router = require("express").Router();
-const { comments, notis } = require("../../models");
+const { comments } = require("../../models");
 
 router.delete("/:commentid", async (req, res) => {
   const { commentid } = req.params;
@@ -26,16 +26,7 @@ router.delete("/:commentid", async (req, res) => {
               id: commentid,
             },
           });
-          if (findComment.postUser !== req.user.id) {
-            await notis.destroy({
-              where: {
-                postId: findComment.postId,
 
-                type: "COMMENT",
-                commentId: commentid,
-              },
-            });
-          }
           console.log("comment deleted successfully");
           return res.status(200).send("Comment deleted successfully");
         }

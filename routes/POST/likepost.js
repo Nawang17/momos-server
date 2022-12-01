@@ -21,34 +21,27 @@ router.post("/", async (req, res) => {
             userId: req.user.id,
           },
         });
-        if (req.user.id !== targetid) {
-          await notis.destroy({
-            where: {
-              postId,
-              userId: req.user.id,
-              targetuserId: targetid,
-              type: "LIKE",
-            },
-          });
-        }
 
         return res.status(200).send({ liked: false });
       } else {
-        await likes.create({
+        const newlike = await likes.create({
           postId,
           userId: req.user.id,
         });
-        if (req.user.id !== targetid) {
-          await notis.create({
-            userId: req.user.id,
-            type: "LIKE",
-            postId,
-            targetuserId: targetid,
-            text: "liked your post.",
-          });
-        }
+        if (newlike) {
+          if (req.user.id !== targetid) {
+            await notis.create({
+              userId: req.user.id,
+              type: "LIKE",
+              postId,
+              targetuserId: targetid,
+              text: "liked your post.",
+              likeId: newlike.id,
+            });
+          }
 
-        return res.status(200).send({ liked: true });
+          return res.status(200).send({ liked: true });
+        }
       }
     } catch (error) {
       console.log(error);

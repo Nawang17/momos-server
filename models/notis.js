@@ -26,6 +26,10 @@ module.exports = (sequelize, DataTypes) => {
       foreignKey: "postId",
       onDelete: "CASCADE",
     });
+    notis.belongsTo(models.likes, {
+      foreignKey: "likeId",
+      onDelete: "CASCADE",
+    });
     notis.belongsTo(models.comments, {
       foreignKey: "commentId",
       onDelete: "CASCADE",
