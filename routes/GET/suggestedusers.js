@@ -73,13 +73,5 @@ router.get("/allsuggested/:name", async (req, res) => {
     suggestedusers,
   });
 });
-router.get("/searchaccounts", async (req, res) => {
-  const findusers = await users.findAll({
-    attributes: ["username", "avatar", "verified"],
-  });
-  res.status(200).send({
-    message: "user retrieved successfully",
-    userAccounts: findusers,
-  });
-});
+
 module.exports = router;

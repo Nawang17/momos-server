@@ -36,6 +36,7 @@ const notis = require("./routes/GET/notis");
 const follow = require("./routes/POST/follow");
 const suggestedusers = require("./routes/GET/suggestedusers");
 const settingsinfo = require("./routes/GET/settingsinfo");
+const search = require("./routes/GET/search");
 
 app.use("/likedposts", tokenCheck, likedpost);
 app.use("/likepost", tokenCheck, likelimit, likepost);
@@ -55,6 +56,7 @@ app.use("/notis", tokenCheck, notis);
 app.use("/follow", tokenCheck, followlimit, follow);
 app.use("/suggestedusers", suggestedusers);
 app.use("/settingsinfo", tokenCheck, settingsinfo);
+app.use("/search", search);
 
 app.get("/", (req, res) => {
   res.send("momos server ");
