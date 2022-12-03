@@ -9,6 +9,7 @@ router.get("/getposts/:value", async (req, res) => {
   }
   try {
     const searchedPost = await posts.findAll({
+      order: [["id", "DESC"]],
       where: {
         text: {
           [Op.like]: "%" + value + "%",
