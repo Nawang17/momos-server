@@ -1,7 +1,7 @@
 "use strict";
 const router = require("express").Router();
 const { posts, users, likes, comments } = require("../../models");
-
+const sequelize = require("sequelize");
 router.get("/", async (req, res) => {
   try {
     const page = parseInt(req.query.page ? req.query.page : 0);
@@ -12,7 +12,23 @@ router.get("/", async (req, res) => {
     const homeposts = await posts.findAll({
       limit: 10,
       offset: page * 10,
-      attributes: { exclude: ["updatedAt", "postUser"] },
+      attributes: {
+        exclude: ["updatedAt", "postUser"],
+
+        // include: [
+        //   [
+        //     sequelize.literal(`(
+        //             SELECT COUNT(*)
+        //             FROM likes AS likes
+        //             WHERE
+        //                 likes.postId = posts.id
+
+        //         )`),
+        //     "likescount",
+        //   ],
+        // ],
+      },
+      // order: [[sequelize.literal("likescount"), "DESC"]],
       order: [["id", "DESC"]],
       include: [
         {
