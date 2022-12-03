@@ -114,6 +114,7 @@ router.get("/followdata/:username", async (req, res) => {
         where: {
           followingid: userInfo.id,
         },
+        order: [["id", "DESC"]],
         include: [
           {
             model: users,
@@ -128,6 +129,7 @@ router.get("/followdata/:username", async (req, res) => {
         where: {
           userid: userInfo.id,
         },
+        order: [["id", "DESC"]],
         include: [
           {
             model: users,
