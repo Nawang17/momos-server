@@ -1,13 +1,22 @@
 "use strict";
 const router = require("express").Router();
-const { likes, notis } = require("../../models");
+const { likes, notis, posts } = require("../../models");
 
 router.post("/", async (req, res) => {
-  const { postId, targetid } = req.body;
-  if (!postId || !targetid) {
-    return res.status(400).send("postId and targetid is required");
+  const { postId } = req.body;
+  if (!postId) {
+    return res.status(400).send("postId is required");
   } else {
     try {
+      const findpost = await posts.findOne({
+        where: {
+          id: postId,
+        },
+      });
+      if (!findpost) {
+        return res.status(400).send("post not found");
+      }
+
       const findLike = await likes.findOne({
         where: {
           postId,
@@ -29,12 +38,12 @@ router.post("/", async (req, res) => {
           userId: req.user.id,
         });
         if (newlike) {
-          if (req.user.id !== targetid) {
+          if (req.user.id !== findpost?.postUser) {
             await notis.create({
               userId: req.user.id,
               type: "LIKE",
               postId,
-              targetuserId: targetid,
+              targetuserId: findpost?.postUser,
               text: "liked your post.",
               likeId: newlike.id,
             });
