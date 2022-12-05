@@ -2,6 +2,8 @@
 const router = require("express").Router();
 const { users } = require("../../models");
 const { cloudinary } = require("../../utils/cloudinary");
+var Filterer = require("bad-words");
+var filter = new Filterer();
 const restrictednames = [
   "ABOUT",
   "LOGIN",
@@ -58,9 +60,6 @@ router.put("/updateprofileinfo", async (req, res) => {
           .send("Username must be between 4 and 15 characters");
       }
       if (username) {
-        if (restrictednames.includes(username.toUpperCase())) {
-          return res.status(400).send("Username is not available");
-        }
         if (!/^[a-zA-Z0-9]+$/.test(username)) {
           return res
             .status(400)
@@ -70,6 +69,12 @@ router.put("/updateprofileinfo", async (req, res) => {
           return res
             .status(400)
             .send("Username must be between 4 and 15 characters");
+        }
+        if (restrictednames.includes(username.toUpperCase())) {
+          return res.status(400).send("Username is not available");
+        }
+        if (filter.isProfane(username)) {
+          return res.status(400).send("Username is not available");
         }
         const finduserwithname = await users.findOne({
           where: {

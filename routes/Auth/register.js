@@ -51,10 +51,9 @@ router.post("/", async (req, res) => {
     return res.status(400).send("Username is not available");
   } else if (password.length < 4) {
     return res.status(400).send("Password must be at least 4 characters");
+  } else if (filter.isProfane(username)) {
+    return res.status(400).send("Username is not available");
   } else {
-    if (filter.isProfane(username)) {
-      return res.status(400).send("Username is not available");
-    }
     try {
       const user = await users.findOne({
         where: {
