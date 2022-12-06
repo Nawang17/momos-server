@@ -12,7 +12,7 @@ router.get("/:username", async (req, res) => {
       where: {
         username: username,
       },
-      attributes: { exclude: ["password", "updatedAt"] },
+      attributes: { exclude: ["password", "updatedAt", "email"] },
     });
     if (!userInfo) {
       return res.status(400).send("User not found");
@@ -52,6 +52,7 @@ router.get("/:username", async (req, res) => {
           userId: userInfo.id,
         },
       });
+
       const likedpostsarr = findlikedPosts.map((post) => post.postId);
       const getallposts = await posts.findAll({
         attributes: { exclude: ["updatedAt", "postUser"] },
@@ -103,7 +104,7 @@ router.get("/followdata/:username", async (req, res) => {
       where: {
         username: username,
       },
-      attributes: { exclude: ["password", "updatedAt"] },
+      attributes: { exclude: ["password", "updatedAt", "email"] },
     });
     if (!userInfo) {
       return res.status(400).send("User not found");
