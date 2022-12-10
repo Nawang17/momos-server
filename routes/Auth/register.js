@@ -136,7 +136,7 @@ router.post("/gregister", async (req, res) => {
           email,
           password: "chI3VkNCCgKO9ZyQ9SJt",
           avatar,
-          verified: true,
+          verified: false,
         });
         if (newUser) {
           const token = sign(
