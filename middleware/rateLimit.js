@@ -32,7 +32,7 @@ const likelimit = rateLimit({
 });
 const registerlimit = rateLimit({
   windowMs: 60 * 60 * 1000, // 1 hour
-  max: 1, // limit to 2 requests every 1 min per windows
+  max: 1, // limit to 1 requests every 1 min per windows
   message: "Register limit reached. Please wait 1 hour to register again.", //err messasge
   skipFailedRequests: true,
 });

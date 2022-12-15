@@ -35,6 +35,7 @@ const restrictednames = [
   "TEST",
   "SUGGESTEDUSERS",
   "SUGGESTEDACCOUNTS",
+  "LEADERBOARD",
 ];
 router.post("/", async (req, res) => {
   const { username, password } = req.body;

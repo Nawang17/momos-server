@@ -17,6 +17,7 @@ const restrictednames = [
   "PASSWORD",
   "TEST",
   "SUGGESTEDUSERS",
+  "LEADERBOARD",
 ];
 router.get("/editprofileinfo", async (req, res) => {
   const { id } = req.user;
