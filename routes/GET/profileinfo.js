@@ -1,7 +1,7 @@
 "use strict";
 const router = require("express").Router();
 const { posts, users, likes, comments, follows } = require("../../models");
-
+const sequelize = require("sequelize");
 router.get("/:username", async (req, res) => {
   const { username } = req.params;
   try {
@@ -12,14 +12,74 @@ router.get("/:username", async (req, res) => {
       where: {
         username: username,
       },
-      attributes: { exclude: ["password", "updatedAt", "email"] },
+      attributes: {
+        exclude: ["password", "updatedAt", "email", "userid", "imagekey"],
+      },
     });
     if (!userInfo) {
       return res.status(400).send("User not found");
     } else if (userInfo.status !== "active") {
       return res.status(400).send("User is inactive");
     } else {
+      let points;
+      const rank = await users
+        .findAll({
+          attributes: {
+            include: [
+              [
+                sequelize.literal(`(
+              
+                      SELECT COUNT(*)
+                      FROM posts AS posts
+                      WHERE
+                          posts.postUser = users.id
+                          AND users.id != 6
+      
+                  )`),
+                "totalposts",
+              ],
+
+              [
+                sequelize.literal(`(
+                SELECT COUNT(*)
+                FROM posts AS posts
+                INNER JOIN likes AS likes ON likes.postId = posts.id
+                WHERE 
+                  posts.postUser = users.id
+                  AND likes.userId != users.id
+                  AND users.id != 6
+              )`),
+                "totalLikes",
+              ],
+            ],
+          },
+
+          order: [[sequelize.literal("totalposts + totalLikes"), "DESC"]],
+          raw: true,
+        })
+        .then(async (users) => {
+          points =
+            (await users[users.findIndex((user) => user.id === userInfo.id)]
+              .totalposts) +
+            users[users.findIndex((user) => user.id === userInfo.id)]
+              .totalLikes;
+          return (await users.findIndex((user) => user.id === userInfo.id)) + 1;
+        });
+
+      let userPoststotalCount;
+
+      await posts
+        .count({
+          where: {
+            postUser: userInfo.id,
+          },
+        })
+        .then((c) => {
+          userPoststotalCount = c;
+        });
+
       const userPosts = await posts.findAll({
+        limit: 10,
         where: {
           postUser: userInfo.id,
         },
@@ -41,20 +101,46 @@ router.get("/:username", async (req, res) => {
             include: [
               {
                 model: users,
+                attributes: ["username", "avatar", "verified", "id"],
               },
             ],
           },
         ],
       });
 
-      const findlikedPosts = await likes.findAll({
-        where: {
-          userId: userInfo.id,
-        },
-      });
+      const likedpostsidarray = await likes
+        .findAll({
+          where: {
+            userId: userInfo.id,
+          },
+          raw: true,
+        })
+        .then(
+          async (likes) =>
+            await likes.map((like) => {
+              return like.postId;
+            })
+        );
 
-      const likedpostsarr = findlikedPosts.map((post) => post.postId);
-      const getallposts = await posts.findAll({
+      let likedpoststotalCount;
+      await posts
+        .count({
+          where: {
+            id: {
+              [sequelize.Op.in]: likedpostsidarray,
+            },
+          },
+        })
+        .then((c) => {
+          likedpoststotalCount = c;
+        });
+      const likedposts = await posts.findAll({
+        limit: 10,
+        where: {
+          id: {
+            [sequelize.Op.in]: likedpostsidarray,
+          },
+        },
         attributes: { exclude: ["updatedAt", "postUser"] },
         order: [["id", "DESC"]],
         include: [
@@ -73,20 +159,20 @@ router.get("/:username", async (req, res) => {
             include: [
               {
                 model: users,
+                attributes: ["username", "avatar", "verified", "id"],
               },
             ],
           },
         ],
       });
-      const likedposts = getallposts.filter((post) =>
-        likedpostsarr.includes(post.id)
-      );
 
       return res.status(200).send({
-        message: "profile retrieved successfully",
         userPosts,
         userInfo,
         likedposts,
+        rankInfo: { rank, points },
+        likedpoststotalCount,
+        userPoststotalCount,
       });
     }
   } catch (error) {
@@ -142,15 +228,112 @@ router.get("/followdata/:username", async (req, res) => {
       const userfollowingarr = userFollowing.map((z) => z.following.username);
 
       return res.status(200).send({
-        message: "follow data retrieved successfully",
-
         userFollowing,
-
         userFollowers,
         userfollowingarr,
         userfollowerarr,
       });
     }
+  } catch (error) {
+    console.log(error);
+    return res.status(500).send("Something went wrong");
+  }
+});
+router.get("/userposts/:userid", async (req, res) => {
+  const { userid } = req.params;
+  const page = parseInt(req.query.page ? req.query.page : 1);
+
+  try {
+    const userPosts = await posts.findAll({
+      offset: page * 10,
+      limit: 10,
+      where: {
+        postUser: userid,
+      },
+      attributes: { exclude: ["updatedAt", "postUser"] },
+      order: [["id", "DESC"]],
+      include: [
+        {
+          model: users,
+          attributes: ["username", "avatar", "verified", "id"],
+        },
+        {
+          model: likes,
+        },
+        {
+          model: comments,
+        },
+        {
+          model: posts,
+          include: [
+            {
+              model: users,
+              attributes: ["username", "avatar", "verified", "id"],
+            },
+          ],
+        },
+      ],
+    });
+    return res.status(200).send(userPosts);
+  } catch (error) {
+    console.log(error);
+    return res.status(500).send("Something went wrong");
+  }
+});
+
+router.get("/likedposts/:userid", async (req, res) => {
+  try {
+    const { userid } = req.params;
+    const page = parseInt(req.query.page ? req.query.page : 1);
+
+    const likedpostsidarray = await likes
+      .findAll({
+        where: {
+          userId: userid,
+        },
+        raw: true,
+      })
+      .then(
+        async (likes) =>
+          await likes.map((like) => {
+            return like.postId;
+          })
+      );
+
+    const likedposts = await posts.findAll({
+      offset: page * 10,
+      limit: 10,
+      where: {
+        id: {
+          [sequelize.Op.in]: likedpostsidarray,
+        },
+      },
+      attributes: { exclude: ["updatedAt", "postUser"] },
+      order: [["id", "DESC"]],
+      include: [
+        {
+          model: users,
+          attributes: ["username", "avatar", "verified", "id"],
+        },
+        {
+          model: likes,
+        },
+        {
+          model: comments,
+        },
+        {
+          model: posts,
+          include: [
+            {
+              model: users,
+              attributes: ["username", "avatar", "verified", "id"],
+            },
+          ],
+        },
+      ],
+    });
+
+    return res.status(200).send(likedposts);
   } catch (error) {
     console.log(error);
     return res.status(500).send("Something went wrong");
