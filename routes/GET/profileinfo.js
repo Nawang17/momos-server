@@ -66,7 +66,7 @@ router.get("/:username", async (req, res) => {
 
           order: [
             [
-              sequelize.literal("totalposts + totalLikes / 2 + totalFollowers"),
+              sequelize.literal("totalposts + totalLikes  + totalFollowers"),
               "DESC",
             ],
           ],
@@ -77,7 +77,7 @@ router.get("/:username", async (req, res) => {
             (await users[users.findIndex((user) => user.id === userInfo.id)]
               .totalposts) +
             users[users.findIndex((user) => user.id === userInfo.id)]
-              .totalLikes  +
+              .totalLikes +
             users[users.findIndex((user) => user.id === userInfo.id)]
               .totalFollowers;
           return (await users.findIndex((user) => user.id === userInfo.id)) + 1;
