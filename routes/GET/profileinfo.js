@@ -77,8 +77,7 @@ router.get("/:username", async (req, res) => {
             (await users[users.findIndex((user) => user.id === userInfo.id)]
               .totalposts) +
             users[users.findIndex((user) => user.id === userInfo.id)]
-              .totalLikes /
-              2 +
+              .totalLikes  +
             users[users.findIndex((user) => user.id === userInfo.id)]
               .totalFollowers;
           return (await users.findIndex((user) => user.id === userInfo.id)) + 1;

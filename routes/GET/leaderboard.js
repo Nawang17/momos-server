@@ -66,7 +66,7 @@ router.get("/", async (req, res) => {
 
       order: [
         [
-          sequelize.literal("totalposts + totalLikes / 2 + totalFollowers"),
+          sequelize.literal("totalposts + totalLikes + totalFollowers"),
           "DESC",
         ],
       ],
