@@ -1,6 +1,6 @@
 "use strict";
 const router = require("express").Router();
-const { users, likes, posts } = require("../../models");
+const { users } = require("../../models");
 const sequelize = require("sequelize");
 
 router.get("/", async (req, res) => {
@@ -26,10 +26,7 @@ router.get("/", async (req, res) => {
           "",
         ],
         include: [
-          //dont include if users.id = 6;
-
           [
-            //dont include if users.id = 6;
             sequelize.literal(`(
               
                       SELECT COUNT(*)
@@ -53,6 +50,16 @@ router.get("/", async (req, res) => {
                   AND users.id != 6
               )`),
             "totalLikes",
+          ],
+          [
+            sequelize.literal(`(
+                SELECT COUNT(*)
+                FROM follows AS follows
+                WHERE
+                    follows.followingid = users.id
+
+            )`),
+            "totalFollowers",
           ],
         ],
       },
