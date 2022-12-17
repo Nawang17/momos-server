@@ -51,10 +51,25 @@ router.get("/:username", async (req, res) => {
               )`),
                 "totalLikes",
               ],
+              [
+                sequelize.literal(`(
+                    SELECT COUNT(*)
+                    FROM follows AS follows
+                    WHERE
+                        follows.followingid = users.id
+    
+                )`),
+                "totalFollowers",
+              ],
             ],
           },
 
-          order: [[sequelize.literal("totalposts + totalLikes"), "DESC"]],
+          order: [
+            [
+              sequelize.literal("totalposts + totalLikes / 2 + totalFollowers"),
+              "DESC",
+            ],
+          ],
           raw: true,
         })
         .then(async (users) => {
@@ -62,7 +77,10 @@ router.get("/:username", async (req, res) => {
             (await users[users.findIndex((user) => user.id === userInfo.id)]
               .totalposts) +
             users[users.findIndex((user) => user.id === userInfo.id)]
-              .totalLikes;
+              .totalLikes /
+              2 +
+            users[users.findIndex((user) => user.id === userInfo.id)]
+              .totalFollowers;
           return (await users.findIndex((user) => user.id === userInfo.id)) + 1;
         });
 

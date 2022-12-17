@@ -64,7 +64,12 @@ router.get("/", async (req, res) => {
         ],
       },
 
-      order: [[sequelize.literal("totalposts + totalLikes"), "DESC"]],
+      order: [
+        [
+          sequelize.literal("totalposts + totalLikes / 2 + totalFollowers"),
+          "DESC",
+        ],
+      ],
     });
     return res.json({ leaderboard: getUsers, usersCount });
   } catch (error) {
