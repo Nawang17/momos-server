@@ -48,6 +48,7 @@ router.get("/getposts/:value", async (req, res) => {
           include: [
             {
               model: users,
+              attributes: ["username", "avatar", "verified", "id"],
             },
           ],
         },
@@ -92,6 +93,7 @@ router.get("/getposts/:value", async (req, res) => {
           include: [
             {
               model: users,
+              attributes: ["username", "avatar", "verified", "id"],
             },
           ],
         },

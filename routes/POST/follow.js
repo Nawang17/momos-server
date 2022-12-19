@@ -10,6 +10,17 @@ router.post("/", async (req, res) => {
     return res.status(400).send("You cannot follow yourself");
   } else {
     try {
+      const finduser = await users.findOne({
+        where: {
+          id: followingid,
+        },
+      });
+      if (!finduser) {
+        return res.status(400).send("You cannot follow a non-existent user");
+      } else if (finduser.status !== "active") {
+        return res.status(400).send("User is inactive");
+      }
+
       const findFollow = await follows.findOne({
         where: {
           followingid,

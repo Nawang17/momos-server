@@ -57,6 +57,7 @@ router.get("/", async (req, res) => {
                 FROM follows AS follows
                 WHERE
                     follows.followingid = users.id
+                    AND users.id != 6
 
             )`),
             "totalFollowers",
@@ -65,10 +66,7 @@ router.get("/", async (req, res) => {
       },
 
       order: [
-        [
-          sequelize.literal("totalposts + totalLikes + totalFollowers"),
-          "DESC",
-        ],
+        [sequelize.literal("totalposts + totalLikes + totalFollowers"), "DESC"],
       ],
     });
     return res.json({ leaderboard: getUsers, usersCount });

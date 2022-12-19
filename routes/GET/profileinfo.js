@@ -57,6 +57,7 @@ router.get("/:username", async (req, res) => {
                     FROM follows AS follows
                     WHERE
                         follows.followingid = users.id
+                        AND users.id != 6
     
                 )`),
                 "totalFollowers",
