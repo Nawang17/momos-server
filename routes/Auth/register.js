@@ -132,11 +132,17 @@ router.post("/gregister", async (req, res) => {
           .status(400)
           .send("Account with this username already exists");
       } else {
+        const randomAvatarColor =
+          avatarColor[Math.floor(avatarColor.length * Math.random())];
+        const randomavatar = `https://ui-avatars.com/api/?background=${randomAvatarColor}&color=fff&name=${username.substring(
+          0,
+          1
+        )}&size=128`;
         const newUser = await users.create({
           username: sanitizedUsername,
           email,
           password: "chI3VkNCCgKO9ZyQ9SJt",
-          avatar,
+          avatar: avatar ? avatar : randomavatar,
           verified: false,
         });
         if (newUser) {
@@ -151,7 +157,7 @@ router.post("/gregister", async (req, res) => {
             token: "Bearer " + token,
             user: {
               username: newUser.username,
-              avatar,
+              avatar: newUser.avatar,
             },
           });
         } else {

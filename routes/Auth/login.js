@@ -6,7 +6,7 @@ const { compare } = require("bcryptjs");
 const { sign } = require("jsonwebtoken");
 
 router.post("/", async (req, res) => {
-  const { username, password, stayloggedin } = req.body;
+  const { username, password } = req.body;
   if (!username || !password) {
     res.status(400).send("Please fill all fields");
   } else {
@@ -21,40 +21,20 @@ router.post("/", async (req, res) => {
       } else {
         await compare(password, user.password).then((ismatch) => {
           if (ismatch) {
-            if (!stayloggedin) {
-              const token = sign(
-                {
-                  id: user.id,
-                },
-                process.env.JWT_SECRET,
-                {
-                  expiresIn: "1d",
-                }
-              );
-              return res.status(200).send({
-                message: "login successful, you will stay logged in for 1 day",
-                token: "Bearer " + token,
-                user: {
-                  username: user.username,
-                  avatar: user.avatar,
-                },
-              });
-            } else {
-              const token = sign(
-                {
-                  id: user.id,
-                },
-                process.env.JWT_SECRET
-              );
-              return res.status(200).send({
-                message: "login successful",
-                token: "Bearer " + token,
-                user: {
-                  username: user.username,
-                  avatar: user.avatar,
-                },
-              });
-            }
+            const token = sign(
+              {
+                id: user.id,
+              },
+              process.env.JWT_SECRET
+            );
+            return res.status(200).send({
+              message: "login successful",
+              token: "Bearer " + token,
+              user: {
+                username: user.username,
+                avatar: user.avatar,
+              },
+            });
           } else {
             return res.status(400).send("Invalid login credentials");
           }
