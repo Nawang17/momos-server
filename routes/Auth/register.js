@@ -103,8 +103,9 @@ router.post("/", async (req, res) => {
             : "209.122.203.50";
           //send discord message
           await discordbot.send(
-            `New account from ${newUser?.username} - ${geoip.lookup(ip).city} 
-          \nhttps://momosz.com/${newUser?.username}`
+            `New account from ${newUser?.username} - ${
+              geoip.lookup(ip).city
+            } (${ip})\nhttps://momosz.com/${newUser?.username}`
           );
           res.status(201).send({
             message: `Account created successfully.Welcome to momos.`,
@@ -181,8 +182,7 @@ router.post("/gregister", async (req, res) => {
           await discordbot.send(
             `New google account from ${newUser?.username} - ${
               geoip.lookup(ip).city
-            } 
-          \nhttps://momosz.com/${newUser?.username}`
+            } (${ip})\nhttps://momosz.com/${newUser?.username}`
           );
           res.status(201).send({
             message: `Account created successfully.Welcome to momos.`,
