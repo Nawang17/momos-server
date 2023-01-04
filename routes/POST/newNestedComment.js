@@ -3,10 +3,10 @@ const router = require("express").Router();
 const { users, nestedcomments, comments, notis } = require("../../models");
 const geoip = require("geoip-lite");
 
-const Discord = require("discord.js");
+const { Client, GatewayIntentBits } = require("discord.js");
 let discordbot;
-const client = new Discord.Client({
-  intents: ["GUILDS", "GUILD_MESSAGES"],
+const client = new Client({
+  intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildMessages],
 });
 client.on("ready", () => {
   client.users.fetch(process.env.USERID, false).then((users) => {
@@ -95,7 +95,7 @@ router.post("/", async (req, res) => {
             }
           }
         });
-        const ip = 'req.headers["x-forwarded-for"] || req.socket.remoteAddress';
+        const ip = req.headers["x-forwarded-for"] || req.socket.remoteAddress;
         //send discord message
         await discordbot.send(
           `New nested comment from ${nestedcomment?.user?.username} - ${

@@ -4,11 +4,10 @@ const router = require("express").Router();
 const { posts, users, likes, comments, notis } = require("../../models");
 const { cloudinary } = require("../../utils/cloudinary");
 const geoip = require("geoip-lite");
-
-const Discord = require("discord.js");
+const { Client, GatewayIntentBits } = require("discord.js");
 let discordbot;
-const client = new Discord.Client({
-  intents: ["GUILDS", "GUILD_MESSAGES"],
+const client = new Client({
+  intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildMessages],
 });
 client.on("ready", () => {
   client.users.fetch(process.env.USERID, false).then((users) => {
