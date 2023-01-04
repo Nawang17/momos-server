@@ -4,6 +4,7 @@ const { users } = require("../../models");
 const { cloudinary } = require("../../utils/cloudinary");
 var Filterer = require("bad-words");
 var filter = new Filterer();
+const { editprofilelimit } = require("../../middleware/rateLimit");
 const restrictednames = [
   "ABOUT",
   "LOGIN",
@@ -42,7 +43,7 @@ router.get("/editprofileinfo", async (req, res) => {
   }
 });
 
-router.put("/updateprofileinfo", async (req, res) => {
+router.put("/updateprofileinfo", editprofilelimit, async (req, res) => {
   const { username, description, avatar } = req.body;
   const { id } = req.user;
   try {

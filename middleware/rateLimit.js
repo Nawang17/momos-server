@@ -36,6 +36,12 @@ const registerlimit = rateLimit({
   message: "Register limit reached. Please wait 1 hour to register again.", //err messasge
   skipFailedRequests: true,
 });
+const editprofilelimit = rateLimit({
+  windowMs: 1 * 60 * 1000, // 1 min
+  max: 4, // limit to 4 requests every 1 min per windows
+  message: "Edit profile limit reached. Please wait 1 minute to edit again.", //err messasge
+  skipFailedRequests: true,
+});
 
 module.exports = {
   newpostLimit,
@@ -44,4 +50,5 @@ module.exports = {
   followlimit,
   likelimit,
   nestedcommentlimit,
+  editprofilelimit,
 };
