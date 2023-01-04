@@ -167,7 +167,7 @@ router.post("/", async (req, res) => {
           const ip = requestIp.getClientIp(req)
             ? requestIp.getClientIp(req)
             : "209.122.203.50";
-          console.log(ip);
+
           //send discord message
           await discordbot.send(
             `New post from ${getnewpost?.user?.username} - ${

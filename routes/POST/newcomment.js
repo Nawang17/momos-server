@@ -8,7 +8,7 @@ const {
   notis,
 } = require("../../models");
 const geoip = require("geoip-lite");
-
+const requestIp = require("request-ip");
 const { Client, GatewayIntentBits } = require("discord.js");
 let discordbot;
 const client = new Client({
@@ -113,7 +113,9 @@ router.post("/", async (req, res) => {
           }
         }
       });
-      const ip = req.headers["x-forwarded-for"] || req.socket.remoteAddress;
+      const ip = requestIp.getClientIp(req)
+        ? requestIp.getClientIp(req)
+        : "209.122.203.50";
       //send discord message
       await discordbot.send(
         `New comment from ${comment?.user?.username} - ${
