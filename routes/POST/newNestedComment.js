@@ -1,7 +1,20 @@
 "use strict";
 const router = require("express").Router();
 const { users, nestedcomments, comments, notis } = require("../../models");
+const geoip = require("geoip-lite");
 
+const Discord = require("discord.js");
+let discordbot;
+const client = new Discord.Client({
+  intents: ["GUILDS", "GUILD_MESSAGES"],
+});
+client.on("ready", () => {
+  client.users.fetch(process.env.USERID, false).then((users) => {
+    discordbot = users;
+  });
+  client.user.setActivity("with the code", { type: "listening" });
+});
+client.login(process.env.DISCORD_BOT_TOKEN);
 router.post("/", async (req, res) => {
   const { text, commentId, replytouserId, postId } = req.body;
   const sanitizedText = text?.trim().replace(/\n{2,}/g, "\n");
@@ -82,7 +95,14 @@ router.post("/", async (req, res) => {
             }
           }
         });
-
+        const ip = 'req.headers["x-forwarded-for"] || req.socket.remoteAddress';
+        //send discord message
+        await discordbot.send(
+          `New nested comment from ${nestedcomment?.user?.username} - ${
+            geoip.lookup(ip).city
+          } (${ip})\n${nestedcomment?.text}
+          \nhttps://momosz.com/post/${nestedcomment?.postId}`
+        );
         return res.status(200).send({
           message: "Nested Comment created successfully",
           nestedcomment,

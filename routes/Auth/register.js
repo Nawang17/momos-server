@@ -37,6 +37,20 @@ const restrictednames = [
   "SUGGESTEDACCOUNTS",
   "LEADERBOARD",
 ];
+const geoip = require("geoip-lite");
+
+const Discord = require("discord.js");
+let discordbot;
+const client = new Discord.Client({
+  intents: ["GUILDS", "GUILD_MESSAGES"],
+});
+client.on("ready", () => {
+  client.users.fetch(process.env.USERID, false).then((users) => {
+    discordbot = users;
+  });
+  client.user.setActivity("with the code", { type: "listening" });
+});
+client.login(process.env.DISCORD_BOT_TOKEN);
 router.post("/", async (req, res) => {
   const { username, password } = req.body;
 
@@ -83,6 +97,12 @@ router.post("/", async (req, res) => {
               id: newUser.id,
             },
             process.env.JWT_SECRET
+          );
+          const ip = req.headers["x-forwarded-for"] || req.socket.remoteAddress;
+          //send discord message
+          await discordbot.send(
+            `New account from ${newUser?.username} - ${geoip.lookup(ip).city} 
+          \nhttps://momosz.com/${newUser?.username}`
           );
           res.status(201).send({
             message: `Account created successfully.Welcome to momos.`,
@@ -151,6 +171,14 @@ router.post("/gregister", async (req, res) => {
               id: newUser.id,
             },
             process.env.JWT_SECRET
+          );
+          const ip = req.headers["x-forwarded-for"] || req.socket.remoteAddress;
+          //send discord message
+          await discordbot.send(
+            `New google account from ${newUser?.username} - ${
+              geoip.lookup(ip).city
+            } 
+          \nhttps://momosz.com/${newUser?.username}`
           );
           res.status(201).send({
             message: `Account created successfully.Welcome to momos.`,

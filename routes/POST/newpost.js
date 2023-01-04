@@ -1,9 +1,22 @@
 "use strict";
 require("dotenv").config();
-
 const router = require("express").Router();
 const { posts, users, likes, comments, notis } = require("../../models");
 const { cloudinary } = require("../../utils/cloudinary");
+const geoip = require("geoip-lite");
+
+const Discord = require("discord.js");
+let discordbot;
+const client = new Discord.Client({
+  intents: ["GUILDS", "GUILD_MESSAGES"],
+});
+client.on("ready", () => {
+  client.users.fetch(process.env.USERID, false).then((users) => {
+    discordbot = users;
+  });
+  client.user.setActivity("with the code", { type: "listening" });
+});
+client.login(process.env.DISCORD_BOT_TOKEN);
 router.post("/", async (req, res) => {
   const { text, imageblob, filetype, quoteId } = req.body;
   const sanitizedText = text?.trim().replace(/\n{2,}/g, "\n");
@@ -145,12 +158,22 @@ router.post("/", async (req, res) => {
                 include: [
                   {
                     model: users,
+                    attributes: ["username", "avatar", "verified", "id"],
                   },
                 ],
               },
             ],
           });
-
+          const ip = req.headers["x-forwarded-for"] || req.socket.remoteAddress;
+          //send discord message
+          await discordbot.send(
+            `New post from ${getnewpost?.user?.username} - ${
+              geoip.lookup(ip).city
+            } (${ip})\n${getnewpost?.text}${
+              getnewpost?.image ? "\nimage added" : ""
+            }
+            \nhttps://momosz.com/post/${getnewpost?.id}`
+          );
           return res.status(201).send({
             message: "Post created successfully",
             newpost: getnewpost,
@@ -165,5 +188,4 @@ router.post("/", async (req, res) => {
     }
   }
 });
-
 module.exports = router;
