@@ -98,7 +98,9 @@ router.post("/", async (req, res) => {
             },
             process.env.JWT_SECRET
           );
-          const ip = req.headers["x-forwarded-for"] || req.socket.remoteAddress;
+          const ip = requestIp.getClientIp(req)
+            ? requestIp.getClientIp(req)
+            : "209.122.203.50";
           //send discord message
           await discordbot.send(
             `New account from ${newUser?.username} - ${geoip.lookup(ip).city} 
