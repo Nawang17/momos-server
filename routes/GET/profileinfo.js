@@ -110,6 +110,12 @@ router.get("/:username", async (req, res) => {
           },
           {
             model: likes,
+            include: [
+              {
+                model: users,
+                attributes: ["username", "avatar", "verified", "id"],
+              },
+            ],
           },
           {
             model: comments,
@@ -168,6 +174,12 @@ router.get("/:username", async (req, res) => {
           },
           {
             model: likes,
+            include: [
+              {
+                model: users,
+                attributes: ["username", "avatar", "verified", "id"],
+              },
+            ],
           },
           {
             model: comments,
@@ -277,6 +289,12 @@ router.get("/userposts/:userid", async (req, res) => {
         },
         {
           model: likes,
+          include: [
+            {
+              model: users,
+              attributes: ["username", "avatar", "verified", "id"],
+            },
+          ],
         },
         {
           model: comments,
@@ -335,6 +353,12 @@ router.get("/likedposts/:userid", async (req, res) => {
         },
         {
           model: likes,
+          include: [
+            {
+              model: users,
+              attributes: ["username", "avatar", "verified", "id"],
+            },
+          ],
         },
         {
           model: comments,

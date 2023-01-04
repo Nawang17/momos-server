@@ -149,6 +149,12 @@ router.post("/", async (req, res) => {
               },
               {
                 model: likes,
+                include: [
+                  {
+                    model: users,
+                    attributes: ["username", "avatar", "verified", "id"],
+                  },
+                ],
               },
               {
                 model: comments,

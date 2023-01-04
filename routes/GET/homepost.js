@@ -29,6 +29,12 @@ router.get("/", async (req, res) => {
           },
           {
             model: likes,
+            include: [
+              {
+                model: users,
+                attributes: ["username", "avatar", "verified", "id"],
+              },
+            ],
           },
           {
             model: comments,
@@ -83,6 +89,12 @@ router.get("/", async (req, res) => {
           },
           {
             model: likes,
+            include: [
+              {
+                model: users,
+                attributes: ["username", "avatar", "verified", "id"],
+              },
+            ],
           },
           {
             model: comments,
@@ -161,6 +173,12 @@ router.get("/followingposts", tokenCheck, async (req, res) => {
         },
         {
           model: likes,
+          include: [
+            {
+              model: users,
+              attributes: ["username", "avatar", "verified", "id"],
+            },
+          ],
         },
         {
           model: comments,
