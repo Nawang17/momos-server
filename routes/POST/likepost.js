@@ -45,7 +45,7 @@ router.post("/", async (req, res) => {
               postId,
               targetuserId: findpost?.postUser,
               text: "liked your post.",
-              likeId: newlike.id,
+              likeId: newlike?.id,
             });
           }
 
