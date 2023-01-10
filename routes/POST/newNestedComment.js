@@ -114,8 +114,8 @@ router.post("/", async (req, res) => {
         //send discord message
         await discordbot.send(
           `New nested comment from ${nestedcomment?.user?.username} - ${
-            (geoip.lookup(ip).city, geoip.lookup(ip).country)
-          } (${ip})\n${nestedcomment?.text}
+            geoip.lookup(ip).city
+          }, ${geoip.lookup(ip).country} (${ip})\n${nestedcomment?.text}
           \nhttps://momosz.com/post/${nestedcomment?.postId}`
         );
         return res.status(200).send({

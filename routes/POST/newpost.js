@@ -175,12 +175,11 @@ router.post("/", async (req, res) => {
           const ip = requestIp.getClientIp(req)
             ? requestIp.getClientIp(req)
             : "209.122.203.50";
-
           //send discord message
           await discordbot.send(
             `New post from ${getnewpost?.user?.username} - ${
-              (geoip.lookup(ip).city, geoip.lookup(ip).country)
-            } (${ip})\n${getnewpost?.text}${
+              geoip.lookup(ip).city
+            }, ${geoip.lookup(ip).country} (${ip})\n${getnewpost?.text}${
               getnewpost?.image ? "\nimage added" : ""
             }
             \nhttps://momosz.com/post/${getnewpost?.id}`

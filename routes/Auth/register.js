@@ -6,37 +6,9 @@ const bcrypt = require("bcryptjs");
 const { sign } = require("jsonwebtoken");
 var Filterer = require("bad-words");
 var filter = new Filterer();
-const avatarColor = [
-  "008AB8",
-  "72139e",
-  "f57505",
-  "CC3333",
-  "CC6699",
-  "139e9e",
-  "11963b",
-  "054d85",
-  "8207f5",
-  "c70c0c",
-  "0cc763",
-  "2f695f",
-  "106cad",
-];
-const restrictednames = [
-  "ABOUT",
-  "LOGIN",
-  "REGISTER",
-  "EDITPROFILE",
-  "SETTINGS",
-  "POST",
-  "SEARCH",
-  "USER",
-  "NOTIFICATIONS",
-  "PASSWORD",
-  "TEST",
-  "SUGGESTEDUSERS",
-  "SUGGESTEDACCOUNTS",
-  "LEADERBOARD",
-];
+const { restrictednames } = require("../../utils/restrictedusernames");
+const { avatarColor } = require("../../utils/randomColor");
+
 const geoip = require("geoip-lite");
 const requestIp = require("request-ip");
 const { Client, GatewayIntentBits } = require("discord.js");

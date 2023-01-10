@@ -133,8 +133,8 @@ router.post("/", async (req, res) => {
       //send discord message
       await discordbot.send(
         `New comment from ${comment?.user?.username} - ${
-          (geoip.lookup(ip).city, geoip.lookup(ip).country)
-        } (${ip})\n${comment?.text}
+          geoip.lookup(ip).city
+        }, ${geoip.lookup(ip).country} (${ip})\n${comment?.text}
         \nhttps://momosz.com/post/${comment?.postId}`
       );
       return res
