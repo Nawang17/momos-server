@@ -3,8 +3,8 @@ const router = require("express").Router();
 const { users, nestedcomments, comments, notis } = require("../../models");
 const geoip = require("geoip-lite");
 const requestIp = require("request-ip");
-var Filterer = require("bad-words");
-var filter = new Filterer();
+var filter = require("../../utils/bad-words-hacked");
+filter = new filter();
 const { Client, GatewayIntentBits } = require("discord.js");
 let discordbot;
 const client = new Client({
@@ -19,7 +19,9 @@ client.on("ready", () => {
 client.login(process.env.DISCORD_BOT_TOKEN);
 router.post("/", async (req, res) => {
   const { text, commentId, replytouserId, postId } = req.body;
-  const sanitizedText = filter.clean(text?.trim().replace(/\n{2,}/g, "\n"));
+  const sanitizedText = filter.cleanHacked(
+    text?.trim().replace(/\n{2,}/g, "\n")
+  );
   if (!text || !commentId || !replytouserId || !postId) {
     return res.status(400).send("Please provide all the required data");
   } else if (/^\s*$/.test(sanitizedText)) {
