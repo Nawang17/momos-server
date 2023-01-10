@@ -1,38 +1,38 @@
 "use strict";
 const router = require("express").Router();
-const { commentlikes, notis, comments } = require("../../models");
+const { nestedcomments, nestedcommentlikes, notis } = require("../../models");
 
 router.post("/", async (req, res) => {
-  const { commentId } = req.body;
-  if (!commentId) {
+  const { nestedcommentId } = req.body;
+  if (!nestedcommentId) {
     return res.status(400).send("commentId is required");
   }
   try {
-    const findcomment = await comments.findOne({
+    const findcomment = await nestedcomments.findOne({
       where: {
-        id: commentId,
+        id: nestedcommentId,
       },
     });
     if (!findcomment) {
       return res.status(400).send("comment not found");
     }
-    const findcommentlike = await commentlikes.findOne({
+    const findcommentlike = await nestedcommentlikes.findOne({
       where: {
-        commentId,
+        nestedcommentId,
         userId: req.user.id,
       },
     });
     if (findcommentlike) {
-      await commentlikes.destroy({
+      await nestedcommentlikes.destroy({
         where: {
-          commentId,
+          nestedcommentId,
           userId: req.user.id,
         },
       });
       return res.status(200).send({ liked: false });
     } else {
-      const newcommentlike = await commentlikes.create({
-        commentId,
+      const newcommentlike = await nestedcommentlikes.create({
+        nestedcommentId,
         userId: req.user.id,
       });
       if (newcommentlike) {
@@ -40,10 +40,10 @@ router.post("/", async (req, res) => {
           await notis.create({
             userId: req.user.id,
             type: "LIKE",
-            commentId,
+            nestedcommentId,
             targetuserId: findcomment?.userId,
             text: "liked your comment.",
-            commentlikeId: newcommentlike?.id,
+            nestedcommentlikeId: newcommentlike?.id,
             postId: findcomment?.postId,
           });
         }

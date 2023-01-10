@@ -7,6 +7,7 @@ const {
   comments,
   nestedcomments,
   commentlikes,
+  nestedcommentlikes,
 } = require("../../models");
 
 router.get("/:postid", async (req, res) => {
@@ -64,6 +65,15 @@ router.get("/:postid", async (req, res) => {
               model: nestedcomments,
 
               include: [
+                {
+                  model: nestedcommentlikes,
+                  include: [
+                    {
+                      model: users,
+                      attributes: ["username", "avatar", "verified", "id"],
+                    },
+                  ],
+                },
                 {
                   model: users,
                   as: "user",

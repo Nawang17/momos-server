@@ -29,6 +29,10 @@ module.exports = (sequelize, DataTypes) => {
       foreignKey: "nestedcommentId",
       onDelete: "CASCADE",
     });
+    nestedcomments.hasMany(models.nestedcommentlikes, {
+      foreignKey: "nestedcommentId",
+      onDelete: "CASCADE",
+    });
   };
   return nestedcomments;
 };

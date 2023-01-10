@@ -46,6 +46,10 @@ module.exports = (sequelize, DataTypes) => {
       foreignKey: "commentlikeId",
       onDelete: "CASCADE",
     });
+    notis.belongsTo(models.nestedcommentlikes, {
+      foreignKey: "nestedcommentlikeId",
+      onDelete: "CASCADE",
+    });
   };
   return notis;
 };

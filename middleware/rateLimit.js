@@ -42,7 +42,18 @@ const editprofilelimit = rateLimit({
   message: "Edit profile limit reached. Please wait 1 minute to edit again.", //err messasge
   skipFailedRequests: true,
 });
-
+const commentlikelimit = rateLimit({
+  windowMs: 1 * 60 * 1000, // 1 min
+  max: 35, // limit to 35 requests every 1 min per windows
+  message: "Like limit reached. Please wait 1 minute to like again.", //err messasge
+  skipFailedRequests: true,
+});
+const nestedcommentlikelimit = rateLimit({
+  windowMs: 1 * 60 * 1000, // 1 min
+  max: 35, // limit to 35 requests every 1 min per windows
+  message: "Like limit reached. Please wait 1 minute to like again.", //err messasge
+  skipFailedRequests: true,
+});
 module.exports = {
   newpostLimit,
   registerlimit,
@@ -51,4 +62,6 @@ module.exports = {
   likelimit,
   nestedcommentlimit,
   editprofilelimit,
+  commentlikelimit,
+  nestedcommentlikelimit,
 };
