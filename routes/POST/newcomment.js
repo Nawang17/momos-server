@@ -39,6 +39,18 @@ router.post("/", async (req, res) => {
     if (!findpost) {
       return res.status(400).send("Post not found");
     }
+    const checkduplicate = await comments.findOne({
+      where: {
+        text: sanitizedText,
+        postId,
+        userId: req.user.id,
+      },
+    });
+
+    if (checkduplicate) {
+      return res.status(400).send("Whoops! You already said that.");
+    }
+
     const newComment = await comments.create({
       text: sanitizedText,
       postId,
@@ -119,7 +131,7 @@ router.post("/", async (req, res) => {
       //send discord message
       await discordbot.send(
         `New comment from ${comment?.user?.username} - ${
-          geoip.lookup(ip).city
+          (geoip.lookup(ip).city, geoip.lookup(ip).country)
         } (${ip})\n${comment?.text}
         \nhttps://momosz.com/post/${comment?.postId}`
       );

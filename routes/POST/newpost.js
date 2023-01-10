@@ -177,7 +177,7 @@ router.post("/", async (req, res) => {
           //send discord message
           await discordbot.send(
             `New post from ${getnewpost?.user?.username} - ${
-              geoip.lookup(ip).city
+              (geoip.lookup(ip).city, geoip.lookup(ip).country)
             } (${ip})\n${getnewpost?.text}${
               getnewpost?.image ? "\nimage added" : ""
             }

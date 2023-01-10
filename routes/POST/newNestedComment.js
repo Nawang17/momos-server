@@ -32,6 +32,17 @@ router.post("/", async (req, res) => {
     if (!findcomment) {
       return res.status(400).send("Comment not found");
     } else {
+      const checkduplicate = await nestedcomments.findOne({
+        where: {
+          text: sanitizedText,
+          commentId,
+          userId: req.user.id,
+          postId,
+        },
+      });
+      if (checkduplicate) {
+        return res.status(400).send("Whoops! You already said that.");
+      }
       const createNewNestedComment = await nestedcomments.create({
         text: sanitizedText,
         commentId,
@@ -101,7 +112,7 @@ router.post("/", async (req, res) => {
         //send discord message
         await discordbot.send(
           `New nested comment from ${nestedcomment?.user?.username} - ${
-            geoip.lookup(ip).city
+            (geoip.lookup(ip).city, geoip.lookup(ip).country)
           } (${ip})\n${nestedcomment?.text}
           \nhttps://momosz.com/post/${nestedcomment?.postId}`
         );
