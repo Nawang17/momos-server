@@ -42,6 +42,10 @@ module.exports = (sequelize, DataTypes) => {
       foreignKey: "followid",
       onDelete: "CASCADE",
     });
+    notis.belongsTo(models.commentlikes, {
+      foreignKey: "commentlikeId",
+      onDelete: "CASCADE",
+    });
   };
   return notis;
 };

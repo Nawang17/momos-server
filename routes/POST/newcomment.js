@@ -6,6 +6,7 @@ const {
   users,
   nestedcomments,
   notis,
+  commentlikes,
 } = require("../../models");
 const geoip = require("geoip-lite");
 const requestIp = require("request-ip");
@@ -67,6 +68,9 @@ router.post("/", async (req, res) => {
           id: newComment.id,
         },
         include: [
+          {
+            model: commentlikes,
+          },
           {
             model: users,
             attributes: ["username", "avatar", "verified", "id"],

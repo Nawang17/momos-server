@@ -39,6 +39,7 @@ const suggestedusers = require("./routes/GET/suggestedusers");
 const settingsinfo = require("./routes/GET/settingsinfo");
 const search = require("./routes/GET/search");
 const leaderboard = require("./routes/GET/leaderboard");
+const likecomment = require("./routes/POST/likecomment");
 
 app.use("/likedposts", tokenCheck, likedpost);
 app.use("/likepost", tokenCheck, likelimit, likepost);
@@ -60,6 +61,7 @@ app.use("/suggestedusers", suggestedusers);
 app.use("/settingsinfo", tokenCheck, settingsinfo);
 app.use("/search", search);
 app.use("/leaderboard", leaderboard);
+app.use("/likecomment", tokenCheck, likecomment);
 
 app.get("/", (req, res) => {
   res.send("momos server ");
