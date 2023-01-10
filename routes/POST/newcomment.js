@@ -70,6 +70,12 @@ router.post("/", async (req, res) => {
         include: [
           {
             model: commentlikes,
+            include: [
+              {
+                model: users,
+                attributes: ["username", "avatar", "verified", "id"],
+              },
+            ],
           },
           {
             model: users,

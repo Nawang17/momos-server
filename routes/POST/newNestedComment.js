@@ -1,6 +1,12 @@
 "use strict";
 const router = require("express").Router();
-const { users, nestedcomments, comments, notis } = require("../../models");
+const {
+  users,
+  nestedcomments,
+  nestedcommentlikes,
+  comments,
+  notis,
+} = require("../../models");
 const geoip = require("geoip-lite");
 const requestIp = require("request-ip");
 var filter = require("../../utils/bad-words-hacked");
@@ -61,6 +67,16 @@ router.post("/", async (req, res) => {
             id: createNewNestedComment.id,
           },
           include: [
+            {
+              model: nestedcommentlikes,
+              include: [
+                {
+                  model: users,
+                  attributes: ["username", "avatar", "verified", "id"],
+                },
+              ],
+            },
+
             {
               model: users,
               as: "user",
