@@ -9,6 +9,8 @@ const {
 } = require("../../models");
 const geoip = require("geoip-lite");
 const requestIp = require("request-ip");
+var Filterer = require("bad-words");
+var filter = new Filterer();
 const { Client, GatewayIntentBits } = require("discord.js");
 let discordbot;
 const client = new Client({
@@ -23,7 +25,7 @@ client.on("ready", () => {
 client.login(process.env.DISCORD_BOT_TOKEN);
 router.post("/", async (req, res) => {
   const { postId, text } = req.body;
-  const sanitizedText = text?.trim().replace(/\n{2,}/g, "\n");
+  const sanitizedText = filter.clean(text?.trim().replace(/\n{2,}/g, "\n"));
   if (!postId || !text) {
     return res.status(400).send("PostId and Text are required");
   } else if (/^\s*$/.test(sanitizedText)) {
