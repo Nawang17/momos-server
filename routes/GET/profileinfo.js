@@ -1,6 +1,13 @@
 "use strict";
 const router = require("express").Router();
-const { posts, users, likes, comments, follows } = require("../../models");
+const {
+  posts,
+  users,
+  likes,
+  comments,
+  follows,
+  nestedcomments,
+} = require("../../models");
 const sequelize = require("sequelize");
 router.get("/:username", async (req, res) => {
   const { username } = req.params;
@@ -119,6 +126,11 @@ router.get("/:username", async (req, res) => {
           },
           {
             model: comments,
+            include: [
+              {
+                model: nestedcomments,
+              },
+            ],
           },
           {
             model: posts,
@@ -183,6 +195,11 @@ router.get("/:username", async (req, res) => {
           },
           {
             model: comments,
+            include: [
+              {
+                model: nestedcomments,
+              },
+            ],
           },
           {
             model: posts,
@@ -298,6 +315,11 @@ router.get("/userposts/:userid", async (req, res) => {
         },
         {
           model: comments,
+          include: [
+            {
+              model: nestedcomments,
+            },
+          ],
         },
         {
           model: posts,
@@ -362,6 +384,11 @@ router.get("/likedposts/:userid", async (req, res) => {
         },
         {
           model: comments,
+          include: [
+            {
+              model: nestedcomments,
+            },
+          ],
         },
         {
           model: posts,

@@ -1,6 +1,12 @@
 "use strict";
 const router = require("express").Router();
-const { posts, users, likes, comments } = require("../../models");
+const {
+  posts,
+  users,
+  likes,
+  comments,
+  nestedcomments,
+} = require("../../models");
 const { Op } = require("sequelize");
 const sequelize = require("sequelize");
 router.get("/getposts/:value", async (req, res) => {
@@ -42,6 +48,11 @@ router.get("/getposts/:value", async (req, res) => {
         },
         {
           model: comments,
+          include: [
+            {
+              model: nestedcomments,
+            },
+          ],
         },
         {
           model: posts,
@@ -87,6 +98,11 @@ router.get("/getposts/:value", async (req, res) => {
         },
         {
           model: comments,
+          include: [
+            {
+              model: nestedcomments,
+            },
+          ],
         },
         {
           model: posts,

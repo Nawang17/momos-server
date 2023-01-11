@@ -1,6 +1,13 @@
 "use strict";
 const router = require("express").Router();
-const { posts, users, likes, comments, follows } = require("../../models");
+const {
+  posts,
+  users,
+  likes,
+  comments,
+  follows,
+  nestedcomments,
+} = require("../../models");
 const sequelize = require("sequelize");
 const { tokenCheck } = require("../../middleware/tokenCheck");
 router.get("/", async (req, res) => {
@@ -38,6 +45,11 @@ router.get("/", async (req, res) => {
           },
           {
             model: comments,
+            include: [
+              {
+                model: nestedcomments,
+              },
+            ],
           },
           {
             model: posts,
@@ -98,6 +110,11 @@ router.get("/", async (req, res) => {
           },
           {
             model: comments,
+            include: [
+              {
+                model: nestedcomments,
+              },
+            ],
           },
           {
             model: posts,
@@ -182,6 +199,11 @@ router.get("/followingposts", tokenCheck, async (req, res) => {
         },
         {
           model: comments,
+          include: [
+            {
+              model: nestedcomments,
+            },
+          ],
         },
         {
           model: posts,
