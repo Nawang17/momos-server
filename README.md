@@ -16,8 +16,7 @@ To get started with the development of this project, you will need to have Node.
 1. Clone this repository and navigate to the project directory
 2. Run the command `npm install` or `yarn install` to install the necessary packages
 3. Create a `.env` file in the root of the project and set up your MySQL credentials and other environment variables.
-4. Run the command `sequelize init` to set up the database
-5. Start the server by running `npm start` or `yarn start`
-6. Make sure to also check out the client-side repository for this project, which can be found at https://github.com/Nawang17/client-momo.
+4. Start the server by running `npm start` or `yarn start`
+5. Make sure to also check out the client-side repository for this project, which can be found at https://github.com/Nawang17/client-momo.
 
 Please note that this project is for educational purposes and may have bugs or unfinished features. If you encounter any issues or have any suggestions, please feel free to reach out or submit a pull request.
