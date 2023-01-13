@@ -3,53 +3,38 @@ const router = require("express").Router();
 const { commentlikes, notis, comments } = require("../../models");
 
 router.post("/", async (req, res) => {
-  const { commentId } = req.body;
-  if (!commentId) {
-    return res.status(400).send("commentId is required");
-  }
   try {
-    const findcomment = await comments.findOne({
-      where: {
-        id: commentId,
-      },
-    });
-    if (!findcomment) {
-      return res.status(400).send("comment not found");
+    const { commentId } = req.body;
+    if (!commentId) {
+      return res.status(400).send("Comment ID is required");
     }
-    const findcommentlike = await commentlikes.findOne({
-      where: {
-        commentId,
-        userId: req.user.id,
-      },
+    const comment = await comments.findOne({ where: { id: commentId } });
+    if (!comment) {
+      return res.status(404).send("Comment not found");
+    }
+    // Find or create a comment like
+    const [like, created] = await commentlikes.findOrCreate({
+      where: { commentId, userId: req.user.id },
+      defaults: { commentId, userId: req.user.id },
     });
-    if (findcommentlike) {
-      await commentlikes.destroy({
-        where: {
-          commentId,
-          userId: req.user.id,
-        },
-      });
+
+    if (!created) {
+      await commentlikes.destroy({ where: { id: like.id } });
       return res.status(200).send({ liked: false });
-    } else {
-      const newcommentlike = await commentlikes.create({
-        commentId,
-        userId: req.user.id,
-      });
-      if (newcommentlike) {
-        if (req.user.id !== findcomment?.userId) {
-          await notis.create({
-            userId: req.user.id,
-            type: "LIKE",
-            commentId,
-            targetuserId: findcomment?.userId,
-            text: "liked your comment.",
-            commentlikeId: newcommentlike?.id,
-            postId: findcomment?.postId,
-          });
-        }
-        return res.status(200).send({ liked: true });
-      }
     }
+
+    if (req.user.id !== comment.userId) {
+      await notis.create({
+        userId: req.user.id,
+        type: "LIKE",
+        commentId,
+        targetuserId: comment.userId,
+        text: "liked your comment.",
+        commentlikeId: like.id,
+        postId: comment.postId,
+      });
+    }
+    return res.status(201).send({ liked: true });
   } catch (error) {
     console.log(error);
     return res.status(500).send("Something went wrong");

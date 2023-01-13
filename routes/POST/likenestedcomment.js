@@ -3,53 +3,56 @@ const router = require("express").Router();
 const { nestedcomments, nestedcommentlikes, notis } = require("../../models");
 
 router.post("/", async (req, res) => {
-  const { nestedcommentId } = req.body;
-  if (!nestedcommentId) {
-    return res.status(400).send("commentId is required");
-  }
   try {
-    const findcomment = await nestedcomments.findOne({
+    const { nestedcommentId } = req.body;
+
+    if (!nestedcommentId) {
+      return res.status(400).send("replyId is required");
+    }
+    //check if commentId is a number
+    if (isNaN(nestedcommentId)) {
+      return res.status(400).send("invalid replyId");
+    }
+
+    // Check if the nested comment exists
+    const findComment = await nestedcomments.findOne({
       where: {
         id: nestedcommentId,
       },
     });
-    if (!findcomment) {
-      return res.status(400).send("comment not found");
+    if (!findComment) {
+      return res.status(404).send("reply not found");
     }
-    const findcommentlike = await nestedcommentlikes.findOne({
-      where: {
-        nestedcommentId,
-        userId: req.user.id,
-      },
+    // Find or create a like
+    const [newLike, created] = await nestedcommentlikes.findOrCreate({
+      where: { nestedcommentId, userId: req.user.id },
+      defaults: { nestedcommentId, userId: req.user.id },
     });
-    if (findcommentlike) {
+    // If like already exists, destroy it
+    if (!created) {
       await nestedcommentlikes.destroy({
         where: {
           nestedcommentId,
           userId: req.user.id,
         },
       });
+      // Send a 200 OK response after deleting the like
       return res.status(200).send({ liked: false });
-    } else {
-      const newcommentlike = await nestedcommentlikes.create({
-        nestedcommentId,
-        userId: req.user.id,
-      });
-      if (newcommentlike) {
-        if (req.user.id !== findcomment?.userId) {
-          await notis.create({
-            userId: req.user.id,
-            type: "LIKE",
-            nestedcommentId,
-            targetuserId: findcomment?.userId,
-            text: "liked your comment.",
-            nestedcommentlikeId: newcommentlike?.id,
-            postId: findcomment?.postId,
-          });
-        }
-        return res.status(200).send({ liked: true });
-      }
     }
+    // Create a notification if the user who liked the comment is not the comment owner
+    if (req.user.id !== findComment.userId) {
+      await notis.create({
+        userId: req.user.id,
+        type: "LIKE",
+        nestedcommentId: findComment.id,
+        targetuserId: findComment.userId,
+        text: "liked your reply.",
+        nestedcommentlikeId: newLike.id,
+        postId: findComment.postId,
+      });
+    }
+    // Send a 201 Created response after creating a new like
+    return res.status(201).send({ liked: true });
   } catch (error) {
     console.log(error);
     return res.status(500).send("Something went wrong");

@@ -39,7 +39,7 @@ router.post("/", async (req, res) => {
       });
 
       // Send a 204 No Content response after deleting the like
-      return res.status(204).send({ liked: false });
+      return res.status(200).send({ liked: false });
     }
 
     // Create a notification if the user who liked the post is not the post owner
