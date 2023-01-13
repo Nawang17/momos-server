@@ -65,7 +65,8 @@ router.post("/", async (req, res) => {
         return res.status(201).send({ liked: true });
       },
       { timeout: 5000 }
-    ); // timeout is optional
+      // this timeout will force the lock to be released after 5 seconds if it is not released by the code
+    );
   } catch (error) {
     console.log(error);
     return res.status(500).send("Something went wrong");
