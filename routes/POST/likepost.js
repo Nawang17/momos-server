@@ -1,6 +1,8 @@
 "use strict";
 const router = require("express").Router();
 const { likes, notis, posts } = require("../../models");
+const asyncLock = require("async-lock");
+const lock = new asyncLock();
 
 router.post("/", async (req, res) => {
   try {
@@ -14,48 +16,56 @@ router.post("/", async (req, res) => {
       return res.status(400).send("invalid postId");
     }
 
-    // Check if the post exists
-    const findpost = await posts.findOne({
-      where: {
-        id: postId,
+    // acquire the lock
+    const key = `like-post-${postId}-${req.user.id}`;
+    await lock.acquire(
+      key,
+      async () => {
+        // Check if the post exists
+        const findpost = await posts.findOne({
+          where: {
+            id: postId,
+          },
+        });
+        if (!findpost) {
+          return res.status(404).send("Post not found");
+        }
+
+        // Find or create a like
+        const [newlike, created] = await likes.findOrCreate({
+          where: { postId, userId: req.user.id },
+          defaults: { postId, userId: req.user.id },
+        });
+        // If like already exists, destroy it
+        if (!created) {
+          await likes.destroy({
+            where: {
+              postId,
+              userId: req.user.id,
+            },
+          });
+
+          // Send a 200 No Content response after deleting the like
+          return res.status(200).send({ liked: false });
+        }
+
+        // Create a notification if the user who liked the post is not the post owner
+        if (req.user.id !== findpost?.postUser) {
+          await notis.create({
+            userId: req.user.id,
+            type: "LIKE",
+            postId,
+            targetuserId: findpost?.postUser,
+            text: "liked your post.",
+            likeId: newlike?.id,
+          });
+        }
+
+        // Send a 201 Created response after creating a new like
+        return res.status(201).send({ liked: true });
       },
-    });
-    if (!findpost) {
-      return res.status(404).send("Post not found");
-    }
-
-    // Find or create a like
-    const [newlike, created] = await likes.findOrCreate({
-      where: { postId, userId: req.user.id },
-      defaults: { postId, userId: req.user.id },
-    });
-    // If like already exists, destroy it
-    if (!created) {
-      await likes.destroy({
-        where: {
-          postId,
-          userId: req.user.id,
-        },
-      });
-
-      // Send a 204 No Content response after deleting the like
-      return res.status(200).send({ liked: false });
-    }
-
-    // Create a notification if the user who liked the post is not the post owner
-    if (req.user.id !== findpost?.postUser) {
-      await notis.create({
-        userId: req.user.id,
-        type: "LIKE",
-        postId,
-        targetuserId: findpost?.postUser,
-        text: "liked your post.",
-        likeId: newlike?.id,
-      });
-    }
-
-    // Send a 201 Created response after creating a new like
-    return res.status(201).send({ liked: true });
+      { timeout: 5000 }
+    ); // timeout is optional
   } catch (error) {
     console.log(error);
     return res.status(500).send("Something went wrong");
