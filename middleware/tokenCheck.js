@@ -18,15 +18,17 @@ const tokenCheck = (req, res, next) => {
       },
     });
     if (finduser) {
-      if (finduser.status === "active") {
+      if (finduser.status === "inactive") {
+        return res.status(401).send("Your account is inactive");
+      } else {
         req.user = {
           id: user.id,
-          username: finduser.username,
-          avatar: finduser.avatar,
+          username: finduser?.username,
+          avatar: finduser?.avatar,
+          status: finduser?.status,
         };
+        console.log(req.user);
         next();
-      } else {
-        return res.status(401).send("Your account is restricted");
       }
     } else {
       return res.status(401).send("User not found");

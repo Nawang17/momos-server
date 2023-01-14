@@ -17,7 +17,7 @@ router.delete("/:postId", async (req, res) => {
       if (!findPost) {
         res.status(400).send("Post not found");
       } else {
-        if (findPost.postUser !== req.user.id && req.user.id !== 5) {
+        if (findPost.postUser !== req.user.id && req.user.status !== "admin") {
           res.status(400).send("You are not authorized to delete this post");
         } else {
           if (findPost.imagekey) {

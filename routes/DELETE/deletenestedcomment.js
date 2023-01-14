@@ -16,7 +16,10 @@ router.delete("/:nestedcommentid", async (req, res) => {
       if (!findNestedComment) {
         return res.status(400).send("Nested comment not found");
       } else {
-        if (findNestedComment.userId !== req.user.id && req.user.id !== 5) {
+        if (
+          findNestedComment.userId !== req.user.id &&
+          req.user.status !== "admin"
+        ) {
           return res
             .status(400)
             .send("You are not authorized to delete this comment");
