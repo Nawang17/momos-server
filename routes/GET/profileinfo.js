@@ -241,7 +241,7 @@ router.get("/followdata/:username", async (req, res) => {
     });
     if (!userInfo) {
       return res.status(400).send("User not found");
-    } else if (userInfo.status !== "active") {
+    } else if (userInfo.status === "inactive") {
       return res.status(400).send("User is inactive");
     } else {
       const userFollowers = await follows.findAll({

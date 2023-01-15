@@ -19,17 +19,17 @@ client.on("ready", () => {
   client.user.setActivity("with the code", { type: "listening" });
 });
 client.login(process.env.DISCORD_BOT_TOKEN);
-// const multer = require("multer");
-// const storage = multer.diskStorage({
-//   destination: (req, file, cb) => {
-//     cb(null, "uploads");
-//   },
-//   filename: (req, file, cb) => {
-//     cb(null, `${Date.now()}-${file.originalname}`);
-//   },
-// });
-// const fs = require("fs");
-// const upload = multer({ storage });
+const multer = require("multer");
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, "uploads");
+  },
+  filename: (req, file, cb) => {
+    cb(null, `${Date.now()}-${file.originalname}`);
+  },
+});
+const fs = require("fs");
+const upload = multer({ storage });
 router.post("/", async (req, res) => {
   const { text, imageblob, filetype, quoteId } = req.body;
   const sanitizedText = filter.cleanHacked(
@@ -212,16 +212,16 @@ router.post("/", async (req, res) => {
   }
 });
 
-// router.post("/try", upload.single("media"), async (req, res) => {
-//   // req.file contains the uploaded image
-//   // req.body contains the text from the form
-//   // fs.unlink("uploads\\1673805803292-vmfu0ejythoscu1ezwxb.webp", (err) => {
-//   //   if (err) throw err;
-//   //   console.log(`media was deleted`);
-//   // });
-//   console.log(req.file, "media");
-//   console.log(req.body.text, "body");
-//   console.log(req.body.quoteid, "quoteid");
-//   res.send("ok"); //
-// });
+router.post("/try", upload.single("media"), async (req, res) => {
+  // req.file contains the uploaded image
+  // req.body contains the text from the form
+  // fs.unlink("uploads\\1673805803292-vmfu0ejythoscu1ezwxb.webp", (err) => {
+  //   if (err) throw err;
+  //   console.log(`media was deleted`);
+  // });
+  console.log(req.file, "media");
+  console.log(req.body.text, "body");
+  console.log(req.body.quoteid, "quoteid");
+  res.send("ok"); //
+});
 module.exports = router;
