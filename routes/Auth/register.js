@@ -9,20 +9,7 @@ var filter = new Filterer();
 const { restrictednames } = require("../../utils/restrictedusernames");
 const { avatarColor } = require("../../utils/randomColor");
 
-const geoip = require("geoip-lite");
-const requestIp = require("request-ip");
-const { Client, GatewayIntentBits } = require("discord.js");
-let discordbot;
-const client = new Client({
-  intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildMessages],
-});
-client.on("ready", () => {
-  client.users.fetch(process.env.USERID, false).then((users) => {
-    discordbot = users;
-  });
-  client.user.setActivity("with the code", { type: "listening" });
-});
-client.login(process.env.DISCORD_BOT_TOKEN);
+const { sendmessage } = require("../../utils/discordbot");
 router.post("/", async (req, res) => {
   const { username, password } = req.body;
 
@@ -70,15 +57,14 @@ router.post("/", async (req, res) => {
             },
             process.env.JWT_SECRET
           );
-          const ip = requestIp.getClientIp(req)
-            ? requestIp.getClientIp(req)
-            : "209.122.203.50";
+
           //send discord message
-          await discordbot.send(
-            `New account from ${newUser?.username} - ${
-              (geoip.lookup(ip).city, geoip.lookup(ip).country)
-            } (${ip})\nhttps://momosz.com/${newUser?.username}`
+          await sendmessage(
+            req,
+            `https://momosz.com/${newUser?.username}`,
+            "account"
           );
+
           res.status(201).send({
             message: `Account created successfully.Welcome to momos.`,
             token: "Bearer " + token,
@@ -147,14 +133,12 @@ router.post("/gregister", async (req, res) => {
             },
             process.env.JWT_SECRET
           );
-          const ip = requestIp.getClientIp(req)
-            ? requestIp.getClientIp(req)
-            : "209.122.203.50";
+
           //send discord message
-          await discordbot.send(
-            `New google account from ${newUser?.username} - ${
-              (geoip.lookup(ip).city, geoip.lookup(ip).country)
-            } (${ip})\nhttps://momosz.com/${newUser?.username}`
+          await sendmessage(
+            req,
+            `https://momosz.com/${newUser?.username}`,
+            "google account"
           );
           res.status(201).send({
             message: `Account created successfully.Welcome to momos.`,

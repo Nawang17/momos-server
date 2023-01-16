@@ -76,6 +76,32 @@ app.use(
   likenestedcomment
 );
 
+const {
+  Client,
+  Events,
+  ActivityType,
+  GatewayIntentBits,
+} = require("discord.js");
+
+// Create a new client instance
+//global is used to make the client available to all files
+global.client = new Client({
+  intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildMessages],
+});
+
+// When the client is ready, run this code (only once)
+// We use 'c' for the event parameter to keep it separate from the already defined 'client'
+global.client.once(Events.ClientReady, (c) => {
+  console.log(`Discord bot ready! Logged in as ${c.user.tag}`);
+
+  c.user.setPresence({
+    activities: [{ name: "momosz.com", type: ActivityType.Watching }],
+  });
+});
+
+// Log in to Discord with your client's token
+global.client.login(process.env.DISCORD_BOT_TOKEN);
+
 app.get("/", (req, res) => {
   res.send("momos server ");
 });

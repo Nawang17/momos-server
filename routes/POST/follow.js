@@ -17,7 +17,7 @@ router.post("/", async (req, res) => {
       });
       if (!finduser) {
         return res.status(400).send("You cannot follow a non-existent user");
-      } else if (finduser.status !== "active") {
+      } else if (finduser.status === "inactive") {
         return res.status(400).send("User is inactive");
       }
 

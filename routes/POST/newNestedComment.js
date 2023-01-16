@@ -7,22 +7,10 @@ const {
   comments,
   notis,
 } = require("../../models");
-const geoip = require("geoip-lite");
-const requestIp = require("request-ip");
+
 var filter = require("../../utils/bad-words-hacked");
 filter = new filter();
-const { Client, GatewayIntentBits } = require("discord.js");
-let discordbot;
-const client = new Client({
-  intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildMessages],
-});
-client.on("ready", () => {
-  client.users.fetch(process.env.USERID, false).then((users) => {
-    discordbot = users;
-  });
-  client.user.setActivity("with the code", { type: "listening" });
-});
-client.login(process.env.DISCORD_BOT_TOKEN);
+const { sendmessage } = require("../../utils/discordbot");
 router.post("/", async (req, res) => {
   const { text, commentId, replytouserId, postId } = req.body;
   const sanitizedText = filter.cleanHacked(
@@ -126,15 +114,13 @@ router.post("/", async (req, res) => {
             }
           }
         });
-        const ip = requestIp.getClientIp(req)
-          ? requestIp.getClientIp(req)
-          : "209.122.203.50";
+
         //send discord message
-        await discordbot.send(
-          `New nested comment from ${nestedcomment?.user?.username} - ${
-            geoip.lookup(ip).city
-          }, ${geoip.lookup(ip).country} (${ip})\n${nestedcomment?.text}
-          \nhttps://momosz.com/post/${nestedcomment?.postId}`
+        await sendmessage(
+          req,
+          `${nestedcomment?.text}
+          \nhttps://momosz.com/post/${nestedcomment?.postId}`,
+          "nested Comment"
         );
         return res.status(200).send({
           message: "Nested Comment created successfully",
