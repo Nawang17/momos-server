@@ -76,6 +76,7 @@ router.get("/:username", async (req, res) => {
             [
               sequelize.literal("totalposts + totalLikes  + totalFollowers"),
               "DESC",
+              [sequelize.col("users.id"), "ASC"],
             ],
           ],
           raw: true,

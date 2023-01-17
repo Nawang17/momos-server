@@ -23,7 +23,6 @@ router.get("/", async (req, res) => {
           "imagekey",
           "status",
           "userid",
-          "",
         ],
         include: [
           [
@@ -67,6 +66,7 @@ router.get("/", async (req, res) => {
 
       order: [
         [sequelize.literal("totalposts + totalLikes + totalFollowers"), "DESC"],
+        [sequelize.col("users.id"), "ASC"],
       ],
     });
     return res.json({ leaderboard: getUsers, usersCount });
