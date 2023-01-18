@@ -1,7 +1,7 @@
 "use strict";
 require("dotenv").config();
 const router = require("express").Router();
-const { posts, users, notis } = require("../../models");
+const { posts, users, notis, previewlinks } = require("../../models");
 const fs = require("fs");
 const { cloudinary } = require("../../utils/cloudinary");
 var filter = require("../../utils/bad-words-hacked");
@@ -9,6 +9,7 @@ filter = new filter();
 const sequelize = require("sequelize");
 const upload = require("../../utils/multermediaupload");
 const { sendmessage } = require("../../utils/discordbot");
+const { getLinkPreview } = require("link-preview-js");
 
 const uploadmedia = async (res, media) => {
   try {
@@ -230,6 +231,11 @@ router.post("/", upload.single("media"), async (req, res) => {
       "post"
     );
 
+    //check if text contains a link and add preview link to database if it does
+    if (!newPost?.image) {
+      await addpreviewlink(newPost);
+    }
+
     // send success response
     return res.status(201).send({
       message: "Post created successfully",
@@ -242,3 +248,58 @@ router.post("/", upload.single("media"), async (req, res) => {
 });
 
 module.exports = router;
+
+const addpreviewlink = async (newPost) => {
+  const findurlregex = /(https?:\/\/)(?!localhost|127\.0\.0\.1)[^\s]+\.[a-z]+/;
+  const link = findurlregex.exec(newPost?.text);
+
+  if (link) {
+    await getLinkPreview(link[0], {
+      followRedirects: `manual`,
+      handleRedirects: (baseURL, forwardedURL) => {
+        const urlObj = new URL(baseURL);
+        const forwardedURLObj = new URL(forwardedURL);
+        if (
+          forwardedURLObj.hostname === urlObj.hostname ||
+          forwardedURLObj.hostname === "www." + urlObj.hostname ||
+          "www." + forwardedURLObj.hostname === urlObj.hostname
+        ) {
+          return true;
+        } else {
+          return false;
+        }
+      },
+    })
+      .then(async (data) => {
+        await previewlinks.create({
+          url: data?.url,
+          title: data?.title,
+          description: data?.description,
+          image: data?.images[0] ? data?.images[0] : null,
+          postId: newPost?.id,
+        });
+        return;
+      })
+      .catch((err) => {
+        console.log("error getting link preview :", err);
+
+        return;
+      });
+  } else {
+    console.log("no link found");
+    return;
+  }
+};
+
+// {
+//   url: 'https://www.google.com/',
+//   title: 'Google',
+//   siteName: undefined,
+//   description: "Search the world's information, including webpages, images, videos and more. Google has many special features to help you find exactly what you're looking for.",
+//   mediaType: 'website',
+//   contentType: 'text/html',
+//   images: [
+//     'https://www.google.com/images/branding/googlelogo/1x/googlelogo_white_background_color_272x92dp.png'
+//   ],
+//   videos: [],
+//   favicons: [ 'https://www.google.com/favicon.ico' ]

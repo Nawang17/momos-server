@@ -7,6 +7,7 @@ const {
   comments,
   follows,
   nestedcomments,
+  previewlinks,
 } = require("../../models");
 const sequelize = require("sequelize");
 router.get("/:username", async (req, res) => {
@@ -112,6 +113,9 @@ router.get("/:username", async (req, res) => {
         order: [["id", "DESC"]],
         include: [
           {
+            model: previewlinks,
+          },
+          {
             model: users,
             attributes: ["username", "avatar", "verified", "id"],
           },
@@ -180,6 +184,9 @@ router.get("/:username", async (req, res) => {
         attributes: { exclude: ["updatedAt", "postUser"] },
         order: [["id", "DESC"]],
         include: [
+          {
+            model: previewlinks,
+          },
           {
             model: users,
             attributes: ["username", "avatar", "verified", "id"],
@@ -301,6 +308,10 @@ router.get("/userposts/:userid", async (req, res) => {
       order: [["id", "DESC"]],
       include: [
         {
+          model: previewlinks,
+        },
+
+        {
           model: users,
           attributes: ["username", "avatar", "verified", "id"],
         },
@@ -369,6 +380,9 @@ router.get("/likedposts/:userid", async (req, res) => {
       attributes: { exclude: ["updatedAt", "postUser"] },
       order: [["id", "DESC"]],
       include: [
+        {
+          model: previewlinks,
+        },
         {
           model: users,
           attributes: ["username", "avatar", "verified", "id"],

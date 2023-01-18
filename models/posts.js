@@ -36,6 +36,11 @@ module.exports = (sequelize, DataTypes) => {
       foreignKey: "postId",
       onDelete: "CASCADE",
     });
+    posts.hasOne(models.previewlinks, {
+      foreignKey: "postId",
+      onDelete: "CASCADE",
+    });
+
     posts.hasMany(models.comments, {
       foreignKey: "postId",
       onDelete: "CASCADE",
