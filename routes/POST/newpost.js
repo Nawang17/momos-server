@@ -220,6 +220,18 @@ router.post("/", upload.single("media"), async (req, res) => {
         }
       }
     }
+    //check if text contains a link and add preview link to database if it does
+    if (!newPost?.image) {
+      await addpreviewlink(newPost);
+    }
+
+    // send success response
+    res.status(201).send({
+      message: "Post created successfully",
+      newpostid: newPost.id,
+    });
+
+    //do background tasks after sending response
 
     //send discord message
 
@@ -230,17 +242,7 @@ router.post("/", upload.single("media"), async (req, res) => {
       }\nhttps://momosz.com/post/${newPost?.id}`,
       "post"
     );
-
-    //check if text contains a link and add preview link to database if it does
-    if (!newPost?.image) {
-      await addpreviewlink(newPost);
-    }
-
-    // send success response
-    return res.status(201).send({
-      message: "Post created successfully",
-      newpostid: newPost.id,
-    });
+    return;
   } catch (error) {
     console.log(error);
     return res.status(500).send("Something went wrong");
