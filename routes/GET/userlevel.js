@@ -39,6 +39,7 @@ router.get("/", async (req, res) => {
                   INNER JOIN likes AS likes ON likes.postId = posts.id
                   WHERE 
                     posts.postUser = users.id
+                    AND likes.userId != users.id
                 )`),
             "totalLikes",
           ],
