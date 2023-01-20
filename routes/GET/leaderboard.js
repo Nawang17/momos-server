@@ -32,7 +32,6 @@ router.get("/", async (req, res) => {
                       FROM posts AS posts
                       WHERE
                           posts.postUser = users.id
-                          AND users.id != 6
       
                   )`),
             "totalposts",
@@ -46,7 +45,6 @@ router.get("/", async (req, res) => {
                 WHERE 
                   posts.postUser = users.id
                   AND likes.userId != users.id
-                  AND users.id != 6
               )`),
             "totalLikes",
           ],
@@ -56,7 +54,6 @@ router.get("/", async (req, res) => {
                 FROM follows AS follows
                 WHERE
                     follows.followingid = users.id
-                    AND users.id != 6
 
             )`),
             "totalFollowers",
