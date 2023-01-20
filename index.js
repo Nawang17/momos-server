@@ -47,6 +47,7 @@ const search = require("./routes/GET/search");
 const leaderboard = require("./routes/GET/leaderboard");
 const likecomment = require("./routes/POST/likecomment");
 const likenestedcomment = require("./routes/POST/likenestedcomment");
+const userlevel = require("./routes/GET/userlevel");
 
 app.use("/likedposts", tokenCheck, likedpost);
 app.use("/likepost", tokenCheck, likelimit, likepost);
@@ -75,6 +76,7 @@ app.use(
   nestedcommentlikelimit,
   likenestedcomment
 );
+app.use("/userlevel", tokenCheck, userlevel);
 
 const {
   Client,
