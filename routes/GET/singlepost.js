@@ -9,6 +9,7 @@ const {
   commentlikes,
   nestedcommentlikes,
   previewlinks,
+  postquotes,
 } = require("../../models");
 
 router.get("/:postid", async (req, res) => {
@@ -23,6 +24,9 @@ router.get("/:postid", async (req, res) => {
       },
       attributes: { exclude: ["updatedAt", "postUser"] },
       include: [
+        {
+          model: postquotes,
+        },
         {
           model: previewlinks,
         },

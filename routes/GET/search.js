@@ -7,6 +7,7 @@ const {
   comments,
   nestedcomments,
   previewlinks,
+  postquotes,
 } = require("../../models");
 const { Op } = require("sequelize");
 const sequelize = require("sequelize");
@@ -39,6 +40,9 @@ router.get("/getposts/:value", async (req, res) => {
       },
 
       include: [
+        {
+          model: postquotes,
+        },
         {
           model: previewlinks,
         },
@@ -92,6 +96,9 @@ router.get("/getposts/:value", async (req, res) => {
       order: [[sequelize.literal("likescount"), "DESC"]],
 
       include: [
+        {
+          model: postquotes,
+        },
         {
           model: previewlinks,
         },

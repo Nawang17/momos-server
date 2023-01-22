@@ -8,6 +8,7 @@ const {
   follows,
   nestedcomments,
   previewlinks,
+  postquotes,
 } = require("../../models");
 const sequelize = require("sequelize");
 const { tokenCheck } = require("../../middleware/tokenCheck");
@@ -30,6 +31,9 @@ router.get("/", async (req, res) => {
         },
         order: [["id", "DESC"]],
         include: [
+          {
+            model: postquotes,
+          },
           {
             model: previewlinks,
           },
@@ -98,6 +102,9 @@ router.get("/", async (req, res) => {
         },
         order: [[sequelize.literal("likescount"), "DESC"]],
         include: [
+          {
+            model: postquotes,
+          },
           {
             model: previewlinks,
           },
@@ -190,6 +197,9 @@ router.get("/followingposts", tokenCheck, async (req, res) => {
       },
       order: [["id", "DESC"]],
       include: [
+        {
+          model: postquotes,
+        },
         {
           model: previewlinks,
         },

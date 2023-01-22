@@ -56,6 +56,14 @@ module.exports = (sequelize, DataTypes) => {
     posts.belongsTo(models.posts, {
       foreignKey: "quoteId",
     });
+    posts.hasMany(models.postquotes, {
+      foreignKey: "postId",
+      onDelete: "CASCADE",
+    });
+    posts.hasMany(models.postquotes, {
+      foreignKey: "quotedPostId",
+      onDelete: "CASCADE",
+    });
   };
   return posts;
 };

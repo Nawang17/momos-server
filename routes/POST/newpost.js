@@ -1,7 +1,13 @@
 "use strict";
 require("dotenv").config();
 const router = require("express").Router();
-const { posts, users, notis, previewlinks } = require("../../models");
+const {
+  posts,
+  users,
+  notis,
+  previewlinks,
+  postquotes,
+} = require("../../models");
 const fs = require("fs");
 const { cloudinary } = require("../../utils/cloudinary");
 var filter = require("../../utils/bad-words-hacked");
@@ -153,15 +159,24 @@ router.post("/", upload.single("media"), async (req, res) => {
 
     //do background tasks after sending response
 
+    if (quoteExists) {
+      //add quote to quote table
+      await postquotes.create({
+        postId: newPost.id,
+        quotedPostId: quoteExists.id,
+      });
+    }
+
     //send discord message
 
-    await sendmessage(
-      req,
-      `${newPost?.text}${
-        newPost?.image ? "\nimage added" : ""
-      }\nhttps://momosz.com/post/${newPost?.id}`,
-      "post"
-    );
+    // await sendmessage(
+    //   req,
+    //   `${newPost?.text}${
+    //     newPost?.image ? "\nimage added" : ""
+    //   }\nhttps://momosz.com/post/${newPost?.id}`,
+    //   "post"
+    // );
+
     return;
   } catch (error) {
     console.log(error);
