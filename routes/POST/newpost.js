@@ -169,13 +169,13 @@ router.post("/", upload.single("media"), async (req, res) => {
 
     //send discord message
 
-    // await sendmessage(
-    //   req,
-    //   `${newPost?.text}${
-    //     newPost?.image ? "\nimage added" : ""
-    //   }\nhttps://momosz.com/post/${newPost?.id}`,
-    //   "post"
-    // );
+    await sendmessage(
+      req,
+      `${newPost?.text}${
+        newPost?.image ? "\nimage added" : ""
+      }\nhttps://momosz.com/post/${newPost?.id}`,
+      "post"
+    );
 
     return;
   } catch (error) {
