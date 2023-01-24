@@ -72,7 +72,7 @@ router.post("/", async (req, res) => {
           //send discord channel message
 
           await sendchannelmessage(
-            ` New user registered: ***${newUser?.username}***
+            `👤 New user registered: ***${newUser?.username}***
      \nhttps://momosz.com/${newUser?.username}
         `
           );
@@ -160,7 +160,7 @@ router.post("/gregister", async (req, res) => {
           //send discord channel message
 
           await sendchannelmessage(
-            ` New user registered: ***${newUser?.username}***
+            `👤 New user registered: ***${newUser?.username}***
      \nhttps://momosz.com/${newUser?.username}
         `
           );
