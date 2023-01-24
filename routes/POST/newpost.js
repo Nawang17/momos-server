@@ -14,7 +14,7 @@ var filter = require("../../utils/bad-words-hacked");
 filter = new filter();
 const sequelize = require("sequelize");
 const upload = require("../../utils/multermediaupload");
-const { sendmessage } = require("../../utils/discordbot");
+const { sendmessage, sendchannelmessage } = require("../../utils/discordbot");
 const { getLinkPreview } = require("link-preview-js");
 
 router.post("/", upload.single("media"), async (req, res) => {
@@ -166,6 +166,22 @@ router.post("/", upload.single("media"), async (req, res) => {
         quotedPostId: quoteExists.id,
       });
     }
+
+    //find user who posted the post
+
+    const postuser = await users.findOne({
+      where: {
+        id: req.user.id,
+      },
+    });
+    //send discord channel message
+
+    await sendchannelmessage(
+      `📮 New post by ${postuser?.username}\n**${newPost?.text}**${
+        newPost?.image ? "\nimage added" : ""
+      }\nhttps://momosz.com/post/${newPost?.id}
+        `
+    );
 
     //send discord message
 

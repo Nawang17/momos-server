@@ -9,7 +9,7 @@ var filter = new Filterer();
 const { restrictednames } = require("../../utils/restrictedusernames");
 const { avatarColor } = require("../../utils/randomColor");
 
-const { sendmessage } = require("../../utils/discordbot");
+const { sendmessage, sendchannelmessage } = require("../../utils/discordbot");
 router.post("/", async (req, res) => {
   const { username, password } = req.body;
 
@@ -58,13 +58,6 @@ router.post("/", async (req, res) => {
             process.env.JWT_SECRET
           );
 
-          //send discord message
-          await sendmessage(
-            req,
-            `https://momosz.com/${newUser?.username}`,
-            "account"
-          );
-
           res.status(201).send({
             message: `Account created successfully.Welcome to momos.`,
             token: "Bearer " + token,
@@ -73,6 +66,25 @@ router.post("/", async (req, res) => {
               avatar,
             },
           });
+
+          // background task to send discord message
+
+          //send discord channel message
+
+          await sendchannelmessage(
+            ` New user registered: ***${newUser?.username}***
+     \nhttps://momosz.com/${newUser?.username}
+        `
+          );
+
+          //send discord message
+          await sendmessage(
+            req,
+            `https://momosz.com/${newUser?.username}`,
+            "account"
+          );
+
+          return;
         } else {
           res.status(400).send("Something went wrong");
         }
@@ -134,12 +146,6 @@ router.post("/gregister", async (req, res) => {
             process.env.JWT_SECRET
           );
 
-          //send discord message
-          await sendmessage(
-            req,
-            `https://momosz.com/${newUser?.username}`,
-            "google account"
-          );
           res.status(201).send({
             message: `Account created successfully.Welcome to momos.`,
             token: "Bearer " + token,
@@ -148,6 +154,24 @@ router.post("/gregister", async (req, res) => {
               avatar: newUser.avatar,
             },
           });
+
+          // background task to send discord message
+
+          //send discord channel message
+
+          await sendchannelmessage(
+            ` New user registered: ***${newUser?.username}***
+     \nhttps://momosz.com/${newUser?.username}
+        `
+          );
+          //send discord message
+          await sendmessage(
+            req,
+            `https://momosz.com/${newUser?.username}`,
+            "google account"
+          );
+
+          return;
         } else {
           res.status(400).send("Something went wrong");
         }

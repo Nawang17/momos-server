@@ -10,7 +10,7 @@ const {
 
 var filter = require("../../utils/bad-words-hacked");
 filter = new filter();
-const { sendmessage } = require("../../utils/discordbot");
+const { sendmessage, sendchannelmessage } = require("../../utils/discordbot");
 router.post("/", async (req, res) => {
   const { text, commentId, replytouserId, postId } = req.body;
   const sanitizedText = filter.cleanHacked(
@@ -115,6 +115,20 @@ router.post("/", async (req, res) => {
           }
         });
 
+        res.status(200).send({
+          message: "Nested Comment created successfully",
+          nestedcomment,
+        });
+
+        // background tasks to send discord message
+
+        //send discord channel message
+
+        await sendchannelmessage(
+          `💬 New reply by ${nestedcomment?.user?.username}\n**${nestedcomment?.text}**\nhttps://momosz.com/post/${nestedcomment?.postId}
+        `
+        );
+
         //send discord message
         await sendmessage(
           req,
@@ -122,10 +136,7 @@ router.post("/", async (req, res) => {
           \nhttps://momosz.com/post/${nestedcomment?.postId}`,
           "nested Comment"
         );
-        return res.status(200).send({
-          message: "Nested Comment created successfully",
-          nestedcomment,
-        });
+        return;
       } else {
         return res.status(400).send("Nested Comment creation failed");
       }

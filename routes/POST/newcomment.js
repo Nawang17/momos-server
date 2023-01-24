@@ -10,7 +10,7 @@ const {
 } = require("../../models");
 var filter = require("../../utils/bad-words-hacked");
 filter = new filter();
-const { sendmessage } = require("../../utils/discordbot");
+const { sendmessage, sendchannelmessage } = require("../../utils/discordbot");
 
 router.post("/", async (req, res) => {
   const { postId, text } = req.body;
@@ -128,16 +128,28 @@ router.post("/", async (req, res) => {
         }
       });
 
+      res
+        .status(200)
+        .send({ message: "Comment created successfully", comment });
+
+      // background task to send discord message
+
+      //send discord channel message
+
+      await sendchannelmessage(
+        `💬 New comment by ${comment?.user?.username}\n**${comment?.text}**\nhttps://momosz.com/post/${comment?.postId}
+          `
+      );
+
       //send discord message
       await sendmessage(
         req,
         `${comment?.text}
-        \nhttps://momosz.com/post/${comment?.postId}`,
+          \nhttps://momosz.com/post/${comment?.postId}`,
         "comment"
       );
-      return res
-        .status(200)
-        .send({ message: "Comment created successfully", comment });
+
+      return;
     } else {
       return res.status(400).send("Comment creation failed");
     }
