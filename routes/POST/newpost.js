@@ -177,9 +177,13 @@ router.post("/", upload.single("media"), async (req, res) => {
     //send discord channel message
 
     await sendchannelmessage(
-      `📮 New post by ${postuser?.username}\n**${newPost?.text}**${
-        newPost?.image ? "\nimage added" : ""
-      }\nhttps://momosz.com/post/${newPost?.id}
+      `📮 New post by ${postuser?.username}${
+        newPost?.text ? "\n" + "**" + newPost?.text + "**" : ""
+      }
+      
+      ${newPost?.image ? "\n**media added**" : ""}\nhttps://momosz.com/post/${
+        newPost?.id
+      }
         `
     );
 
@@ -188,7 +192,7 @@ router.post("/", upload.single("media"), async (req, res) => {
     await sendmessage(
       req,
       `${newPost?.text}${
-        newPost?.image ? "\nimage added" : ""
+        newPost?.image ? "\nmedia added" : ""
       }\nhttps://momosz.com/post/${newPost?.id}`,
       "post"
     );
