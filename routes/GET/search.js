@@ -53,6 +53,12 @@ router.get("/getposts/:value", async (req, res) => {
         },
         {
           model: likes,
+          include: [
+            {
+              model: users,
+              attributes: ["username", "avatar", "verified", "id"],
+            },
+          ],
         },
         {
           model: comments,
@@ -109,6 +115,12 @@ router.get("/getposts/:value", async (req, res) => {
         },
         {
           model: likes,
+          include: [
+            {
+              model: users,
+              attributes: ["username", "avatar", "verified", "id"],
+            },
+          ],
         },
         {
           model: comments,
