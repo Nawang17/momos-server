@@ -53,7 +53,6 @@ router.post("/glogin", async (req, res) => {
     try {
       const user = await users.findOne({
         where: {
-          password: "chI3VkNCCgKO9ZyQ9SJt",
           email,
         },
       });

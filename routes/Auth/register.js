@@ -21,6 +21,8 @@ router.post("/", async (req, res) => {
     res.status(400).send("Username can only contain letters and numbers");
   } else if (username.length < 4 || username.length > 15) {
     res.status(400).send("Username must be between 4 and 15 characters");
+  } else if (!/^(?=.*[a-zA-Z]).+$/g.test(username)) {
+    return res.status(400).send("Username must contain at least one letter");
   } else if (restrictednames.includes(username.toUpperCase())) {
     return res.status(400).send("Username is not available");
   } else if (password.length < 4) {
@@ -134,7 +136,6 @@ router.post("/gregister", async (req, res) => {
         const newUser = await users.create({
           username: sanitizedUsername,
           email,
-          password: "chI3VkNCCgKO9ZyQ9SJt",
           avatar: avatar ? avatar : randomavatar,
           verified: false,
         });
