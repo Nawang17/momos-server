@@ -26,6 +26,7 @@ const tokenCheck = (req, res, next) => {
           username: finduser?.username,
           avatar: finduser?.avatar,
           status: finduser?.status,
+          verified: finduser?.verified,
         };
 
         next();

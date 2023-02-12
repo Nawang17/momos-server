@@ -95,6 +95,18 @@ module.exports = (sequelize, DataTypes) => {
       foreignKey: "userId",
       onDelete: "CASCADE",
     });
+    users.hasMany(models.chatrooms, {
+      foreignKey: "user1",
+      onDelete: "CASCADE",
+    });
+    users.hasMany(models.chatrooms, {
+      foreignKey: "user2",
+      onDelete: "CASCADE",
+    });
+    users.hasMany(models.chats, {
+      foreignKey: "userid",
+      onDelete: "CASCADE",
+    });
   };
   return users;
 };

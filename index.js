@@ -1,13 +1,21 @@
 "use strict";
+require("dotenv").config();
 const express = require("express");
 const app = express();
-
+const http = require("http");
+const server = http.createServer(app);
+const { Server } = require("socket.io");
+global.io = new Server(server, {
+  cors: {
+    origin: [process.env.CLIENT_URL],
+  },
+});
 const db = require("./models");
 const cors = require("cors");
 const port = process.env.PORT || 3001;
 app.use(
   cors({
-    origin: ["http://localhost:3000", "https://momosz.com"],
+    origin: [process.env.CLIENT_URL],
   })
 );
 app.set("trust proxy", 4);
@@ -49,6 +57,7 @@ const likecomment = require("./routes/POST/likecomment");
 const likenestedcomment = require("./routes/POST/likenestedcomment");
 const userlevel = require("./routes/GET/userlevel");
 const reposts = require("./routes/GET/reposts");
+const chat = require("./routes/chat/chat");
 
 app.use("/likedposts", tokenCheck, likedpost);
 app.use("/likepost", tokenCheck, likelimit, likepost);
@@ -79,6 +88,35 @@ app.use(
 );
 app.use("/userlevel", tokenCheck, userlevel);
 app.use("/reposts", reposts);
+app.use("/chat", tokenCheck, chat);
+
+//initialize socket
+
+io.on("connection", (socket) => {
+  console.log("a user connected ", socket.id);
+
+  socket.on("joinroom", async (data) => {
+    if (data.roomid !== undefined) {
+      socket.join(data.roomid);
+      console.log("user joined room", socket.rooms);
+    }
+  });
+  socket.on("leaveroom", (data) => {
+    if (data.roomid !== undefined) {
+      socket.leave(data.roomid);
+      console.log("user left room", socket.rooms);
+    }
+  });
+  socket.on("sendmessage", (data) => {
+    console.log(data);
+    io.emit("newmessage", data);
+  });
+
+  socket.on("disconnect", () => {
+    console.log("user disconnected", socket.id);
+    console.log("users count ", socket.adapter.sids.size);
+  });
+});
 
 const {
   Client,
@@ -113,7 +151,7 @@ app.get("/", (req, res) => {
 db.sequelize
   .sync()
   .then(() => {
-    app.listen(port, () => {
+    server.listen(port, () => {
       console.log(`Server is listening on port ${port}`);
     });
   })

@@ -18,6 +18,9 @@ router.get("/:postid", async (req, res) => {
     if (!postid) {
       res.status(400).send("postid is required");
     }
+    if (isNaN(postid)) {
+      res.status(400).send("postid must be a number");
+    }
     const singlepost = await posts.findAll({
       where: {
         id: postid,
