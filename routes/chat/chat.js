@@ -51,11 +51,17 @@ router.get("/getchatmessages/:roomid/:page", async (req, res) => {
 
     const findchatmessages = await chatrooms.findOne({
       where: {
-        [Op.or]: [
-          { roomid: chatroomid },
-          { roomid: chatroomid.split("-").reverse().join("-") },
+        [Op.and]: [
+          {
+            [Op.or]: [
+              { roomid: chatroomid },
+              { roomid: chatroomid.split("-").reverse().join("-") },
+            ],
+          },
+          {
+            [Op.or]: [{ user1: req.user.id }, { user2: req.user.id }],
+          },
         ],
-        [Op.or]: [{ user1: req.user.id }, { user2: req.user.id }],
       },
 
       include: [

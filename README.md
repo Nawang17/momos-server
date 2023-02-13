@@ -6,7 +6,7 @@ Welcome to the Momos server-side repository! This repository contains the code f
 
 - Node.js
 - Express
-- MySQL
+- MySQL, Cloudinary
 - Sequelize (ORM)
 
 ## Getting Started
