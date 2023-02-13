@@ -55,6 +55,7 @@ router.get("/getchatmessages/:roomid/:page", async (req, res) => {
           { roomid: chatroomid },
           { roomid: chatroomid.split("-").reverse().join("-") },
         ],
+        [Op.or]: [{ user1: req.user.id }, { user2: req.user.id }],
       },
 
       include: [
@@ -158,6 +159,7 @@ router.post("/sendmessage", chatmessagelimit, async (req, res) => {
     const findchatroom = await chatrooms.findOne({
       where: {
         id: chatroomid,
+        [Op.or]: [{ user1: req.user.id }, { user2: req.user.id }],
       },
     });
     if (!findchatroom) return res.status(400).send("chatroom not found");
