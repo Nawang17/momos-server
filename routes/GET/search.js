@@ -11,6 +11,31 @@ const {
 } = require("../../models");
 const { Op } = require("sequelize");
 const sequelize = require("sequelize");
+
+router.get("/trending", async (req, res) => {
+  try {
+    const allPosts = await posts.findAll();
+    const hashtagCounts = {};
+
+    allPosts.forEach((post) => {
+      const hashtags = post.text.match(/#\w+/g) || []; // extract hashtags from post text using a regular expression
+      hashtags.forEach((hashtag) => {
+        const lowercaseHashtag = hashtag.toLowerCase(); // convert hashtag to lowercase
+        hashtagCounts[lowercaseHashtag] =
+          (hashtagCounts[lowercaseHashtag] || 0) + 1; // count the frequency of each hashtag (case-insensitive)
+      });
+    });
+
+    const topHashtags = Object.entries(hashtagCounts)
+      .sort((a, b) => b[1] - a[1]) // sort the hashtag counts in descending order
+      .slice(0, 10) // take the top 5 hashtags
+      .map((entry) => ({ hashtag: entry[0], count: entry[1] }));
+    res.status(200).send(topHashtags);
+  } catch (error) {
+    console.log(error);
+    res.status(500).send("Server Error");
+  }
+});
 router.get("/getposts/:value", async (req, res) => {
   const { value } = req.params;
   if (!value) {
