@@ -18,9 +18,9 @@ router.get("/trending", async (req, res) => {
     const hashtagCounts = {};
 
     allPosts?.forEach((post) => {
-      const hashtags = post?.text.match(/#\w+/g) || []; // extract hashtags from post text using a regular expression
-      hashtags.forEach((hashtag) => {
-        const lowercaseHashtag = hashtag.toLowerCase(); // convert hashtag to lowercase
+      const hashtags = post?.text?.match(/#\w+/g) || []; // extract hashtags from post text using a regular expression
+      hashtags?.forEach((hashtag) => {
+        const lowercaseHashtag = hashtag?.toLowerCase(); // convert hashtag to lowercase
         hashtagCounts[lowercaseHashtag] =
           (hashtagCounts[lowercaseHashtag] || 0) + 1; // count the frequency of each hashtag (case-insensitive)
       });
