@@ -91,10 +91,29 @@ app.use("/reposts", reposts);
 app.use("/chat", tokenCheck, chat);
 
 //initialize socket
+const { verify } = require("jsonwebtoken");
 
+let onlineusers = [];
 io.on("connection", (socket) => {
   console.log("a user connected ", socket.id);
 
+  socket.on("onlinestatus", async (data) => {
+    if (data.token) {
+      const token = data.token.split(" ")[1];
+      verify(token, process.env.JWT_SECRET, (err, user) => {
+        if (err) {
+          console.log("err", err);
+          const userarr = onlineusers.map((user) => user.userid);
+          io.emit("onlineusers", [...new Set(userarr)]);
+        }
+
+        onlineusers.push({ userid: user.id, socketid: socket.id });
+        console.log("user added to online users list", onlineusers);
+        const userarr = onlineusers.map((user) => user.userid);
+        io.emit("onlineusers", [...new Set(userarr)]);
+      });
+    }
+  });
   socket.on("joinroom", async (data) => {
     if (data.roomid !== undefined) {
       socket.join(data.roomid);
@@ -115,6 +134,11 @@ io.on("connection", (socket) => {
   socket.on("disconnect", () => {
     console.log("user disconnected", socket.id);
     console.log("users count ", socket.adapter.sids.size);
+    onlineusers = onlineusers.filter((user) => user.socketid !== socket.id);
+    const userarr = onlineusers.map((user) => user.userid);
+    io.emit("onlineusers", [...new Set(userarr)]);
+
+    console.log("user removed from onlineusers", onlineusers);
   });
 });
 
