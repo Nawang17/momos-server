@@ -109,7 +109,24 @@ io.on("connection", (socket) => {
 
         onlineusers.push({ userid: user.id, socketid: socket.id });
         console.log("user added to online users list", onlineusers);
-        const userarr = onlineusers.map((user) => user.userid);
+        const userarr = onlineusers.map((user) => user?.userid);
+        io.emit("onlineusers", [...new Set(userarr)]);
+      });
+    } else {
+      const userarr = onlineusers.map((user) => user?.userid);
+      io.emit("onlineusers", [...new Set(userarr)]);
+    }
+  });
+  socket.on("removeOnlinestatus", async (data) => {
+    if (data.token) {
+      const token = data.token.split(" ")[1];
+      verify(token, process.env.JWT_SECRET, (err, user) => {
+        if (err) {
+          console.log("err", err);
+        }
+        onlineusers = onlineusers.filter((u) => u.socketid !== socket.id);
+
+        const userarr = onlineusers.map((user) => user?.userid);
         io.emit("onlineusers", [...new Set(userarr)]);
       });
     }
