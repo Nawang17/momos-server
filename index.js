@@ -92,7 +92,7 @@ app.use("/chat", tokenCheck, chat);
 
 //initialize socket
 const { verify } = require("jsonwebtoken");
-
+const { users } = require("./models");
 let onlineusers = [];
 io.on("connection", (socket) => {
   console.log("a user connected ", socket.id);
@@ -100,21 +100,39 @@ io.on("connection", (socket) => {
   socket.on("onlinestatus", async (data) => {
     if (data.token) {
       const token = data.token.split(" ")[1];
-      verify(token, process.env.JWT_SECRET, (err, user) => {
+      verify(token, process.env.JWT_SECRET, async (err, user) => {
         if (err) {
-          console.log("err", err);
-          const userarr = onlineusers.map((user) => user.userid);
-          io.emit("onlineusers", [...new Set(userarr)]);
+          console.log("online status error: ", err);
+          const userarr = onlineusers?.filter((obj, index, self) => {
+            return index === self.findIndex((o) => o.username === obj.username);
+          });
+          io.emit("onlineusers", userarr);
         } else {
-          onlineusers.push({ userid: user.id, socketid: socket.id });
-          console.log("user added to online users list", onlineusers);
-          const userarr = onlineusers.map((user) => user?.userid);
-          io.emit("onlineusers", [...new Set(userarr)]);
+          const finduser = await users.findOne({
+            where: {
+              id: user?.id,
+            },
+          });
+          onlineusers.push({
+            userid: finduser?.id,
+            username: finduser?.username,
+            avatar: finduser?.avatar,
+            description: finduser?.description,
+            socketid: socket.id,
+          });
+          console.log("user added to online users list");
+
+          const userarr = onlineusers?.filter((obj, index, self) => {
+            return index === self.findIndex((o) => o.username === obj.username);
+          });
+          io.emit("onlineusers", userarr);
         }
       });
     } else {
-      const userarr = onlineusers.map((user) => user?.userid);
-      io.emit("onlineusers", [...new Set(userarr)]);
+      const userarr = onlineusers?.filter((obj, index, self) => {
+        return index === self.findIndex((o) => o.username === obj.username);
+      });
+      io.emit("onlineusers", userarr);
     }
   });
   socket.on("removeOnlinestatus", async (data) => {
@@ -122,12 +140,13 @@ io.on("connection", (socket) => {
       const token = data.token.split(" ")[1];
       verify(token, process.env.JWT_SECRET, (err, user) => {
         if (err) {
-          console.log("err", err);
+          console.log("remove online status error: ", err);
         } else {
           onlineusers = onlineusers.filter((u) => u?.socketid !== socket?.id);
-
-          const userarr = onlineusers.map((user) => user?.userid);
-          io.emit("onlineusers", [...new Set(userarr)]);
+          const userarr = onlineusers?.filter((obj, index, self) => {
+            return index === self.findIndex((o) => o.username === obj.username);
+          });
+          io.emit("onlineusers", userarr);
         }
       });
     }
@@ -153,10 +172,12 @@ io.on("connection", (socket) => {
     console.log("user disconnected", socket.id);
     console.log("users count ", socket.adapter.sids.size);
     onlineusers = onlineusers.filter((user) => user.socketid !== socket.id);
-    const userarr = onlineusers.map((user) => user.userid);
-    io.emit("onlineusers", [...new Set(userarr)]);
+    const userarr = onlineusers?.filter((obj, index, self) => {
+      return index === self.findIndex((o) => o.username === obj.username);
+    });
+    io.emit("onlineusers", userarr);
 
-    console.log("user removed from onlineusers", onlineusers);
+    console.log("user removed from onlineusers after disconnect");
   });
 });
 
