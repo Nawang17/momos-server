@@ -21,19 +21,6 @@ router.get("/", async (req, res) => {
         include: [
           [
             sequelize.literal(`(
-                
-                        SELECT COUNT(*)
-                        FROM posts AS posts
-                        WHERE
-                            posts.postUser = users.id
-                            
-        
-                    )`),
-            "totalposts",
-          ],
-
-          [
-            sequelize.literal(`(
                   SELECT COUNT(*)
                   FROM posts AS posts
                   INNER JOIN likes AS likes ON likes.postId = posts.id
@@ -43,15 +30,30 @@ router.get("/", async (req, res) => {
                 )`),
             "totalLikes",
           ],
+          // get count of total likes on users comments
           [
             sequelize.literal(`(
-                  SELECT COUNT(*)
-                  FROM follows AS follows
-                  WHERE
-                      follows.followingid = users.id
-  
-              )`),
-            "totalFollowers",
+            SELECT COUNT(*)
+            FROM comments AS comments
+            INNER JOIN commentlikes AS commentlikes ON commentlikes.commentId = comments.id
+            WHERE
+              comments.userId = users.id
+              AND commentlikes.userId != users.id
+          )`),
+            "totalCommentLikes",
+          ],
+          // get count of total likes on users nestedcomments
+
+          [
+            sequelize.literal(`(
+            SELECT COUNT(*)
+            FROM nestedcomments AS nestedcomments
+            INNER JOIN nestedcommentlikes AS nestedcommentlikes ON nestedcommentlikes.nestedcommentId = nestedcomments.id
+            WHERE
+            nestedcomments.userId = users.id
+              AND nestedcommentlikes.userId != users.id
+          )`),
+            "totalNestedCommentLikes",
           ],
         ],
       },

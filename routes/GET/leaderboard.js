@@ -25,17 +25,7 @@ router.get("/", async (req, res) => {
           "userid",
         ],
         include: [
-          [
-            sequelize.literal(`(
-              
-                      SELECT COUNT(*)
-                      FROM posts AS posts
-                      WHERE
-                          posts.postUser = users.id
-      
-                  )`),
-            "totalposts",
-          ],
+          // get count of total likes on users posts
 
           [
             sequelize.literal(`(
@@ -48,21 +38,41 @@ router.get("/", async (req, res) => {
               )`),
             "totalLikes",
           ],
+          // get count of total likes on users comments
           [
             sequelize.literal(`(
                 SELECT COUNT(*)
-                FROM follows AS follows
+                FROM comments AS comments
+                INNER JOIN commentlikes AS commentlikes ON commentlikes.commentId = comments.id
                 WHERE
-                    follows.followingid = users.id
+                  comments.userId = users.id
+                  AND commentlikes.userId != users.id
+              )`),
+            "totalCommentLikes",
+          ],
+          // get count of total likes on users nestedcomments
 
-            )`),
-            "totalFollowers",
+          [
+            sequelize.literal(`(
+                SELECT COUNT(*)
+                FROM nestedcomments AS nestedcomments
+                INNER JOIN nestedcommentlikes AS nestedcommentlikes ON nestedcommentlikes.nestedcommentId = nestedcomments.id
+                WHERE
+                nestedcomments.userId = users.id
+                  AND nestedcommentlikes.userId != users.id
+              )`),
+            "totalNestedCommentLikes",
           ],
         ],
       },
 
       order: [
-        [sequelize.literal("totalposts + totalLikes + totalFollowers"), "DESC"],
+        [
+          sequelize.literal(
+            "totalLikes + totalCommentLikes + totalNestedCommentLikes"
+          ),
+          "DESC",
+        ],
         [sequelize.col("users.id"), "ASC"],
       ],
     });
