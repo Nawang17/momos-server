@@ -24,14 +24,22 @@ router.post("/", async (req, res) => {
   }
 
   try {
+    // check if post exists where comment is being made
+
     const findpost = await posts.findOne({
       where: {
         id: postId,
       },
     });
+
+    // if post not found, send error
+
     if (!findpost) {
       return res.status(400).send("Post not found");
     }
+
+    // check if comment with same text already exists
+
     const checkduplicate = await comments.findOne({
       where: {
         text: sanitizedText,
@@ -40,10 +48,13 @@ router.post("/", async (req, res) => {
       },
     });
 
+    // if comment with same text already exists, send error
+
     if (checkduplicate) {
       return res.status(400).send("Whoops! You already said that.");
     }
 
+    // create new comment
     const newComment = await comments.create({
       text: sanitizedText,
       postId,
@@ -51,6 +62,14 @@ router.post("/", async (req, res) => {
     });
 
     if (newComment) {
+      //like own comment
+
+      await commentlikes.create({
+        commentId: newComment?.id,
+        userId: req.user.id,
+      });
+
+      // get new comment with all the data
       const comment = await comments.findOne({
         where: {
           id: newComment.id,
@@ -89,6 +108,17 @@ router.post("/", async (req, res) => {
           },
         ],
       });
+
+      //send success response with new comment data
+
+      res
+        .status(200)
+        .send({ message: "Comment created successfully", comment });
+
+      // BACKGROUND TASKS
+
+      // send notification to post owner if not the same user
+
       if (req.user.id !== findpost.postUser) {
         await notis.create({
           userId: req.user.id,
@@ -99,6 +129,9 @@ router.post("/", async (req, res) => {
           commentId: newComment.id,
         });
       }
+
+      // send notifications to all users mentioned in the comment
+
       const mentionsarr = sanitizedText?.match(/(@\w+)/gi);
 
       let mentions = [];
@@ -128,13 +161,7 @@ router.post("/", async (req, res) => {
         }
       });
 
-      res
-        .status(200)
-        .send({ message: "Comment created successfully", comment });
-
-      // background task to send discord message
-
-      //send discord channel message
+      // send discord channel message for new comment on post to momos server
 
       await sendchannelmessage(
         `💬 New comment by ${comment?.user?.username}\n**${comment?.text}**\nhttps://momosz.com/post/${comment?.postId}

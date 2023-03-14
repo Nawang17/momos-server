@@ -22,14 +22,21 @@ router.post("/", async (req, res) => {
     return res.status(400).send("Reply cannot be empty");
   }
   try {
+    // find comment that is being replied to
+
     const findcomment = await comments.findOne({
       where: {
         id: commentId,
       },
     });
+
+    // if comment not found, send error
+
     if (!findcomment) {
       return res.status(400).send("Comment not found");
     } else {
+      // check if reply with same text already exists
+
       const checkduplicate = await nestedcomments.findOne({
         where: {
           text: sanitizedText,
@@ -38,9 +45,15 @@ router.post("/", async (req, res) => {
           postId,
         },
       });
+
+      // if reply with same text already exists, send error
+
       if (checkduplicate) {
         return res.status(400).send("Whoops! You already said that.");
       }
+
+      // create new nested comment(reply)
+
       const createNewNestedComment = await nestedcomments.create({
         text: sanitizedText,
         commentId,
@@ -50,6 +63,15 @@ router.post("/", async (req, res) => {
       });
 
       if (createNewNestedComment) {
+        //like own nested comment by default
+
+        await nestedcommentlikes.create({
+          nestedcommentId: createNewNestedComment?.id,
+          userId: req.user.id,
+        });
+
+        // get nested comment with all data
+
         const nestedcomment = await nestedcomments.findOne({
           where: {
             id: createNewNestedComment.id,
@@ -79,6 +101,18 @@ router.post("/", async (req, res) => {
             },
           ],
         });
+
+        // send success response with new nested comment data
+
+        res.status(200).send({
+          message: "Nested Comment created successfully",
+          nestedcomment,
+        });
+
+        // BACKGROUND TASKS
+
+        // send notification to user who was replied to if not the same user
+
         if (req.user.id !== replytouserId) {
           await notis.create({
             userId: req.user.id,
@@ -89,6 +123,8 @@ router.post("/", async (req, res) => {
             nestedcommentId: createNewNestedComment.id,
           });
         }
+
+        // send notifications to all users mentioned in the comment
         const mentionsarr = sanitizedText?.match(/(@\w+)/gi);
 
         let mentions = [];
@@ -114,13 +150,6 @@ router.post("/", async (req, res) => {
             }
           }
         });
-
-        res.status(200).send({
-          message: "Nested Comment created successfully",
-          nestedcomment,
-        });
-
-        // background tasks to send discord message
 
         //send discord channel message
 

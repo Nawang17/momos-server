@@ -7,6 +7,7 @@ const {
   notis,
   previewlinks,
   postquotes,
+  likes,
 } = require("../../models");
 const fs = require("fs");
 const { cloudinary } = require("../../utils/cloudinary");
@@ -150,6 +151,13 @@ router.post("/", upload.single("media"), async (req, res) => {
     if (!newPost?.image) {
       await addpreviewlink(newPost);
     }
+
+    //like own post
+
+    await likes.create({
+      postId: newPost?.id,
+      userId: req.user.id,
+    });
 
     // send success response
     res.status(201).send({
