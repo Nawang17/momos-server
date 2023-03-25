@@ -4,6 +4,7 @@ const router = require("express").Router();
 const { users } = require("../../models");
 const { compare } = require("bcryptjs");
 const { sign } = require("jsonwebtoken");
+const { sendmessage } = require("../../utils/discordbot");
 
 router.post("/", async (req, res) => {
   const { username, password } = req.body;
@@ -19,7 +20,7 @@ router.post("/", async (req, res) => {
       if (!user) {
         return res.status(400).send("Invalid login credentials");
       } else {
-        await compare(password, user.password).then((ismatch) => {
+        await compare(password, user.password).then(async (ismatch) => {
           if (ismatch) {
             const token = sign(
               {
@@ -27,7 +28,7 @@ router.post("/", async (req, res) => {
               },
               process.env.JWT_SECRET
             );
-            return res.status(200).send({
+            res.status(200).send({
               message: "login successful",
               token: "Bearer " + token,
               user: {
@@ -35,6 +36,16 @@ router.post("/", async (req, res) => {
                 avatar: user.avatar,
               },
             });
+
+            if (process.env.NODE_ENV === "production") {
+              //send discord message
+              await sendmessage(
+                req,
+                `https://momosz.com/${user.username}`,
+                "login"
+              );
+            }
+            return;
           } else {
             return res.status(400).send("Invalid login credentials");
           }

@@ -12,8 +12,8 @@ router.get("/", async (req, res) => {
     });
 
     const getUsers = await users.findAll({
-      limit: 10,
-      offset: page * 10,
+      limit: 20,
+      offset: page * 20,
       attributes: {
         exclude: [
           "password",
