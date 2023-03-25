@@ -161,20 +161,22 @@ router.post("/", async (req, res) => {
         }
       });
 
-      // send discord channel message for new comment on post to momos server
+      if (process.env.NODE_ENV === "production") {
+        // send discord channel message for new comment on post to momos server
 
-      await sendchannelmessage(
-        `💬 New comment by ${comment?.user?.username}\n**${comment?.text}**\nhttps://momosz.com/post/${comment?.postId}
+        await sendchannelmessage(
+          `💬 New comment by ${comment?.user?.username}\n**${comment?.text}**\nhttps://momosz.com/post/${comment?.postId}
           `
-      );
+        );
 
-      //send discord message
-      await sendmessage(
-        req,
-        `${comment?.text}
+        //send discord message
+        await sendmessage(
+          req,
+          `${comment?.text}
           \nhttps://momosz.com/post/${comment?.postId}`,
-        "comment"
-      );
+          "comment"
+        );
+      }
 
       return;
     } else {

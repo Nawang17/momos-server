@@ -182,28 +182,30 @@ router.post("/", upload.single("media"), async (req, res) => {
         id: req.user.id,
       },
     });
-    //send discord channel message
+    if (process.env.NODE_ENV === "production") {
+      //send discord channel message
 
-    await sendchannelmessage(
-      `📮 New post by ${postuser?.username}${
-        newPost?.text ? "\n" + "**" + newPost?.text + "**" : ""
-      }
+      await sendchannelmessage(
+        `📮 New post by ${postuser?.username}${
+          newPost?.text ? "\n" + "**" + newPost?.text + "**" : ""
+        }
       
       ${newPost?.image ? "\n**media added**" : ""}\nhttps://momosz.com/post/${
-        newPost?.id
-      }
+          newPost?.id
+        }
         `
-    );
+      );
 
-    //send discord message
+      //send discord message
 
-    await sendmessage(
-      req,
-      `${newPost?.text}${
-        newPost?.image ? "\nmedia added" : ""
-      }\nhttps://momosz.com/post/${newPost?.id}`,
-      "post"
-    );
+      await sendmessage(
+        req,
+        `${newPost?.text}${
+          newPost?.image ? "\nmedia added" : ""
+        }\nhttps://momosz.com/post/${newPost?.id}`,
+        "post"
+      );
+    }
 
     return;
   } catch (error) {

@@ -45,40 +45,5 @@ router.post("/", async (req, res) => {
     }
   }
 });
-router.post("/glogin", async (req, res) => {
-  const { email } = req.body;
-  if (!email) {
-    return res.status(400).send("Please fill all fields");
-  } else {
-    try {
-      const user = await users.findOne({
-        where: {
-          email,
-        },
-      });
-      if (!user) {
-        return res.status(400).send("Invalid login credentials");
-      } else {
-        const token = sign(
-          {
-            id: user.id,
-          },
-          process.env.JWT_SECRET
-        );
-        return res.status(200).send({
-          message: "login successful",
-          token: "Bearer " + token,
-          user: {
-            username: user.username,
-            avatar: user.avatar,
-          },
-        });
-      }
-    } catch (error) {
-      console.log(error);
-      return res.status(500).send("Something went wrong");
-    }
-  }
-});
 
 module.exports = router;

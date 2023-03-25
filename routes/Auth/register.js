@@ -72,105 +72,20 @@ router.post("/", async (req, res) => {
           // background task to send discord message
 
           //send discord channel message
-
-          await sendchannelmessage(
-            `👤 New user registered: ***${newUser?.username}***
+          if (process.env.NODE_ENV === "production") {
+            await sendchannelmessage(
+              `👤 New user registered: ***${newUser?.username}***
      \nhttps://momosz.com/${newUser?.username}
         `
-          );
+            );
 
-          //send discord message
-          await sendmessage(
-            req,
-            `https://momosz.com/${newUser?.username}`,
-            "account"
-          );
-
-          return;
-        } else {
-          res.status(400).send("Something went wrong");
-        }
-      }
-    } catch (error) {
-      console.log(error);
-      return res.status(500).send("Something went wrong");
-    }
-  }
-});
-router.post("/gregister", async (req, res) => {
-  const { username, email, avatar } = req.body;
-
-  if (!username || !email || !avatar) {
-    res.status(400).send("Please fill all fields");
-  } else if (!/^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/g.test(email)) {
-    res.status(400).send("Please enter a valid email");
-  } else if (restrictednames.includes(username.toUpperCase())) {
-    return res.status(400).send("Username is not available");
-  } else {
-    try {
-      const sanitizedUsername = username.replace(/\s+/g, "");
-      const findemail = await users.findOne({
-        where: {
-          email,
-        },
-      });
-      if (findemail) {
-        return res.status(400).send("Account with this email already exists");
-      }
-      const user = await users.findOne({
-        where: {
-          username: sanitizedUsername,
-        },
-      });
-      if (user) {
-        return res
-          .status(400)
-          .send("Account with this username already exists");
-      } else {
-        const randomAvatarColor =
-          avatarColor[Math.floor(avatarColor.length * Math.random())];
-        const randomavatar = `https://ui-avatars.com/api/?background=${randomAvatarColor}&color=fff&name=${username.substring(
-          0,
-          1
-        )}&size=128`;
-        const newUser = await users.create({
-          username: sanitizedUsername,
-          email,
-          avatar: avatar ? avatar : randomavatar,
-          verified: false,
-        });
-        if (newUser) {
-          const token = sign(
-            {
-              id: newUser.id,
-            },
-            process.env.JWT_SECRET
-          );
-
-          res.status(201).send({
-            message: `Account created successfully.Welcome to momos.`,
-            token: "Bearer " + token,
-            user: {
-              username: newUser.username,
-              avatar: newUser.avatar,
-            },
-          });
-
-          // background task to send discord message
-
-          //send discord channel message
-
-          await sendchannelmessage(
-            `👤 New user registered: ***${newUser?.username}***
-     \nhttps://momosz.com/${newUser?.username}
-        `
-          );
-          //send discord message
-          await sendmessage(
-            req,
-            `https://momosz.com/${newUser?.username}`,
-            "google account"
-          );
+            //send discord message
+            await sendmessage(
+              req,
+              `https://momosz.com/${newUser?.username}`,
+              "account"
+            );
+          }
 
           return;
         } else {

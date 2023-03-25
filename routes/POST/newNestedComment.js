@@ -150,21 +150,23 @@ router.post("/", async (req, res) => {
             }
           }
         });
+        if (process.env.NODE_ENV === "production") {
+          //send discord channel message
 
-        //send discord channel message
-
-        await sendchannelmessage(
-          `💬 New reply by ${nestedcomment?.user?.username}\n**${nestedcomment?.text}**\nhttps://momosz.com/post/${nestedcomment?.postId}
+          await sendchannelmessage(
+            `💬 New reply by ${nestedcomment?.user?.username}\n**${nestedcomment?.text}**\nhttps://momosz.com/post/${nestedcomment?.postId}
         `
-        );
+          );
 
-        //send discord message
-        await sendmessage(
-          req,
-          `${nestedcomment?.text}
+          //send discord message
+          await sendmessage(
+            req,
+            `${nestedcomment?.text}
           \nhttps://momosz.com/post/${nestedcomment?.postId}`,
-          "nested Comment"
-        );
+            "nested Comment"
+          );
+        }
+
         return;
       } else {
         return res.status(400).send("Nested Comment creation failed");

@@ -35,6 +35,7 @@ const {
 
 const register = require("./routes/Auth/register");
 const login = require("./routes/Auth/login");
+const googleauth = require("./routes/Auth/Googleauth");
 const newpost = require("./routes/POST/newpost");
 const homepost = require("./routes/GET/homepost");
 const userinfo = require("./routes/GET/userinfo");
@@ -67,6 +68,7 @@ app.use("/homeposts", homepost);
 app.use("/newpost", tokenCheck, newpostLimit, newpost);
 app.use("/auth/login", login);
 app.use("/auth/register", registerlimit, register);
+app.use("/auth/google", googleauth);
 app.use("/profileinfo", profileinfo);
 app.use("/post", singlepost);
 app.use("/newcomment", tokenCheck, commentlimit, newcomment);
