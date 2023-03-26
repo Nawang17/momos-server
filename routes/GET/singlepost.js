@@ -29,6 +29,7 @@ router.get("/:postid", async (req, res) => {
       include: [
         {
           model: postquotes,
+          seperate: true,
         },
         {
           model: previewlinks,
@@ -54,6 +55,7 @@ router.get("/:postid", async (req, res) => {
               attributes: ["username", "avatar", "verified", "id"],
             },
           ],
+          seperate: true,
         },
         {
           model: comments,
@@ -66,6 +68,7 @@ router.get("/:postid", async (req, res) => {
                   attributes: ["username", "avatar", "verified", "id"],
                 },
               ],
+              seperate: true,
             },
 
             {
@@ -84,6 +87,7 @@ router.get("/:postid", async (req, res) => {
                       attributes: ["username", "avatar", "verified", "id"],
                     },
                   ],
+                  seperate: true,
                 },
                 {
                   model: users,
@@ -100,6 +104,7 @@ router.get("/:postid", async (req, res) => {
               ],
             },
           ],
+          seperate: true,
         },
       ],
     });

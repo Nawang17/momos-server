@@ -33,6 +33,7 @@ router.get("/", async (req, res) => {
         include: [
           {
             model: postquotes,
+            seperate: true,
           },
           {
             model: previewlinks,
@@ -50,14 +51,17 @@ router.get("/", async (req, res) => {
                 attributes: ["username", "avatar", "verified", "id"],
               },
             ],
+            seperate: true,
           },
           {
             model: comments,
             include: [
               {
                 model: nestedcomments,
+                seperate: true,
               },
             ],
+            seperate: true,
           },
           {
             model: posts,
@@ -104,6 +108,7 @@ router.get("/", async (req, res) => {
         include: [
           {
             model: postquotes,
+            seperate: true,
           },
           {
             model: previewlinks,
@@ -121,14 +126,17 @@ router.get("/", async (req, res) => {
                 attributes: ["username", "avatar", "verified", "id"],
               },
             ],
+            seperate: true,
           },
           {
             model: comments,
             include: [
               {
                 model: nestedcomments,
+                seperate: true,
               },
             ],
+            seperate: true,
           },
           {
             model: posts,
@@ -199,6 +207,7 @@ router.get("/followingposts", tokenCheck, async (req, res) => {
       include: [
         {
           model: postquotes,
+          seperate: true,
         },
         {
           model: previewlinks,
@@ -216,14 +225,17 @@ router.get("/followingposts", tokenCheck, async (req, res) => {
               attributes: ["username", "avatar", "verified", "id"],
             },
           ],
+          seperate: true,
         },
         {
           model: comments,
           include: [
             {
               model: nestedcomments,
+              seperate: true,
             },
           ],
+          seperate: true,
         },
         {
           model: posts,
