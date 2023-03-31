@@ -1,12 +1,35 @@
 const rateLimit = require("express-rate-limit");
+const tokennewpostLimit = rateLimit({
+  //token limit for new post
+  keyGenerator: (req) => req.headers["authorization"],
+  windowMs: 1 * 60 * 1000, // 1 min
+  message: "Post limit reached. Please wait 1 minute to post again.",
+  max: 4, // limit to 4 requests every 1 min per windows
+  skipFailedRequests: true,
+});
 const newpostLimit = rateLimit({
+  //ip limit for new post
   windowMs: 1 * 60 * 1000, // 1 min
   max: 4, // limit to 4 requests every 1 min per windows
   message: "Post limit reached. Please wait 1 minute to post again.",
   skipFailedRequests: true,
 });
-
+const tokencommentlimit = rateLimit({
+  keyGenerator: (req) => req.headers["authorization"],
+  windowMs: 1 * 60 * 1000, // 1 min
+  max: 5, // limit to 5 requests every 1 min per windows
+  message: "Reply limit reached. Please wait 1 minute to reply again.", //err messasge
+  skipFailedRequests: true,
+});
 const commentlimit = rateLimit({
+  windowMs: 1 * 60 * 1000, // 1 min
+  max: 5, // limit to 5 requests every 1 min per windows
+  message: "Reply limit reached. Please wait 1 minute to reply again.", //err messasge
+  skipFailedRequests: true,
+});
+
+const tokennestedcommentlimit = rateLimit({
+  keyGenerator: (req) => req.headers["authorization"],
   windowMs: 1 * 60 * 1000, // 1 min
   max: 5, // limit to 5 requests every 1 min per windows
   message: "Reply limit reached. Please wait 1 minute to reply again.", //err messasge
@@ -61,6 +84,14 @@ const chatmessagelimit = rateLimit({
     "You are sending messages too fast. Please wait 1 minute to send again.", //err messasge
   skipFailedRequests: true,
 });
+const tokenchatmessagelimit = rateLimit({
+  keyGenerator: (req) => req.headers["authorization"],
+  windowMs: 1 * 60 * 1000, // 1 min
+  max: 35, // limit to 35 requests every 1 min per windows
+  message:
+    "You are sending messages too fast. Please wait 1 minute to send again.", //err messasge
+  skipFailedRequests: true,
+});
 module.exports = {
   newpostLimit,
   registerlimit,
@@ -72,4 +103,9 @@ module.exports = {
   commentlikelimit,
   nestedcommentlikelimit,
   chatmessagelimit,
+
+  tokennewpostLimit,
+  tokenchatmessagelimit,
+  tokencommentlimit,
+  tokennestedcommentlimit,
 };

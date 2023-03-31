@@ -2,7 +2,10 @@
 const router = require("express").Router();
 const { chatrooms, users, chats } = require("../../models");
 const { Op } = require("sequelize");
-const { chatmessagelimit } = require("../../middleware/rateLimit");
+const {
+  chatmessagelimit,
+  tokenchatmessagelimit,
+} = require("../../middleware/rateLimit");
 const createnewchatroom = require("./newchatroom");
 router.get("/:id1", async (req, res) => {
   try {
@@ -151,47 +154,54 @@ router.get("/get/chatrooms", async (req, res) => {
   }
 });
 
-router.post("/sendmessage", chatmessagelimit, async (req, res) => {
-  try {
-    const { chatroomid, message } = req.body;
-    if (!chatroomid || !message)
-      return res.status(400).send("no room id or message provided");
-    if (message.trim().length === 0) {
-      return res.status(400).send("message cannot be empty");
-    }
-    if (message.length > 500) {
-      return res.status(400).send("message cannot be more than 500 characters");
-    }
-    const findchatroom = await chatrooms.findOne({
-      where: {
-        id: chatroomid,
-        [Op.or]: [{ user1: req.user.id }, { user2: req.user.id }],
-      },
-    });
-    if (!findchatroom) return res.status(400).send("chatroom not found");
-    const newmessage = await chats.create({
-      message: message,
-      userid: req.user.id,
-      chatroomid: findchatroom.id,
-    });
-    const findnewmessage = await chats.findOne({
-      where: {
-        id: newmessage.id,
-      },
-      include: [
-        {
-          model: users,
-          attributes: ["username", "avatar", "verified", "id"],
+router.post(
+  "/sendmessage",
+  tokenchatmessagelimit,
+  chatmessagelimit,
+  async (req, res) => {
+    try {
+      const { chatroomid, message } = req.body;
+      if (!chatroomid || !message)
+        return res.status(400).send("no room id or message provided");
+      if (message.trim().length === 0) {
+        return res.status(400).send("message cannot be empty");
+      }
+      if (message.length > 500) {
+        return res
+          .status(400)
+          .send("message cannot be more than 500 characters");
+      }
+      const findchatroom = await chatrooms.findOne({
+        where: {
+          id: chatroomid,
+          [Op.or]: [{ user1: req.user.id }, { user2: req.user.id }],
         },
-      ],
-    });
-    if (!findnewmessage) return res.status(500).send("something went wrong");
-    io.in(findchatroom.roomid).emit("newmessage", findnewmessage);
-    return res.status(200).send({ message: findnewmessage });
-  } catch (error) {
-    console.log(error);
-    return res.status(500).send("Something went wrong");
+      });
+      if (!findchatroom) return res.status(400).send("chatroom not found");
+      const newmessage = await chats.create({
+        message: message,
+        userid: req.user.id,
+        chatroomid: findchatroom.id,
+      });
+      const findnewmessage = await chats.findOne({
+        where: {
+          id: newmessage.id,
+        },
+        include: [
+          {
+            model: users,
+            attributes: ["username", "avatar", "verified", "id"],
+          },
+        ],
+      });
+      if (!findnewmessage) return res.status(500).send("something went wrong");
+      io.in(findchatroom.roomid).emit("newmessage", findnewmessage);
+      return res.status(200).send({ message: findnewmessage });
+    } catch (error) {
+      console.log(error);
+      return res.status(500).send("Something went wrong");
+    }
   }
-});
+);
 
 module.exports = router;

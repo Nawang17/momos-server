@@ -31,6 +31,10 @@ const {
   registerlimit,
   commentlikelimit,
   nestedcommentlikelimit,
+  tokennewpostLimit,
+
+  tokencommentlimit,
+  tokennestedcommentlimit,
 } = require("./middleware/rateLimit");
 
 const register = require("./routes/Auth/register");
@@ -65,15 +69,21 @@ app.use("/likepost", tokenCheck, likelimit, likepost);
 app.use("/deletepost", tokenCheck, deletepost);
 app.use("/userinfo", tokenCheck, userinfo);
 app.use("/homeposts", homepost);
-app.use("/newpost", tokenCheck, newpostLimit, newpost);
+app.use("/newpost", tokenCheck, tokennewpostLimit, newpostLimit, newpost);
 app.use("/auth/login", login);
 app.use("/auth/register", registerlimit, register);
 app.use("/auth/google", googleauth);
 app.use("/profileinfo", profileinfo);
 app.use("/post", singlepost);
-app.use("/newcomment", tokenCheck, commentlimit, newcomment);
+app.use("/newcomment", tokenCheck, tokencommentlimit, commentlimit, newcomment);
 app.use("/deletecomment", tokenCheck, deletecomment);
-app.use("/newnestedcomment", tokenCheck, nestedcommentlimit, newnestedcomment);
+app.use(
+  "/newnestedcomment",
+  tokenCheck,
+  tokennestedcommentlimit,
+  nestedcommentlimit,
+  newnestedcomment
+);
 app.use("/deletenestedcomment", tokenCheck, deletenestedcomment);
 app.use("/notis", tokenCheck, notis);
 app.use("/follow", tokenCheck, followlimit, follow);
