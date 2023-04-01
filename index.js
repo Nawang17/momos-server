@@ -12,15 +12,28 @@ global.io = new Server(server, {
 });
 const db = require("./models");
 const cors = require("cors");
+app.set("trust proxy", 4);
+app.use(express.json({ limit: "42mb" }));
+app.use(express.urlencoded({ limit: "42mb", extended: true }));
 const port = process.env.PORT || 3001;
+
+// blacklist of IP addresses
+const blacklist = process.env.BLACKLISTED_IPS.split(" ");
+
+// a custom middleware to check if the incoming request is from a blacklisted IP address
+const blacklistMiddleware = (req, res, next) => {
+  const ip = req.ip;
+  if (blacklist.includes(ip)) {
+    return res.status(403).send("Access denied");
+  }
+  next();
+};
+app.use(blacklistMiddleware);
 app.use(
   cors({
     origin: [process.env.CLIENT_URL],
   })
 );
-app.set("trust proxy", 4);
-app.use(express.json({ limit: "42mb" }));
-app.use(express.urlencoded({ limit: "42mb", extended: true }));
 const { tokenCheck } = require("./middleware/tokenCheck");
 const {
   newpostLimit,
