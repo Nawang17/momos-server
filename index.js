@@ -29,7 +29,7 @@ const blacklistMiddleware = (req, res, next) => {
   }
   next();
 };
-app.use(blacklistMiddleware);
+
 app.use(
   cors({
     origin: [process.env.CLIENT_URL],
@@ -79,42 +79,69 @@ const reposts = require("./routes/GET/reposts");
 const chat = require("./routes/chat/chat");
 
 app.use("/likedposts", tokenCheck, likedpost);
-app.use("/likepost", tokenCheck, likelimit, likepost);
+app.use("/likepost", blacklistMiddleware, tokenCheck, likelimit, likepost);
 app.use("/deletepost", tokenCheck, deletepost);
 app.use("/userinfo", tokenCheck, userinfo);
 app.use("/homeposts", homepost);
-app.use("/newpost", tokenCheck, tokennewpostLimit, newpostLimit, newpost);
+app.use(
+  "/newpost",
+  blacklistMiddleware,
+  tokenCheck,
+  tokennewpostLimit,
+  newpostLimit,
+  newpost
+);
 app.use("/auth/login", login);
-app.use("/auth/register", registerlimit, register);
-app.use("/auth/google", googleauth);
+app.use("/auth/register", blacklistMiddleware, registerlimit, register);
+app.use("/auth/google", blacklistMiddleware, googleauth);
 app.use("/profileinfo", profileinfo);
 app.use("/post", singlepost);
-app.use("/newcomment", tokenCheck, tokencommentlimit, commentlimit, newcomment);
-app.use("/deletecomment", tokenCheck, deletecomment);
+app.use(
+  "/newcomment",
+  blacklistMiddleware,
+  tokenCheck,
+  tokencommentlimit,
+  commentlimit,
+  newcomment
+);
+app.use("/deletecomment", blacklistMiddleware, tokenCheck, deletecomment);
 app.use(
   "/newnestedcomment",
+  blacklistMiddleware,
   tokenCheck,
   tokennestedcommentlimit,
   nestedcommentlimit,
   newnestedcomment
 );
-app.use("/deletenestedcomment", tokenCheck, deletenestedcomment);
+app.use(
+  "/deletenestedcomment",
+  blacklistMiddleware,
+  tokenCheck,
+  deletenestedcomment
+);
 app.use("/notis", tokenCheck, notis);
-app.use("/follow", tokenCheck, followlimit, follow);
+app.use("/follow", blacklistMiddleware, tokenCheck, followlimit, follow);
 app.use("/suggestedusers", suggestedusers);
 app.use("/settingsinfo", tokenCheck, settingsinfo);
 app.use("/search", search);
 app.use("/leaderboard", leaderboard);
-app.use("/likecomment", tokenCheck, commentlikelimit, likecomment);
+app.use(
+  "/likecomment",
+  blacklistMiddleware,
+  tokenCheck,
+  commentlikelimit,
+  likecomment
+);
 app.use(
   "/likenestedcomment",
+  blacklistMiddleware,
   tokenCheck,
   nestedcommentlikelimit,
   likenestedcomment
 );
 app.use("/userlevel", tokenCheck, userlevel);
 app.use("/reposts", reposts);
-app.use("/chat", tokenCheck, chat);
+app.use("/chat", blacklistMiddleware, tokenCheck, chat);
 
 //initialize socket
 const { verify } = require("jsonwebtoken");
