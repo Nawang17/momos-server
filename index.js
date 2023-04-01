@@ -13,9 +13,7 @@ global.io = new Server(server, {
 });
 const db = require("./models");
 const cors = require("cors");
-app.set("trust proxy", 4);
-app.use(express.json({ limit: "42mb" }));
-app.use(express.urlencoded({ limit: "42mb", extended: true }));
+
 const port = process.env.PORT || 3001;
 
 // blacklist of IP addresses
@@ -35,6 +33,9 @@ app.use(
     origin: [process.env.CLIENT_URL],
   })
 );
+app.set("trust proxy", 4);
+app.use(express.json({ limit: "42mb" }));
+app.use(express.urlencoded({ limit: "42mb", extended: true }));
 const { tokenCheck } = require("./middleware/tokenCheck");
 const {
   newpostLimit,
