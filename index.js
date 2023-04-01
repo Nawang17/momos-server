@@ -5,6 +5,7 @@ const app = express();
 const http = require("http");
 const server = http.createServer(app);
 const { Server } = require("socket.io");
+const requestIp = require("request-ip");
 global.io = new Server(server, {
   cors: {
     origin: [process.env.CLIENT_URL],
@@ -22,7 +23,7 @@ const blacklist = process.env.BLACKLISTED_IPS.split(" ");
 
 // a custom middleware to check if the incoming request is from a blacklisted IP address
 const blacklistMiddleware = (req, res, next) => {
-  const ip = req.ip;
+  const ip = requestIp.getClientIp(req);
   if (blacklist.includes(ip)) {
     return res.status(403).send("Access denied");
   }
