@@ -262,17 +262,7 @@ global.client.once(Events.ClientReady, (c) => {
 global.client.login(process.env.DISCORD_BOT_TOKEN);
 
 app.get("/", async (req, res) => {
-  const d = await getColorFromURL(
-    "https://ui-avatars.com/api/?background=72139e&color=fff&name=&size=1920"
-  );
-
-  const converted =
-    "#" + ((d[0] << 16) + (d[1] << 8) + d[2]).toString(16).padStart(6, "0");
-
-  console.log("d", d);
-  console.log("converted", converted);
-  res.send(d);
-  // res.send("momos server ");
+  res.send("momos server ");
 });
 
 app.get("/banner", async (req, res) => {
