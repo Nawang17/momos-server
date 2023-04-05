@@ -265,41 +265,41 @@ app.get("/", async (req, res) => {
   res.send("momos server ");
 });
 
-app.get("/banner", async (req, res) => {
-  const getusers = await users.findAll();
+// app.get("/banner", async (req, res) => {
+//   const getusers = await users.findAll();
 
-  try {
-    for (const user of getusers) {
-      const findbanner = await profilebanners.findOne({
-        where: {
-          userid: user.id,
-        },
-      });
-      if (!findbanner) {
-        // get dominant color from profileimage
-        const getdomcolor = await getColorFromURL(user.avatar)
-          .then(async (d) => {
-            const convert = ((d[0] << 16) + (d[1] << 8) + d[2])
-              .toString(16)
-              .padStart(6, "0"); // convert rgb to hex
-            const banner = `https://ui-avatars.com/api/?background=${convert}&color=fff&name=&size=1920`; // create banner url
+//   try {
+//     for (const user of getusers) {
+//       const findbanner = await profilebanners.findOne({
+//         where: {
+//           userid: user.id,
+//         },
+//       });
+//       if (!findbanner) {
+//         // get dominant color from profileimage
+//         const getdomcolor = await getColorFromURL(user.avatar)
+//           .then(async (d) => {
+//             const convert = ((d[0] << 16) + (d[1] << 8) + d[2])
+//               .toString(16)
+//               .padStart(6, "0"); // convert rgb to hex
+//             const banner = `https://ui-avatars.com/api/?background=${convert}&color=fff&name=&size=1920`; // create banner url
 
-            await profilebanners.create({
-              userid: user.id,
-              imageurl: banner,
-            }); // create banner in db
-          })
-          .catch((err) => {
-            console.log(err);
-          });
-      }
-    }
-  } catch (error) {
-    console.log(error);
-  }
+//             await profilebanners.create({
+//               userid: user.id,
+//               imageurl: banner,
+//             }); // create banner in db
+//           })
+//           .catch((err) => {
+//             console.log(err);
+//           });
+//       }
+//     }
+//   } catch (error) {
+//     console.log(error);
+//   }
 
-  res.send("done");
-});
+//   res.send("done");
+// });
 
 // force: true
 db.sequelize
