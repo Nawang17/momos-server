@@ -9,6 +9,7 @@ const {
   nestedcomments,
   previewlinks,
   postquotes,
+  profilebanners,
 } = require("../../models");
 const sequelize = require("sequelize");
 router.get("/:username", async (req, res) => {
@@ -24,6 +25,12 @@ router.get("/:username", async (req, res) => {
       attributes: {
         exclude: ["password", "updatedAt", "email", "userid", "imagekey"],
       },
+      include: [
+        {
+          model: profilebanners,
+          attributes: ["imagekey", "imageurl"],
+        },
+      ],
     });
     if (!userInfo) {
       return res.status(400).send("User not found");

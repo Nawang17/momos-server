@@ -1,7 +1,8 @@
 "use strict";
 const router = require("express").Router();
-const { users } = require("../../models");
+const { users, profilebanners } = require("../../models");
 const { cloudinary } = require("../../utils/cloudinary");
+const { getColorFromURL } = require("color-thief-node");
 var Filterer = require("bad-words");
 var filter = new Filterer();
 const { editprofilelimit } = require("../../middleware/rateLimit");
@@ -161,6 +162,37 @@ router.put("/updateprofileinfo", editprofilelimit, async (req, res) => {
                 multi: true,
               }
             );
+            const getprofilebanner = await profilebanners.findOne({
+              where: {
+                userid: id,
+              },
+            });
+
+            if (getprofilebanner?.imagekey === null) {
+              //change banner color to match profile avatar if user has no custom banner
+
+              await getColorFromURL(imguploadedResponse?.secure_url)
+                .then(async (d) => {
+                  const convert = ((d[0] << 16) + (d[1] << 8) + d[2])
+                    .toString(16)
+                    .padStart(6, "0"); // convert rgb to hex
+                  const banner = `https://ui-avatars.com/api/?background=${convert}&color=fff&name=&size=1920`; // create banner url
+
+                  await profilebanners.update(
+                    {
+                      imageurl: banner,
+                    },
+                    {
+                      where: {
+                        userid: id,
+                      },
+                    }
+                  ); // update banner in db
+                })
+                .catch((err) => {
+                  console.log(err);
+                });
+            }
           } catch (error) {
             console.log(error);
             return res.status(400).send("Something went wrong");

@@ -1,7 +1,8 @@
 "use strict";
 require("dotenv").config();
 const router = require("express").Router();
-const { users } = require("../../models");
+const { users, profilebanners } = require("../../models");
+const { getColorFromURL } = require("color-thief-node");
 const { sign } = require("jsonwebtoken");
 var Filterer = require("bad-words");
 var filter = new Filterer();
@@ -90,6 +91,28 @@ router.post("/", async (req, res) => {
             },
             process.env.JWT_SECRET
           );
+          if (!avatar) {
+            await profilebanners.create({
+              imageurl: `https://ui-avatars.com/api/?background=${randomAvatarColor}&color=fff&name=&size=1920`,
+              userid: newUser.id,
+            }); // create banner in db
+          } else {
+            await getColorFromURL(avatar)
+              .then(async (d) => {
+                const convert = ((d[0] << 16) + (d[1] << 8) + d[2])
+                  .toString(16)
+                  .padStart(6, "0"); // convert rgb to hex
+                const banner = `https://ui-avatars.com/api/?background=${convert}&color=fff&name=&size=1920`; // create banner url
+
+                await profilebanners.create({
+                  imageurl: banner,
+                  userid: newUser.id,
+                }); // create banner in db
+              })
+              .catch((err) => {
+                console.log(err);
+              });
+          }
 
           res.status(201).send({
             type: "register",

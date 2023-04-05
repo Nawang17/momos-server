@@ -1,7 +1,7 @@
 "use strict";
 require("dotenv").config();
 const router = require("express").Router();
-const { users } = require("../../models");
+const { users, profilebanners } = require("../../models");
 const bcrypt = require("bcryptjs");
 const { sign } = require("jsonwebtoken");
 var Filterer = require("bad-words");
@@ -59,7 +59,12 @@ router.post("/", async (req, res) => {
             },
             process.env.JWT_SECRET
           );
+          const banner = `https://ui-avatars.com/api/?background=${randomAvatarColor}&color=fff&name=&size=1920`; // create banner url
 
+          await profilebanners.create({
+            imageurl: banner,
+            userid: newUser?.id,
+          }); // create banner in db
           res.status(201).send({
             message: `Account created successfully.Welcome to momos.`,
             token: "Bearer " + token,

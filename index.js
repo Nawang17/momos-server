@@ -1,5 +1,6 @@
 "use strict";
 require("dotenv").config();
+const { getColorFromURL } = require("color-thief-node");
 const express = require("express");
 const app = express();
 const http = require("http");
@@ -13,7 +14,6 @@ global.io = new Server(server, {
 });
 const db = require("./models");
 const cors = require("cors");
-
 const port = process.env.PORT || 3001;
 
 // blacklist of IP addresses
@@ -146,7 +146,7 @@ app.use("/chat", blacklistMiddleware, tokenCheck, chat);
 
 //initialize socket
 const { verify } = require("jsonwebtoken");
-const { users } = require("./models");
+const { users, profilebanners } = require("./models");
 let onlineusers = [];
 io.on("connection", (socket) => {
   console.log("a user connected ", socket.id);
@@ -261,9 +261,56 @@ global.client.once(Events.ClientReady, (c) => {
 // Log in to Discord with your client's token
 global.client.login(process.env.DISCORD_BOT_TOKEN);
 
-app.get("/", (req, res) => {
-  res.send("momos server ");
+app.get("/", async (req, res) => {
+  const d = await getColorFromURL(
+    "https://ui-avatars.com/api/?background=72139e&color=fff&name=&size=1920"
+  );
+
+  const converted =
+    "#" + ((d[0] << 16) + (d[1] << 8) + d[2]).toString(16).padStart(6, "0");
+
+  console.log("d", d);
+  console.log("converted", converted);
+  res.send(d);
+  // res.send("momos server ");
 });
+
+app.get("/banner", async (req, res) => {
+  const getusers = await users.findAll();
+
+  try {
+    for (const user of getusers) {
+      const findbanner = await profilebanners.findOne({
+        where: {
+          userid: user.id,
+        },
+      });
+      if (!findbanner) {
+        // get dominant color from profileimage
+        const getdomcolor = await getColorFromURL(user.avatar)
+          .then(async (d) => {
+            const convert = ((d[0] << 16) + (d[1] << 8) + d[2])
+              .toString(16)
+              .padStart(6, "0"); // convert rgb to hex
+            const banner = `https://ui-avatars.com/api/?background=${convert}&color=fff&name=&size=1920`; // create banner url
+
+            await profilebanners.create({
+              userid: user.id,
+              imageurl: banner,
+            }); // create banner in db
+          })
+          .catch((err) => {
+            console.log(err);
+          });
+      }
+    }
+  } catch (error) {
+    console.log(error);
+  }
+
+  res.send("done");
+});
+
 // force: true
 db.sequelize
   .sync()
