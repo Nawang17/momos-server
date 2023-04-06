@@ -15,6 +15,12 @@ router.get("/editprofileinfo", async (req, res) => {
         id: id,
       },
       attributes: ["username", "description", "avatar", "verified"],
+      include: [
+        {
+          model: profilebanners,
+          attributes: ["imageurl"],
+        },
+      ],
     });
     if (!userInfo) {
       return res.status(400).send("User not found");
@@ -31,7 +37,7 @@ router.get("/editprofileinfo", async (req, res) => {
 });
 
 router.put("/updateprofileinfo", editprofilelimit, async (req, res) => {
-  const { username, description, avatar } = req.body;
+  const { username, description, avatar, banner } = req.body;
   const { id } = req.user;
   try {
     const finduser = await users.findOne({
@@ -43,6 +49,7 @@ router.put("/updateprofileinfo", editprofilelimit, async (req, res) => {
       return res.status(400).send("User not found");
     } else {
       let imguploadedResponse;
+      let banneruploadedResponse;
       if (!username) {
         return res
           .status(400)
@@ -127,7 +134,51 @@ router.put("/updateprofileinfo", editprofilelimit, async (req, res) => {
           return res.status(400).send("Something went wrong");
         }
       }
+      if (banner) {
+        const findprofilebanner = await profilebanners.findOne({
+          where: {
+            userid: id,
+          },
+        });
+        try {
+          banneruploadedResponse = await cloudinary.uploader.upload(banner, {
+            upload_preset: process.env.CLOUDINARY_UPLOAD_PRESET,
+          });
+        } catch (error) {
+          return res.status(500).send("error uploading image to cloudinary");
+        }
+        if (findprofilebanner?.imagekey) {
+          await cloudinary.uploader.destroy(findprofilebanner.imagekey),
+            (err, result) => {
+              if (err) {
+                return res.status(500).send("error deleting old banner");
+              }
+            };
+        }
+        if (banneruploadedResponse) {
+          try {
+            await profilebanners.update(
+              {
+                imageurl: banneruploadedResponse?.secure_url,
+                imagekey: banneruploadedResponse?.public_id,
+              },
+              {
+                where: {
+                  userid: id,
+                },
+              },
+              {
+                multi: true,
+              }
+            );
 
+            console.log("banner updated successfully");
+          } catch (error) {
+            console.log(error);
+            return res.status(400).send("Something went wrong");
+          }
+        }
+      }
       if (avatar) {
         try {
           imguploadedResponse = await cloudinary.uploader.upload(avatar, {
