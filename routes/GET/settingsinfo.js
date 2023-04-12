@@ -156,26 +156,40 @@ router.put("/updateprofileinfo", editprofilelimit, async (req, res) => {
             };
         }
         if (banneruploadedResponse) {
-          try {
-            await profilebanners.update(
-              {
+          if (!findprofilebanner) {
+            try {
+              await profilebanners.create({
+                userid: id,
                 imageurl: banneruploadedResponse?.secure_url,
                 imagekey: banneruploadedResponse?.public_id,
-              },
-              {
-                where: {
-                  userid: id,
+              });
+              console.log("banner created successfully");
+            } catch (error) {
+              console.log(error);
+              return res.status(400).send("Something went wrong");
+            }
+          } else {
+            try {
+              await profilebanners.update(
+                {
+                  imageurl: banneruploadedResponse?.secure_url,
+                  imagekey: banneruploadedResponse?.public_id,
                 },
-              },
-              {
-                multi: true,
-              }
-            );
+                {
+                  where: {
+                    userid: id,
+                  },
+                },
+                {
+                  multi: true,
+                }
+              );
 
-            console.log("banner updated successfully");
-          } catch (error) {
-            console.log(error);
-            return res.status(400).send("Something went wrong");
+              console.log("banner updated successfully");
+            } catch (error) {
+              console.log(error);
+              return res.status(400).send("Something went wrong");
+            }
           }
         }
       }
@@ -219,7 +233,10 @@ router.put("/updateprofileinfo", editprofilelimit, async (req, res) => {
               },
             });
 
-            if (getprofilebanner?.imagekey === null) {
+            if (
+              getprofilebanner?.imagekey === null ||
+              getprofilebanner === null
+            ) {
               //change banner color to match profile avatar if user has no custom banner
 
               await getColorFromURL(imguploadedResponse?.secure_url)
@@ -228,17 +245,23 @@ router.put("/updateprofileinfo", editprofilelimit, async (req, res) => {
                     .toString(16)
                     .padStart(6, "0"); // convert rgb to hex
                   const banner = `https://ui-avatars.com/api/?background=${convert}&color=fff&name=&size=1920`; // create banner url
-
-                  await profilebanners.update(
-                    {
+                  if (!getprofilebanner) {
+                    await profilebanners.create({
+                      userid: id,
                       imageurl: banner,
-                    },
-                    {
-                      where: {
-                        userid: id,
+                    });
+                  } else {
+                    await profilebanners.update(
+                      {
+                        imageurl: banner,
                       },
-                    }
-                  ); // update banner in db
+                      {
+                        where: {
+                          userid: id,
+                        },
+                      }
+                    ); // update banner in db
+                  }
                 })
                 .catch((err) => {
                   console.log(err);
