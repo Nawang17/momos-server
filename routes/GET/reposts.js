@@ -9,6 +9,9 @@ const {
 
   previewlinks,
   postquotes,
+  polls,
+  pollchoices,
+  pollvotes,
 } = require("../../models");
 
 //get reposts
@@ -31,6 +34,25 @@ router.get("/:postid", async (req, res) => {
       },
       order: [["id", "DESC"]],
       include: [
+        {
+          model: polls,
+          include: [
+            {
+              model: pollchoices,
+              include: [
+                {
+                  model: pollvotes,
+                  include: [
+                    {
+                      model: users,
+                      attributes: ["username", "avatar", "verified", "id"],
+                    },
+                  ],
+                },
+              ],
+            },
+          ],
+        },
         {
           model: postquotes,
         },

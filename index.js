@@ -58,6 +58,7 @@ const newpost = require("./routes/POST/newpost");
 const homepost = require("./routes/GET/homepost");
 const userinfo = require("./routes/GET/userinfo");
 const deletepost = require("./routes/DELETE/deletepost");
+const pollvote = require("./routes/POST/pollvote");
 const likepost = require("./routes/POST/likepost");
 const likedpost = require("./routes/GET/likedpost");
 const profileinfo = require("./routes/GET/profileinfo");
@@ -80,6 +81,7 @@ const chat = require("./routes/chat/chat");
 
 app.use("/likedposts", tokenCheck, likedpost);
 app.use("/likepost", blacklistMiddleware, tokenCheck, likelimit, likepost);
+app.use("/pollvote", blacklistMiddleware, tokenCheck, pollvote);
 app.use("/deletepost", tokenCheck, deletepost);
 app.use("/userinfo", tokenCheck, userinfo);
 app.use("/homeposts", homepost);

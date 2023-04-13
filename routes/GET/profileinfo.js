@@ -10,6 +10,9 @@ const {
   previewlinks,
   postquotes,
   profilebanners,
+  polls,
+  pollchoices,
+  pollvotes,
 } = require("../../models");
 const sequelize = require("sequelize");
 router.get("/:username", async (req, res) => {
@@ -123,6 +126,25 @@ router.get("/:username", async (req, res) => {
         order: [["id", "DESC"]],
         include: [
           {
+            model: polls,
+            include: [
+              {
+                model: pollchoices,
+                include: [
+                  {
+                    model: pollvotes,
+                    include: [
+                      {
+                        model: users,
+                        attributes: ["username", "avatar", "verified", "id"],
+                      },
+                    ],
+                  },
+                ],
+              },
+            ],
+          },
+          {
             model: postquotes,
           },
           {
@@ -197,6 +219,25 @@ router.get("/:username", async (req, res) => {
         attributes: { exclude: ["updatedAt", "postUser"] },
         order: [["id", "DESC"]],
         include: [
+          {
+            model: polls,
+            include: [
+              {
+                model: pollchoices,
+                include: [
+                  {
+                    model: pollvotes,
+                    include: [
+                      {
+                        model: users,
+                        attributes: ["username", "avatar", "verified", "id"],
+                      },
+                    ],
+                  },
+                ],
+              },
+            ],
+          },
           {
             model: postquotes,
           },
@@ -324,6 +365,25 @@ router.get("/userposts/:userid", async (req, res) => {
       order: [["id", "DESC"]],
       include: [
         {
+          model: polls,
+          include: [
+            {
+              model: pollchoices,
+              include: [
+                {
+                  model: pollvotes,
+                  include: [
+                    {
+                      model: users,
+                      attributes: ["username", "avatar", "verified", "id"],
+                    },
+                  ],
+                },
+              ],
+            },
+          ],
+        },
+        {
           model: postquotes,
         },
         {
@@ -399,6 +459,25 @@ router.get("/likedposts/:userid", async (req, res) => {
       attributes: { exclude: ["updatedAt", "postUser"] },
       order: [["id", "DESC"]],
       include: [
+        {
+          model: polls,
+          include: [
+            {
+              model: pollchoices,
+              include: [
+                {
+                  model: pollvotes,
+                  include: [
+                    {
+                      model: users,
+                      attributes: ["username", "avatar", "verified", "id"],
+                    },
+                  ],
+                },
+              ],
+            },
+          ],
+        },
         {
           model: postquotes,
         },

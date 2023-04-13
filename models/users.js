@@ -54,6 +54,10 @@ module.exports = (sequelize, DataTypes) => {
       foreignKey: "userId",
       onDelete: "CASCADE",
     });
+    users.hasMany(models.pollvotes, {
+      foreignKey: "userId",
+      onDelete: "CASCADE",
+    });
     users.hasMany(models.comments, {
       foreignKey: "userId",
       onDelete: "CASCADE",

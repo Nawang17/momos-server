@@ -8,6 +8,8 @@ const {
   previewlinks,
   postquotes,
   likes,
+  polls,
+  pollchoices,
 } = require("../../models");
 const fs = require("fs");
 const { cloudinary } = require("../../utils/cloudinary");
@@ -337,5 +339,272 @@ const addpreviewlink = async (newPost) => {
     return;
   }
 };
+
+router.post("/addpoll", async (req, res) => {
+  try {
+    const {
+      choice1,
+      choice2,
+      choice3,
+      choice4,
+      question,
+      durationday,
+      durationhour,
+      durationminute,
+    } = req.body;
+
+    //convert string duration values to number
+    const days = parseInt(durationday);
+    const hours = parseInt(durationhour);
+    const minutes = parseInt(durationminute);
+
+    //check if duration values are numbers
+    if (isNaN(days) || isNaN(hours) || isNaN(minutes)) {
+      return res.status(400).send("Duration must be numbers");
+    }
+
+    //check if duration values are integers (no decimals)
+    if (
+      !Number.isInteger(days) ||
+      !Number.isInteger(hours) ||
+      !Number.isInteger(minutes)
+    ) {
+      return res.status(400).send("Duration values must be integers");
+    }
+
+    //check if duration values are within limits
+
+    if (days < 0 || days > 7) {
+      return res.status(400).send("Days must be between 0 and 7");
+    }
+
+    if (hours < 0 || hours > 23) {
+      return res.status(400).send("Hours must be between 0 and 23");
+    }
+
+    if (minutes < 0 || minutes > 59) {
+      return res.status(400).send("Minutes must be between 0 and 59");
+    }
+
+    if (!fiveMinutesCheck(days, hours, minutes)) {
+      return res.status(400).send("Duration must be at least 5 minutes");
+    }
+
+    // Check if required fields are present and have non-zero length after removing whitespace
+    if (!choice1.trim() || !choice2.trim() || !question.trim()) {
+      return res
+        .status(400)
+        .send("choice1, choice2, and question are required.");
+    }
+
+    // Check if optional fields have zero or non-zero length after removing whitespace
+    if (choice3 && !choice3.trim()) {
+      return res
+        .status(400)
+        .send("choice3 must have non-zero length if provided.");
+    }
+    if (choice4 && !choice4.trim()) {
+      return res
+        .status(400)
+        .send("choice4 must have non-zero length if provided.");
+    }
+
+    //The code below removes all whitespace and newline characters and then applies additional filtering or cleaning to the resulting string using a custom filter.cleanHacked() function.
+    const cleanQuestion = filter.cleanHacked(
+      question?.replace(/^\s+|\s+$/g, "").replace(/\n/g, "")
+    );
+    const cleanChoice1 = filter.cleanHacked(
+      choice1?.replace(/^\s+|\s+$/g, "").replace(/\n/g, "")
+    );
+    const cleanChoice2 = filter.cleanHacked(
+      choice2?.replace(/^\s+|\s+$/g, "").replace(/\n/g, "")
+    );
+    const cleanChoice3 = filter.cleanHacked(
+      choice3?.replace(/^\s+|\s+$/g, "").replace(/\n/g, "")
+    );
+    const cleanChoice4 = filter.cleanHacked(
+      choice4?.replace(/^\s+|\s+$/g, "").replace(/\n/g, "")
+    );
+
+    // If all validations pass, continue with other logic
+    const existingPost = await posts.findOne({
+      where: {
+        text: cleanQuestion,
+        postUser: req.user.id,
+      },
+    });
+    if (existingPost) {
+      return res.status(400).send("You already asked this question");
+    }
+    const createPost = await posts.create({
+      postUser: req.user.id,
+      text: cleanQuestion,
+    });
+    if (createPost) {
+      const createPoll = await polls.create({
+        duration: convertToMysqlDate(days, hours, minutes),
+        postId: createPost?.id,
+      });
+
+      if (createPoll) {
+        if (cleanChoice1) {
+          await pollchoices.create({
+            choice: cleanChoice1,
+            pollId: createPoll?.id,
+          });
+        }
+        if (cleanChoice2) {
+          await pollchoices.create({
+            choice: cleanChoice2,
+            pollId: createPoll?.id,
+          });
+        }
+        if (cleanChoice3) {
+          await pollchoices.create({
+            choice: cleanChoice3,
+            pollId: createPoll?.id,
+          });
+        }
+        if (cleanChoice4) {
+          await pollchoices.create({
+            choice: cleanChoice4,
+            pollId: createPoll?.id,
+          });
+        }
+        console.log("Pollchoices created successfully");
+      } else {
+        return res.status(400).send("Error creating poll");
+      }
+
+      if (cleanQuestion) {
+        // extract mentioned users from question
+
+        const mentionedUsers = cleanQuestion
+          ?.match(/(@\w+)/gi)
+          ?.map((match) => match.slice(1));
+        if (mentionedUsers?.length > 0) {
+          // find if mentioned users in database
+
+          const findmentionedUsers = await users.findAll({
+            where: {
+              username: {
+                [sequelize.Op.in]: mentionedUsers,
+              },
+            },
+          });
+
+          if (findmentionedUsers?.length !== 0) {
+            // send notification to mentioned users
+
+            findmentionedUsers?.forEach(async (user) => {
+              if (user.id !== req.user.id) {
+                await notis.create({
+                  type: "MENTION",
+                  text: cleanQuestion ? cleanQuestion : null,
+                  targetuserId: user?.id,
+                  postId: createPost?.id,
+                  userId: req.user.id,
+                });
+              }
+            });
+          }
+        }
+      }
+
+      //like own post
+
+      await likes.create({
+        postId: createPost?.id,
+        userId: req.user.id,
+      });
+
+      // send success response
+      res.status(201).send({
+        message: "Post created successfully",
+        newpostid: createPost?.id,
+      });
+
+      //do background tasks after sending response
+
+      //find user who posted the post
+
+      const postuser = await users.findOne({
+        where: {
+          id: req.user.id,
+        },
+      });
+      if (process.env.NODE_ENV === "production") {
+        //send discord channel message
+
+        await sendchannelmessage(
+          `📮 New post by ${postuser?.username}${
+            createPost?.text ? "\n" + "**" + createPost?.text + "**" : ""
+          }
+        
+        ${
+          createPost?.image ? "\n**media added**" : ""
+        }\nhttps://momosz.com/post/${createPost?.id}
+          `
+        );
+
+        //send discord message
+
+        await sendmessage(
+          req,
+          `${createPost?.text}\nhttps://momosz.com/post/${createPost?.id}`,
+          "poll"
+        );
+      }
+
+      return;
+    } else {
+      return res.status(500).send("Something went wrong");
+    }
+  } catch (error) {
+    console.log(error);
+    return res.status(500).send("Something went wrong");
+  }
+});
+function convertToMysqlDate(days, hours, minutes) {
+  const now = new Date();
+  const daysToAdd = days;
+  const hoursToAdd = hours;
+  const minutesToAdd = minutes;
+  const dateWithAddedTime = new Date(
+    now.getFullYear(),
+    now.getMonth(),
+    now.getDate() + daysToAdd,
+    now.getHours() + hoursToAdd,
+    now.getMinutes() + minutesToAdd,
+    now.getSeconds()
+  );
+  const year = dateWithAddedTime.getFullYear();
+  const month = (dateWithAddedTime.getMonth() + 1).toString().padStart(2, "0");
+  const day = dateWithAddedTime.getDate().toString().padStart(2, "0");
+  const hour = dateWithAddedTime.getHours().toString().padStart(2, "0");
+  const minute = dateWithAddedTime.getMinutes().toString().padStart(2, "0");
+  const second = dateWithAddedTime.getSeconds().toString().padStart(2, "0");
+  const mysqlDate = `${year}-${month}-${day} ${hour}:${minute}:${second}`;
+  return mysqlDate;
+}
+
+function fiveMinutesCheck(days, hours, minutes) {
+  const now = new Date();
+  const dateWithAddedTime = new Date(
+    now.getFullYear(),
+    now.getMonth(),
+    now.getDate() + days,
+    now.getHours() + hours,
+    now.getMinutes() + minutes,
+    now.getSeconds()
+  );
+  const fiveMinutesFromNow = new Date(now.getTime() + 4 * 60 * 1000); // 5 minutes from now
+
+  if (dateWithAddedTime.getTime() < fiveMinutesFromNow.getTime()) {
+    return false;
+  } else {
+    return true;
+  }
+}
 
 module.exports = router;

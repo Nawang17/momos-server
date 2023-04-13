@@ -8,6 +8,9 @@ const {
   nestedcomments,
   previewlinks,
   postquotes,
+  polls,
+  pollchoices,
+  pollvotes,
 } = require("../../models");
 const { Op } = require("sequelize");
 const sequelize = require("sequelize");
@@ -65,6 +68,25 @@ router.get("/getposts/:value", async (req, res) => {
       },
 
       include: [
+        {
+          model: polls,
+          include: [
+            {
+              model: pollchoices,
+              include: [
+                {
+                  model: pollvotes,
+                  include: [
+                    {
+                      model: users,
+                      attributes: ["username", "avatar", "verified", "id"],
+                    },
+                  ],
+                },
+              ],
+            },
+          ],
+        },
         {
           model: postquotes,
         },
@@ -127,6 +149,25 @@ router.get("/getposts/:value", async (req, res) => {
       order: [[sequelize.literal("likescount"), "DESC"]],
 
       include: [
+        {
+          model: polls,
+          include: [
+            {
+              model: pollchoices,
+              include: [
+                {
+                  model: pollvotes,
+                  include: [
+                    {
+                      model: users,
+                      attributes: ["username", "avatar", "verified", "id"],
+                    },
+                  ],
+                },
+              ],
+            },
+          ],
+        },
         {
           model: postquotes,
         },

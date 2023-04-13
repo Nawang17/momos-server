@@ -9,6 +9,9 @@ const {
   nestedcomments,
   previewlinks,
   postquotes,
+  polls,
+  pollchoices,
+  pollvotes,
 } = require("../../models");
 const sequelize = require("sequelize");
 const { tokenCheck } = require("../../middleware/tokenCheck");
@@ -34,6 +37,25 @@ router.get("/", async (req, res) => {
           {
             model: postquotes,
             seperate: true,
+          },
+          {
+            model: polls,
+            include: [
+              {
+                model: pollchoices,
+                include: [
+                  {
+                    model: pollvotes,
+                    include: [
+                      {
+                        model: users,
+                        attributes: ["username", "avatar", "verified", "id"],
+                      },
+                    ],
+                  },
+                ],
+              },
+            ],
           },
           {
             model: previewlinks,
@@ -109,6 +131,25 @@ router.get("/", async (req, res) => {
           {
             model: postquotes,
             seperate: true,
+          },
+          {
+            model: polls,
+            include: [
+              {
+                model: pollchoices,
+                include: [
+                  {
+                    model: pollvotes,
+                    include: [
+                      {
+                        model: users,
+                        attributes: ["username", "avatar", "verified", "id"],
+                      },
+                    ],
+                  },
+                ],
+              },
+            ],
           },
           {
             model: previewlinks,
@@ -211,6 +252,25 @@ router.get("/followingposts", tokenCheck, async (req, res) => {
         },
         {
           model: previewlinks,
+        },
+        {
+          model: polls,
+          include: [
+            {
+              model: pollchoices,
+              include: [
+                {
+                  model: pollvotes,
+                  include: [
+                    {
+                      model: users,
+                      attributes: ["username", "avatar", "verified", "id"],
+                    },
+                  ],
+                },
+              ],
+            },
+          ],
         },
         {
           model: users,

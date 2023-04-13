@@ -10,6 +10,9 @@ const {
   nestedcommentlikes,
   previewlinks,
   postquotes,
+  polls,
+  pollchoices,
+  pollvotes,
 } = require("../../models");
 
 router.get("/:postid", async (req, res) => {
@@ -27,6 +30,25 @@ router.get("/:postid", async (req, res) => {
       },
       attributes: { exclude: ["updatedAt", "postUser"] },
       include: [
+        {
+          model: polls,
+          include: [
+            {
+              model: pollchoices,
+              include: [
+                {
+                  model: pollvotes,
+                  include: [
+                    {
+                      model: users,
+                      attributes: ["username", "avatar", "verified", "id"],
+                    },
+                  ],
+                },
+              ],
+            },
+          ],
+        },
         {
           model: postquotes,
           seperate: true,
