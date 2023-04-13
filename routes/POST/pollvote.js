@@ -48,6 +48,13 @@ router.post("/", async (req, res) => {
       return res.status(404).send("Poll not found");
     }
 
+    //check if duration is over
+
+    const pollEndDate = new Date(Date.parse(findpoll?.duration));
+    if (pollEndDate < Date.now()) {
+      return res.status(400).send("Poll is closed");
+    }
+
     // Check if the pollchoice exists
 
     const findpollchoice = await pollchoices.findOne({
