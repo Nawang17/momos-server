@@ -353,7 +353,20 @@ router.post("/addpoll", async (req, res) => {
       durationminute,
     } = req.body;
 
+    if (question.length > 255) {
+      return res.status(400).send("Question cannot exceed 255 characters");
+    }
+    if (
+      choice1.length > 25 ||
+      choice2.length > 25 ||
+      choice3.length > 25 ||
+      choice4.length > 25
+    ) {
+      return res.status(400).send("Choices cannot exceed 25 characters");
+    }
+
     //convert string duration values to number
+
     const days = parseInt(durationday);
     const hours = parseInt(durationhour);
     const minutes = parseInt(durationminute);
