@@ -35,8 +35,13 @@ router.post("/", upload.single("media"), async (req, res) => {
     }
 
     if (newtext) {
-      //filter text for bad words and remove extra newlines(/n)
-      newtext = filter.cleanHacked(newtext?.trim().replace(/\n{2,}/g, "\n"));
+      //filter text for bad words and keep only 3 newlines max in a row and trim whitespace
+      newtext = filter.cleanHacked(
+        newtext
+          ?.trim()
+          .replace(/(\r?\n){4,}/g, "$1$1$1")
+          .replace(/(\r?\n){3,}/g, "$1$1$1")
+      );
       //send error if text contains only whitespace
       if (/^\s*$/.test(newtext)) {
         return res.status(400).send("Post cannot be empty");
