@@ -26,12 +26,16 @@ router.post("/", upload.single("media"), async (req, res) => {
     let quoteExists = null;
     let newtext = req.body.text ? req.body.text : null;
     let quoteid = req.body.quoteid ? req.body.quoteid : null;
+    let gif = req.body.gif ? req.body.gif : null;
     let mediaurl;
     let mediakey;
 
-    //check if both text and media are empty
-    if (!media && !newtext) {
+    //check if all the values are empty
+    if (!media && !newtext && !gif) {
       return res.status(400).send("Post cannot be empty");
+    }
+    if (media && gif) {
+      return res.status(400).send("Cannot add media and gif at the same time");
     }
 
     if (newtext) {
@@ -102,6 +106,7 @@ router.post("/", upload.single("media"), async (req, res) => {
       filetype: media ? media?.mimetype.split("/")[0] : null,
       quoteId: quoteExists ? Number(quoteid) : null,
       hasquote: quoteExists ? true : false,
+      gif: gif ? gif : null,
     });
 
     if (newPost) {

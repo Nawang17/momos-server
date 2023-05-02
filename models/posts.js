@@ -25,6 +25,11 @@ module.exports = (sequelize, DataTypes) => {
       allowNull: false,
       defaultValue: false,
     },
+    gif: {
+      type: DataTypes.STRING,
+      allowNull: true,
+      defaultValue: null,
+    },
   });
   posts.associate = (models) => {
     posts.belongsTo(models.users, {
