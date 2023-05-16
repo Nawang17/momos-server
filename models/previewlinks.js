@@ -26,6 +26,7 @@ module.exports = (sequelize, DataTypes) => {
     previewlinks.belongsTo(models.posts, {
       foreignKey: "postId",
       onDelete: "CASCADE",
+      foreignKeyConstraint: true,
     });
   };
   return previewlinks;

@@ -8,10 +8,12 @@ module.exports = (sequelize, DataTypes) => {
   chats.associate = (models) => {
     chats.belongsTo(models.chatrooms, {
       foreignKey: "chatroomid",
+      foreignKeyConstraint: true,
       onDelete: "CASCADE",
     });
     chats.belongsTo(models.users, {
       foreignKey: "userid",
+      foreignKeyConstraint: true,
       onDelete: "CASCADE",
     });
   };

@@ -9,14 +9,17 @@ module.exports = (sequelize, DataTypes) => {
   polls.associate = (models) => {
     polls.belongsTo(models.posts, {
       foreignKey: "postId",
+      foreignKeyConstraint: true,
       onDelete: "CASCADE",
     });
     polls.hasMany(models.pollchoices, {
       foreignKey: "pollId",
+      foreignKeyConstraint: true,
       onDelete: "CASCADE",
     });
     polls.hasMany(models.pollvotes, {
       foreignKey: "pollId",
+      foreignKeyConstraint: true,
       onDelete: "CASCADE",
     });
   };

@@ -12,16 +12,19 @@ module.exports = (sequelize, DataTypes) => {
 
       foreignKey: "user1",
       onDelete: "CASCADE",
+      foreignKeyConstraint: true,
     });
 
     chatrooms.belongsTo(models.users, {
       as: "usertwo",
       foreignKey: "user2",
+      foreignKeyConstraint: true,
       onDelete: "CASCADE",
     });
     chatrooms.hasMany(models.chats, {
       foreignKey: "chatroomid",
 
+      foreignKeyConstraint: true,
       onDelete: "CASCADE",
     });
   };

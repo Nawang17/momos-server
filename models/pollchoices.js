@@ -9,10 +9,12 @@ module.exports = (sequelize, DataTypes) => {
   pollchoices.associate = (models) => {
     pollchoices.belongsTo(models.polls, {
       foreignKey: "pollId",
+      foreignKeyConstraint: true,
       onDelete: "CASCADE",
     });
     pollchoices.hasMany(models.pollvotes, {
       foreignKey: "pollchoicesId",
+      foreignKeyConstraint: true,
       onDelete: "CASCADE",
     });
   };

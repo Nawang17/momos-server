@@ -15,6 +15,7 @@ module.exports = (sequelize, DataTypes) => {
     profilebanners.belongsTo(models.users, {
       foreignKey: "userid",
 
+      foreignKeyConstraint: true,
       onDelete: "CASCADE",
     });
   };
