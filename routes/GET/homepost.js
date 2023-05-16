@@ -36,7 +36,6 @@ router.get("/", async (req, res) => {
         include: [
           {
             model: postquotes,
-            seperate: true,
           },
           {
             model: polls,
@@ -130,7 +129,6 @@ router.get("/", async (req, res) => {
         include: [
           {
             model: postquotes,
-            seperate: true,
           },
           {
             model: polls,
@@ -248,7 +246,6 @@ router.get("/followingposts", tokenCheck, async (req, res) => {
       include: [
         {
           model: postquotes,
-          seperate: true,
         },
         {
           model: previewlinks,

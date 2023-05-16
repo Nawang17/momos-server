@@ -147,7 +147,7 @@ app.use("/chat", blacklistMiddleware, tokenCheck, chat);
 
 //initialize socket
 const { verify } = require("jsonwebtoken");
-const { users, profilebanners } = require("./models");
+const { users } = require("./models");
 let onlineusers = [];
 io.on("connection", (socket) => {
   console.log("a user connected ", socket.id);
@@ -261,8 +261,40 @@ global.client.once(Events.ClientReady, (c) => {
 
 // Log in to Discord with your client's token
 global.client.login(process.env.DISCORD_BOT_TOKEN);
-
+// const { likes, comments } = require("./models");
+// function generateUsername() {
+//   const characters =
+//     "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+//   let username = "";
+//   for (let i = 0; i < 4 + Math.floor(Math.random() * 11); i++) {
+//     username += characters.charAt(
+//       Math.floor(Math.random() * characters.length)
+//     );
+//   }
+//   return username;
+// }
 app.get("/", async (req, res) => {
+  // for (let i = 0; i < 1000; i++) {
+  //   await users
+  //     .create({
+  //       username: generateUsername(),
+  //       password: "testuser",
+  //       avatar:
+  //         "https://ui-avatars.com/api/?background=11963b&color=fff&name=&size=1920",
+  //     })
+  //     .then(async (ress) => {
+  //       await likes.create({
+  //         postId: 268,
+  //         userId: ress.id,
+  //       });
+  //       // await comments.create({
+  //       //   text: generateUsername(),
+  //       //   postId: 267,
+  //       //   userId: ress.id,
+  //       // });
+  //     });
+  // }
+
   res.send("momos server ");
 });
 

@@ -81,9 +81,12 @@ router.get("/:postid", async (req, res) => {
         },
         {
           model: comments,
+          seperate: true,
+
           include: [
             {
               model: commentlikes,
+              seperate: true,
               include: [
                 {
                   model: users,
@@ -99,17 +102,18 @@ router.get("/:postid", async (req, res) => {
             },
             {
               model: nestedcomments,
-
+              seperate: true,
               include: [
                 {
                   model: nestedcommentlikes,
+                  seperate: true,
+
                   include: [
                     {
                       model: users,
                       attributes: ["username", "avatar", "verified", "id"],
                     },
                   ],
-                  seperate: true,
                 },
                 {
                   model: users,
@@ -126,7 +130,6 @@ router.get("/:postid", async (req, res) => {
               ],
             },
           ],
-          seperate: true,
         },
       ],
     });

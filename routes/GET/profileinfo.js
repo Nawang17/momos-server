@@ -156,6 +156,7 @@ router.get("/:username", async (req, res) => {
           },
           {
             model: likes,
+            seperate: true,
             include: [
               {
                 model: users,
@@ -165,9 +166,11 @@ router.get("/:username", async (req, res) => {
           },
           {
             model: comments,
+            seperate: true,
             include: [
               {
                 model: nestedcomments,
+                seperate: true,
               },
             ],
           },
@@ -250,6 +253,7 @@ router.get("/:username", async (req, res) => {
           },
           {
             model: likes,
+            seperate: true,
             include: [
               {
                 model: users,
@@ -259,9 +263,11 @@ router.get("/:username", async (req, res) => {
           },
           {
             model: comments,
+            seperate: true,
             include: [
               {
                 model: nestedcomments,
+                seperate: true,
               },
             ],
           },
@@ -396,6 +402,7 @@ router.get("/userposts/:userid", async (req, res) => {
         },
         {
           model: likes,
+          seperate: true,
           include: [
             {
               model: users,
@@ -405,9 +412,11 @@ router.get("/userposts/:userid", async (req, res) => {
         },
         {
           model: comments,
+          seperate: true,
           include: [
             {
               model: nestedcomments,
+              seperate: true,
             },
           ],
         },
@@ -490,6 +499,7 @@ router.get("/likedposts/:userid", async (req, res) => {
         },
         {
           model: likes,
+          seperate: true,
           include: [
             {
               model: users,
@@ -499,9 +509,11 @@ router.get("/likedposts/:userid", async (req, res) => {
         },
         {
           model: comments,
+          seperate: true,
           include: [
             {
               model: nestedcomments,
+              seperate: true,
             },
           ],
         },

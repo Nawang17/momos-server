@@ -5,15 +5,18 @@ module.exports = (sequelize) => {
     nestedcommentlikes.belongsTo(models.users, {
       foreignKey: "userId",
       onDelete: "CASCADE",
+      foreignKeyConstraint: true,
     });
     nestedcommentlikes.belongsTo(models.nestedcomments, {
       foreignKey: "nestedcommentId",
       onDelete: "CASCADE",
+      foreignKeyConstraint: true,
     });
 
     nestedcommentlikes.hasMany(models.notis, {
       foreignKey: "nestedcommentlikeId",
       onDelete: "CASCADE",
+      foreignKeyConstraint: true,
     });
   };
   return nestedcommentlikes;

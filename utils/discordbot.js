@@ -11,7 +11,10 @@ const sendmessage = async (req, message, type) => {
 
   // send discord message
 
-  await client.users.send(process.env.USERID, `${msg}${message} `);
+  await client.users.send(
+    process.env.USERID,
+    `${msg}${message.replace(/@/g, "")} `
+  );
   return;
 };
 

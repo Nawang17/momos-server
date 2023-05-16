@@ -100,6 +100,7 @@ router.get("/getposts/:value", async (req, res) => {
         },
         {
           model: likes,
+          seperate: true,
           include: [
             {
               model: users,
@@ -109,9 +110,11 @@ router.get("/getposts/:value", async (req, res) => {
         },
         {
           model: comments,
+          seperate: true,
           include: [
             {
               model: nestedcomments,
+              seperate: true,
             },
           ],
         },
@@ -181,6 +184,8 @@ router.get("/getposts/:value", async (req, res) => {
         },
         {
           model: likes,
+          seperate: true,
+
           include: [
             {
               model: users,
@@ -190,9 +195,12 @@ router.get("/getposts/:value", async (req, res) => {
         },
         {
           model: comments,
+          seperate: true,
+
           include: [
             {
               model: nestedcomments,
+              seperate: true,
             },
           ],
         },
