@@ -17,7 +17,9 @@ const sendmessage = async (req, message, type) => {
 
 const sendchannelmessage = async (message) => {
   //send message to momos server channel
-  await client.channels.cache.get(process.env.CHANNEL_ID).send(message);
+  await client.channels.cache
+    .get(process.env.CHANNEL_ID)
+    .send(message.replace(/@/g, ""));
 };
 
 module.exports = { sendmessage, sendchannelmessage };
