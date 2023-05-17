@@ -261,7 +261,7 @@ global.client.once(Events.ClientReady, (c) => {
 
 // Log in to Discord with your client's token
 global.client.login(process.env.DISCORD_BOT_TOKEN);
-// const { likes, comments } = require("./models");
+// const { likes, posts, comments, postquotes } = require("./models");
 // function generateUsername() {
 //   const characters =
 //     "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
@@ -274,7 +274,7 @@ global.client.login(process.env.DISCORD_BOT_TOKEN);
 //   return username;
 // }
 app.get("/", async (req, res) => {
-  // for (let i = 0; i < 1000; i++) {
+  // for (let i = 0; i < 2; i++) {
   //   await users
   //     .create({
   //       username: generateUsername(),
@@ -283,10 +283,28 @@ app.get("/", async (req, res) => {
   //         "https://ui-avatars.com/api/?background=11963b&color=fff&name=&size=1920",
   //     })
   //     .then(async (ress) => {
-  //       await likes.create({
-  //         postId: 268,
-  //         userId: ress.id,
-  //       });
+  //       // await likes.create({
+  //       //   postId: 268,
+  //       //   userId: ress.id,
+  //       // });
+  //       await posts
+  //         .create({
+  //           text: "bruh",
+  //           image: null,
+  //           imagekey: null,
+  //           postUser: ress.id,
+  //           filetype: null,
+  //           quoteId: 267,
+  //           hasquote: true,
+  //           gif: null,
+  //         })
+  //         .then(async (fff) => {
+  //           await postquotes.create({
+  //             postId: fff.id,
+  //             quotedPostId: 267,
+  //           });
+  //         });
+
   //       // await comments.create({
   //       //   text: generateUsername(),
   //       //   postId: 267,
@@ -295,7 +313,7 @@ app.get("/", async (req, res) => {
   //     });
   // }
 
-  res.send("momos server ");
+  res.send("momos server");
 });
 
 // force: true

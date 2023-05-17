@@ -31,12 +31,17 @@ router.get("/", async (req, res) => {
         offset: page * 10,
         attributes: {
           exclude: ["updatedAt", "postUser"],
+          include: [
+            [
+              sequelize.literal(
+                "(SELECT COUNT(*) FROM postquotes WHERE postquotes.quotedPostId = posts.id)"
+              ),
+              "postquotesCount",
+            ],
+          ],
         },
         order: [["id", "DESC"]],
         include: [
-          {
-            model: postquotes,
-          },
           {
             model: polls,
             include: [
@@ -123,13 +128,16 @@ router.get("/", async (req, res) => {
                   )`),
               "likescount",
             ],
+            [
+              sequelize.literal(
+                "(SELECT COUNT(*) FROM postquotes WHERE postquotes.quotedPostId = posts.id)"
+              ),
+              "postquotesCount",
+            ],
           ],
         },
         order: [[sequelize.literal("likescount"), "DESC"]],
         include: [
-          {
-            model: postquotes,
-          },
           {
             model: polls,
             include: [
@@ -241,12 +249,17 @@ router.get("/followingposts", tokenCheck, async (req, res) => {
       offset: page * 10,
       attributes: {
         exclude: ["updatedAt", "postUser"],
+        include: [
+          [
+            sequelize.literal(
+              "(SELECT COUNT(*) FROM postquotes WHERE postquotes.quotedPostId = posts.id)"
+            ),
+            "postquotesCount",
+          ],
+        ],
       },
       order: [["id", "DESC"]],
       include: [
-        {
-          model: postquotes,
-        },
         {
           model: previewlinks,
         },

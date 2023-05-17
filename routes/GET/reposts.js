@@ -15,7 +15,7 @@ const {
 } = require("../../models");
 
 //get reposts
-
+const sequelize = require("sequelize");
 router.get("/:postid", async (req, res) => {
   try {
     const { postid } = req.params;
@@ -31,6 +31,14 @@ router.get("/:postid", async (req, res) => {
       },
       attributes: {
         exclude: ["updatedAt", "postUser"],
+        include: [
+          [
+            sequelize.literal(
+              "(SELECT COUNT(*) FROM postquotes WHERE postquotes.quotedPostId = posts.id)"
+            ),
+            "postquotesCount",
+          ],
+        ],
       },
       order: [["id", "DESC"]],
       include: [
@@ -53,9 +61,7 @@ router.get("/:postid", async (req, res) => {
             },
           ],
         },
-        {
-          model: postquotes,
-        },
+
         {
           model: previewlinks,
         },

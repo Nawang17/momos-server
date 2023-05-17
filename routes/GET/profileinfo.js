@@ -122,7 +122,17 @@ router.get("/:username", async (req, res) => {
         where: {
           postUser: userInfo.id,
         },
-        attributes: { exclude: ["updatedAt", "postUser"] },
+        attributes: {
+          exclude: ["updatedAt", "postUser"],
+          include: [
+            [
+              sequelize.literal(
+                "(SELECT COUNT(*) FROM postquotes WHERE postquotes.quotedPostId = posts.id)"
+              ),
+              "postquotesCount",
+            ],
+          ],
+        },
         order: [["id", "DESC"]],
         include: [
           {
@@ -144,9 +154,7 @@ router.get("/:username", async (req, res) => {
               },
             ],
           },
-          {
-            model: postquotes,
-          },
+
           {
             model: previewlinks,
           },
@@ -219,7 +227,17 @@ router.get("/:username", async (req, res) => {
             [sequelize.Op.in]: likedpostsidarray,
           },
         },
-        attributes: { exclude: ["updatedAt", "postUser"] },
+        attributes: {
+          exclude: ["updatedAt", "postUser"],
+          include: [
+            [
+              sequelize.literal(
+                "(SELECT COUNT(*) FROM postquotes WHERE postquotes.quotedPostId = posts.id)"
+              ),
+              "postquotesCount",
+            ],
+          ],
+        },
         order: [["id", "DESC"]],
         include: [
           {
@@ -241,9 +259,7 @@ router.get("/:username", async (req, res) => {
               },
             ],
           },
-          {
-            model: postquotes,
-          },
+
           {
             model: previewlinks,
           },
@@ -367,7 +383,17 @@ router.get("/userposts/:userid", async (req, res) => {
       where: {
         postUser: userid,
       },
-      attributes: { exclude: ["updatedAt", "postUser"] },
+      attributes: {
+        exclude: ["updatedAt", "postUser"],
+        include: [
+          [
+            sequelize.literal(
+              "(SELECT COUNT(*) FROM postquotes WHERE postquotes.quotedPostId = posts.id)"
+            ),
+            "postquotesCount",
+          ],
+        ],
+      },
       order: [["id", "DESC"]],
       include: [
         {
@@ -389,9 +415,7 @@ router.get("/userposts/:userid", async (req, res) => {
             },
           ],
         },
-        {
-          model: postquotes,
-        },
+
         {
           model: previewlinks,
         },
@@ -465,7 +489,17 @@ router.get("/likedposts/:userid", async (req, res) => {
           [sequelize.Op.in]: likedpostsidarray,
         },
       },
-      attributes: { exclude: ["updatedAt", "postUser"] },
+      attributes: {
+        exclude: ["updatedAt", "postUser"],
+        include: [
+          [
+            sequelize.literal(
+              "(SELECT COUNT(*) FROM postquotes WHERE postquotes.quotedPostId = posts.id)"
+            ),
+            "postquotesCount",
+          ],
+        ],
+      },
       order: [["id", "DESC"]],
       include: [
         {
@@ -487,9 +521,7 @@ router.get("/likedposts/:userid", async (req, res) => {
             },
           ],
         },
-        {
-          model: postquotes,
-        },
+
         {
           model: previewlinks,
         },

@@ -15,6 +15,7 @@ const {
   pollvotes,
 } = require("../../models");
 
+const sequelize = require("sequelize");
 router.get("/:postid", async (req, res) => {
   const { postid } = req.params;
   try {
@@ -28,7 +29,18 @@ router.get("/:postid", async (req, res) => {
       where: {
         id: postid,
       },
-      attributes: { exclude: ["updatedAt", "postUser"] },
+      attributes: {
+        exclude: ["updatedAt", "postUser"],
+        include: [
+          [
+            sequelize.literal(
+              "(SELECT COUNT(*) FROM postquotes WHERE postquotes.quotedPostId = posts.id)"
+            ),
+            "postquotesCount",
+          ],
+        ],
+      },
+
       include: [
         {
           model: polls,
@@ -49,10 +61,7 @@ router.get("/:postid", async (req, res) => {
             },
           ],
         },
-        {
-          model: postquotes,
-          seperate: true,
-        },
+
         {
           model: previewlinks,
         },

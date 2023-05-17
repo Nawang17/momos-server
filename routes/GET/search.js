@@ -55,6 +55,12 @@ router.get("/getposts/:value", async (req, res) => {
       attributes: {
         include: [
           [
+            sequelize.literal(
+              "(SELECT COUNT(*) FROM postquotes WHERE postquotes.quotedPostId = posts.id)"
+            ),
+            "postquotesCount",
+          ],
+          [
             sequelize.literal(`(
                     SELECT COUNT(*)
                     FROM likes AS likes
@@ -87,9 +93,7 @@ router.get("/getposts/:value", async (req, res) => {
             },
           ],
         },
-        {
-          model: postquotes,
-        },
+
         {
           model: previewlinks,
         },
@@ -138,6 +142,12 @@ router.get("/getposts/:value", async (req, res) => {
       attributes: {
         include: [
           [
+            sequelize.literal(
+              "(SELECT COUNT(*) FROM postquotes WHERE postquotes.quotedPostId = posts.id)"
+            ),
+            "postquotesCount",
+          ],
+          [
             sequelize.literal(`(
                     SELECT COUNT(*)
                     FROM likes AS likes
@@ -171,9 +181,7 @@ router.get("/getposts/:value", async (req, res) => {
             },
           ],
         },
-        {
-          model: postquotes,
-        },
+
         {
           model: previewlinks,
         },
