@@ -298,11 +298,55 @@ router.get("/:username", async (req, res) => {
           },
         ],
       });
+      //get replies of user
+      const getcomments = await comments.findAll({
+        where: { userId: userInfo?.id },
+        include: [
+          {
+            model: users,
+            attributes: ["username", "avatar", "verified", "id"],
+          },
+          {
+            model: posts,
+            include: [
+              {
+                model: users,
+                attributes: ["username", "avatar", "verified", "id"],
+              },
+            ],
+          },
+        ],
+      });
+      const getnestedcomments = await nestedcomments.findAll({
+        where: {
+          userId: userInfo?.id,
+        },
+        include: [
+          {
+            model: users,
+            as: "user",
+
+            attributes: ["username", "avatar", "verified", "id"],
+          },
+          {
+            model: users,
+            as: "repliedtouser",
+
+            attributes: ["username", "avatar", "verified", "id"],
+          },
+        ],
+      });
+
+      // merge comments and nestedcomments in one array and sort them by latest date
+      const replies = [...getcomments, ...getnestedcomments].sort(
+        (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
+      );
 
       return res.status(200).send({
         userPosts,
         userInfo,
         likedposts,
+        replies,
         rankInfo: { rank, points },
         likedpoststotalCount,
         userPoststotalCount,
