@@ -2,7 +2,13 @@ module.exports = (sequelize, DataTypes) => {
   const comments = sequelize.define("comments", {
     text: {
       type: DataTypes.STRING,
-      allowNull: false,
+      allowNull: true,
+      defaultValue: null,
+    },
+    gif: {
+      type: DataTypes.STRING,
+      allowNull: true,
+      defaultValue: null,
     },
   });
   comments.associate = (models) => {

@@ -13,14 +13,14 @@ filter = new filter();
 const { sendmessage, sendchannelmessage } = require("../../utils/discordbot");
 
 router.post("/", async (req, res) => {
-  const { postId, text } = req.body;
+  const { postId, text, gif } = req.body;
   const sanitizedText = filter.cleanHacked(
     text?.trim().replace(/\n{2,}/g, "\n")
   );
-  if (!postId || !text) {
-    return res.status(400).send("PostId and Text are required");
-  } else if (/^\s*$/.test(sanitizedText)) {
-    return res.status(400).send("Reply cannot be empty");
+  if (!postId) {
+    return res.status(400).send("PostId is required");
+  } else if (!gif && /^\s*$/.test(sanitizedText)) {
+    return res.status(400).send("Comment cannot be empty");
   }
 
   try {
@@ -56,7 +56,8 @@ router.post("/", async (req, res) => {
 
     // create new comment
     const newComment = await comments.create({
-      text: sanitizedText,
+      text: sanitizedText ? sanitizedText : null,
+      gif: gif ? gif : null,
       postId,
       userId: req.user.id,
     });
@@ -165,7 +166,13 @@ router.post("/", async (req, res) => {
         // send discord channel message for new comment on post to momos server
 
         await sendchannelmessage(
-          `💬 New comment by ${comment?.user?.username}\n**${comment?.text}**\nhttps://momosz.com/post/${comment?.postId}
+          `💬 New comment by ${comment?.user?.username}${
+            comment?.text ? "\n" + "**" + comment?.text + "**" : ""
+          }
+        
+        ${comment?.gif ? "\n**gif**" : ""}\nhttps://momosz.com/post/${
+            comment?.postId
+          }
           `
         );
 

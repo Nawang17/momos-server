@@ -12,14 +12,20 @@ var filter = require("../../utils/bad-words-hacked");
 filter = new filter();
 const { sendmessage, sendchannelmessage } = require("../../utils/discordbot");
 router.post("/", async (req, res) => {
-  const { text, commentId, replytouserId, postId } = req.body;
+  const { text, commentId, replytouserId, postId, gif } = req.body;
+
   const sanitizedText = filter.cleanHacked(
     text?.trim().replace(/\n{2,}/g, "\n")
   );
-  if (!text || !commentId || !replytouserId || !postId) {
-    return res.status(400).send("Please provide all the required data");
-  } else if (/^\s*$/.test(sanitizedText)) {
+  if (!sanitizedText && !gif) {
     return res.status(400).send("Reply cannot be empty");
+  } else if (sanitizedText) {
+    if (/^\s*$/.test(sanitizedText)) {
+      return res.status(400).send("Invalid reply");
+    }
+  }
+  if (!commentId || !replytouserId || !postId) {
+    return res.status(400).send("Please provide all the required data");
   }
   try {
     // find comment that is being replied to
@@ -55,11 +61,12 @@ router.post("/", async (req, res) => {
       // create new nested comment(reply)
 
       const createNewNestedComment = await nestedcomments.create({
-        text: sanitizedText,
+        text: sanitizedText ? sanitizedText : null,
         commentId,
         repliedtouserId: replytouserId,
         userId: req.user.id,
         postId,
+        gif: gif ? gif : null,
       });
 
       if (createNewNestedComment) {
@@ -154,8 +161,16 @@ router.post("/", async (req, res) => {
           //send discord channel message
 
           await sendchannelmessage(
-            `💬 New reply by ${nestedcomment?.user?.username}\n**${nestedcomment?.text}**\nhttps://momosz.com/post/${nestedcomment?.postId}
-        `
+            `💬 New reply by ${nestedcomment?.user?.username}${
+              nestedcomment?.text
+                ? "\n" + "**" + nestedcomment?.text + "**"
+                : ""
+            }
+          
+          ${nestedcomment?.gif ? "\n**gif**" : ""}\nhttps://momosz.com/post/${
+              nestedcomment?.postId
+            }
+            `
           );
 
           //send discord message

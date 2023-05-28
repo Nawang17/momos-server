@@ -2,7 +2,13 @@ module.exports = (sequelize, DataTypes) => {
   const nestedcomments = sequelize.define("nestedcomments", {
     text: {
       type: DataTypes.STRING,
-      allowNull: false,
+      allowNull: true,
+      defaultValue: null,
+    },
+    gif: {
+      type: DataTypes.STRING,
+      allowNull: true,
+      defaultValue: null,
     },
   });
   nestedcomments.associate = (models) => {
