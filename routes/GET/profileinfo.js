@@ -41,6 +41,9 @@ router.get("/:username", async (req, res) => {
       return res.status(400).send("User is inactive");
     } else {
       let points;
+      const currentDate = new Date();
+      const currentYear = currentDate.getFullYear();
+      const currentMonth = currentDate.getMonth() + 1; // Adding 1 since months are zero-based
       const rank = await users
         .findAll({
           attributes: {
@@ -54,6 +57,8 @@ router.get("/:username", async (req, res) => {
                     WHERE
                     notis.targetuserId = users.id
                     AND notis.type = 'LIKE'
+                    AND YEAR(notis.createdAt) = ${currentYear}
+                    AND MONTH(notis.createdAt) = ${currentMonth}
                   )`),
                 "totalpoints",
               ],

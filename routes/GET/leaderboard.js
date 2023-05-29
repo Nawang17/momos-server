@@ -10,7 +10,9 @@ router.get("/", async (req, res) => {
     await users.count().then((c) => {
       usersCount = c;
     });
-
+    const currentDate = new Date();
+    const currentYear = currentDate.getFullYear();
+    const currentMonth = currentDate.getMonth() + 1; // Adding 1 since months are zero-based
     const totalpoints = await users.findAll({
       limit: 20,
       offset: page * 20,
@@ -34,6 +36,8 @@ router.get("/", async (req, res) => {
                 WHERE
                 notis.targetuserId = users.id
                 AND notis.type = 'LIKE'
+                AND YEAR(notis.createdAt) = ${currentYear}
+                AND MONTH(notis.createdAt) = ${currentMonth}
               )`),
             "totalpoints",
           ],
