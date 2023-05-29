@@ -45,63 +45,31 @@ router.get("/:username", async (req, res) => {
         .findAll({
           attributes: {
             include: [
-              [
-                sequelize.literal(`(
-                SELECT COUNT(*)
-                FROM posts AS posts
-                INNER JOIN likes AS likes ON likes.postId = posts.id
-                WHERE 
-                  posts.postUser = users.id
-                  AND likes.userId != users.id
-              )`),
-                "totalLikes",
-              ],
-              // get count of total likes on users comments
-              [
-                sequelize.literal(`(
-                SELECT COUNT(*)
-                FROM comments AS comments
-                INNER JOIN commentlikes AS commentlikes ON commentlikes.commentId = comments.id
-                WHERE
-                  comments.userId = users.id
-                  AND commentlikes.userId != users.id
-              )`),
-                "totalCommentLikes",
-              ],
-              // get count of total likes on users nestedcomments
+              // get count of total likes
 
               [
                 sequelize.literal(`(
-                SELECT COUNT(*)
-                FROM nestedcomments AS nestedcomments
-                INNER JOIN nestedcommentlikes AS nestedcommentlikes ON nestedcommentlikes.nestedcommentId = nestedcomments.id
-                WHERE
-                nestedcomments.userId = users.id
-                  AND nestedcommentlikes.userId != users.id
-              )`),
-                "totalNestedCommentLikes",
+                    SELECT COUNT(*)
+                    FROM notis
+                    WHERE
+                    notis.targetuserId = users.id
+                    AND notis.type = 'LIKE'
+                  )`),
+                "totalpoints",
               ],
             ],
           },
 
           order: [
-            [
-              sequelize.literal(
-                "totalLikes + totalCommentLikes + totalNestedCommentLikes"
-              ),
-              "DESC",
-            ],
+            [sequelize.literal("totalpoints"), "DESC"],
+            [sequelize.col("users.id"), "ASC"],
           ],
           raw: true,
         })
         .then(async (users) => {
-          points =
-            (await users[users.findIndex((user) => user.id === userInfo.id)]
-              .totalCommentLikes) +
-            users[users.findIndex((user) => user.id === userInfo.id)]
-              .totalNestedCommentLikes +
-            users[users.findIndex((user) => user.id === userInfo.id)]
-              .totalLikes;
+          points = await users[
+            users.findIndex((user) => user.id === userInfo.id)
+          ].totalpoints;
           return (await users.findIndex((user) => user.id === userInfo.id)) + 1;
         });
 

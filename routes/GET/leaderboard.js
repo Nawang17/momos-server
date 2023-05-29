@@ -11,7 +11,7 @@ router.get("/", async (req, res) => {
       usersCount = c;
     });
 
-    const getUsers = await users.findAll({
+    const totalpoints = await users.findAll({
       limit: 20,
       offset: page * 20,
       attributes: {
@@ -25,58 +25,31 @@ router.get("/", async (req, res) => {
           "userid",
         ],
         include: [
-          // get count of total likes on users posts
+          // get count of total likes
 
           [
             sequelize.literal(`(
                 SELECT COUNT(*)
-                FROM posts AS posts
-                INNER JOIN likes AS likes ON likes.postId = posts.id
-                WHERE 
-                  posts.postUser = users.id
-                  AND likes.userId != users.id
-              )`),
-            "totalLikes",
-          ],
-          // get count of total likes on users comments
-          [
-            sequelize.literal(`(
-                SELECT COUNT(*)
-                FROM comments AS comments
-                INNER JOIN commentlikes AS commentlikes ON commentlikes.commentId = comments.id
+                FROM notis
                 WHERE
-                  comments.userId = users.id
-                  AND commentlikes.userId != users.id
+                notis.targetuserId = users.id
+                AND notis.type = 'LIKE'
               )`),
-            "totalCommentLikes",
-          ],
-          // get count of total likes on users nestedcomments
-
-          [
-            sequelize.literal(`(
-                SELECT COUNT(*)
-                FROM nestedcomments AS nestedcomments
-                INNER JOIN nestedcommentlikes AS nestedcommentlikes ON nestedcommentlikes.nestedcommentId = nestedcomments.id
-                WHERE
-                nestedcomments.userId = users.id
-                  AND nestedcommentlikes.userId != users.id
-              )`),
-            "totalNestedCommentLikes",
+            "totalpoints",
           ],
         ],
       },
 
       order: [
-        [
-          sequelize.literal(
-            "totalLikes + totalCommentLikes + totalNestedCommentLikes"
-          ),
-          "DESC",
-        ],
+        [sequelize.literal("totalpoints"), "DESC"],
         [sequelize.col("users.id"), "ASC"],
       ],
     });
-    return res.json({ leaderboard: getUsers, usersCount });
+
+    return res.json({
+      usersCount,
+      leaderboard: totalpoints,
+    });
   } catch (error) {
     console.log(error);
     res.status(500).send("Something went wrong");
