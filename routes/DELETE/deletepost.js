@@ -57,6 +57,8 @@ router.delete("/:postId", async (req, res) => {
           });
           res.status(200).send("Post deleted successfully");
           console.log("post deleted successfully");
+          io.emit("post-deleted", postId);
+          return;
         }
       }
     } catch (error) {

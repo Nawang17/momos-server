@@ -126,9 +126,30 @@ router.post("/", async (req, res) => {
           type: "COMMENT",
           postId,
           targetuserId: findpost.postUser,
-          text: sanitizedText,
+          text: sanitizedText ? sanitizedText : "with a gif",
           commentId: newComment.id,
         });
+        const findusersocketID = onlineusers
+          .filter(
+            (obj, index, self) =>
+              self.findIndex((o) => o.socketid === obj.socketid) === index
+          )
+          .find((val) => val.userid === findpost.postUser);
+        if (findusersocketID) {
+          const replyuser = await users.findOne({
+            where: {
+              id: req.user.id,
+            },
+          });
+          io.to(findusersocketID?.socketid).emit("newnotification", {
+            type: sanitizedText
+              ? "commented: " + sanitizedText
+              : "commented with a gif",
+            postId,
+            username: replyuser?.username,
+            avatar: replyuser?.avatar,
+          });
+        }
       }
 
       // send notifications to all users mentioned in the comment

@@ -121,6 +121,27 @@ router.post("/", upload.single("media"), async (req, res) => {
             text: "quoted your post",
             targetuserId: quoteExists.postUser,
           });
+          const findusersocketID = onlineusers
+            .filter(
+              (obj, index, self) =>
+                self.findIndex((o) => o.socketid === obj.socketid) === index
+            )
+            .find((val) => val.userid === quoteExists.postUser);
+          if (findusersocketID) {
+            const quoteuser = await users.findOne({
+              where: {
+                id: req.user.id,
+              },
+            });
+            io.to(findusersocketID?.socketid).emit("newnotification", {
+              type: newtext
+                ? "quoted: " + newtext
+                : "quoted: with a " + media?.mimetype.split("/")[0],
+              postId: newPost.id,
+              username: quoteuser?.username,
+              avatar: quoteuser?.avatar,
+            });
+          }
         }
       }
       //send notification to mentioned users in text
