@@ -1,6 +1,6 @@
 "use strict";
 const router = require("express").Router();
-const { likes, notis, posts } = require("../../models");
+const { likes, notis, posts, users } = require("../../models");
 const asyncLock = require("async-lock");
 const lock = new asyncLock();
 
@@ -48,7 +48,10 @@ router.post("/", async (req, res) => {
           // Send a 200 No Content response after deleting the like
           return res.status(200).send({ liked: false });
         }
+        // Send a 201 Created response after creating a new like
+        res.status(201).send({ liked: true });
 
+        //do in background
         // Create a notification if the user who liked the post is not the post owner
         if (req.user.id !== findpost?.postUser) {
           await notis.create({
@@ -59,10 +62,28 @@ router.post("/", async (req, res) => {
             text: "liked your post.",
             likeId: newlike?.id,
           });
+          const findusersocketID = onlineusers
+            .filter(
+              (obj, index, self) =>
+                self.findIndex((o) => o.socketid === obj.socketid) === index
+            )
+            .find((val) => val.userid === findpost?.postUser);
+          if (findusersocketID) {
+            const likeuser = await users.findOne({
+              where: {
+                id: req.user.id,
+              },
+            });
+            io.to(findusersocketID?.socketid).emit("newnotification", {
+              type: "liked your post",
+              postId,
+              username: likeuser?.username,
+              avatar: likeuser?.avatar,
+            });
+          }
         }
 
-        // Send a 201 Created response after creating a new like
-        return res.status(201).send({ liked: true });
+        return;
       },
       { timeout: 5000 }
       // this timeout will force the lock to be released after 5 seconds if it is not released by the code

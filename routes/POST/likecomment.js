@@ -1,6 +1,6 @@
 "use strict";
 const router = require("express").Router();
-const { commentlikes, notis, comments } = require("../../models");
+const { commentlikes, notis, comments, users } = require("../../models");
 const asyncLock = require("async-lock");
 const lock = new asyncLock();
 router.post("/", async (req, res) => {
@@ -30,7 +30,9 @@ router.post("/", async (req, res) => {
           await commentlikes.destroy({ where: { id: like.id } });
           return res.status(200).send({ liked: false });
         }
+        res.status(201).send({ liked: true });
 
+        //do background task
         if (req.user.id !== comment.userId) {
           await notis.create({
             userId: req.user.id,
@@ -41,8 +43,27 @@ router.post("/", async (req, res) => {
             commentlikeId: like.id,
             postId: comment.postId,
           });
+          const findusersocketID = onlineusers
+            .filter(
+              (obj, index, self) =>
+                self.findIndex((o) => o.socketid === obj.socketid) === index
+            )
+            .find((val) => val.userid === comment.userId);
+          if (findusersocketID) {
+            const likeuser = await users.findOne({
+              where: {
+                id: req.user.id,
+              },
+            });
+            io.to(findusersocketID?.socketid).emit("newnotification", {
+              type: "liked your comment",
+              postId: comment.postId,
+              username: likeuser?.username,
+              avatar: likeuser?.avatar,
+            });
+          }
         }
-        return res.status(201).send({ liked: true });
+        return;
       },
       { timeout: 5000 }
       // this timeout will force the lock to be released after 5 seconds if it is not released by the code

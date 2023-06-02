@@ -148,7 +148,7 @@ app.use("/chat", blacklistMiddleware, tokenCheck, chat);
 //initialize socket
 const { verify } = require("jsonwebtoken");
 const { users } = require("./models");
-let onlineusers = [];
+global.onlineusers = [];
 io.on("connection", (socket) => {
   console.log("a user connected ", socket.id);
 

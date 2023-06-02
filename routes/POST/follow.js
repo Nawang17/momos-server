@@ -92,8 +92,30 @@ router.post("/", async (req, res) => {
                 },
               ],
             });
-            //return followed status as true and new follow relationship details
-            return res.status(200).send({ followed: true, newFollowing });
+
+            //respond with followed status as true and new follow relationship details
+            res.status(200).send({ followed: true, newFollowing });
+
+            const findusersocketID = onlineusers
+              .filter(
+                (obj, index, self) =>
+                  self.findIndex((o) => o.socketid === obj.socketid) === index
+              )
+              .find((val) => val.userid === followingid);
+            if (findusersocketID) {
+              const followuser = await users.findOne({
+                where: {
+                  id: req.user.id,
+                },
+              });
+              io.to(findusersocketID?.socketid).emit("newnotification", {
+                type: "started following you",
+                postId: null,
+                username: followuser?.username,
+                avatar: followuser?.avatar,
+              });
+            }
+            return;
           }
         },
         //set timeout to release lock after 5 seconds if not released by the code
