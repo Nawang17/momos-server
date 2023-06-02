@@ -8,10 +8,10 @@ const {
   follows,
   nestedcomments,
   previewlinks,
-  postquotes,
   polls,
   pollchoices,
   pollvotes,
+  commentlikes,
 } = require("../../models");
 const sequelize = require("sequelize");
 const { tokenCheck } = require("../../middleware/tokenCheck");
@@ -81,7 +81,24 @@ router.get("/", async (req, res) => {
           },
           {
             model: comments,
+
             include: [
+              {
+                model: commentlikes,
+                seperate: true,
+                include: [
+                  {
+                    model: users,
+                    attributes: ["username", "avatar", "verified", "id"],
+                  },
+                ],
+                seperate: true,
+              },
+              {
+                model: users,
+
+                attributes: ["username", "avatar", "verified", "id"],
+              },
               {
                 model: nestedcomments,
                 seperate: true,
@@ -178,6 +195,22 @@ router.get("/", async (req, res) => {
           {
             model: comments,
             include: [
+              {
+                model: commentlikes,
+                seperate: true,
+                include: [
+                  {
+                    model: users,
+                    attributes: ["username", "avatar", "verified", "id"],
+                  },
+                ],
+                seperate: true,
+              },
+              {
+                model: users,
+
+                attributes: ["username", "avatar", "verified", "id"],
+              },
               {
                 model: nestedcomments,
                 seperate: true,
@@ -300,6 +333,22 @@ router.get("/followingposts", tokenCheck, async (req, res) => {
         {
           model: comments,
           include: [
+            {
+              model: commentlikes,
+              seperate: true,
+              include: [
+                {
+                  model: users,
+                  attributes: ["username", "avatar", "verified", "id"],
+                },
+              ],
+              seperate: true,
+            },
+            {
+              model: users,
+
+              attributes: ["username", "avatar", "verified", "id"],
+            },
             {
               model: nestedcomments,
               seperate: true,
