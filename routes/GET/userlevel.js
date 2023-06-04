@@ -4,9 +4,6 @@ const { users } = require("../../models");
 const sequelize = require("sequelize");
 router.get("/", async (req, res) => {
   try {
-    const currentDate = new Date();
-    const currentYear = currentDate.getFullYear();
-    const currentMonth = currentDate.getMonth() + 1; // Adding 1 since months are zero-based
     const userlevel = await users.findOne({
       where: {
         id: req.user.id,
@@ -31,8 +28,7 @@ router.get("/", async (req, res) => {
                 WHERE
                 notis.targetuserId = users.id
                 AND notis.type = 'LIKE'
-                AND YEAR(notis.createdAt) = ${currentYear}
-                AND MONTH(notis.createdAt) = ${currentMonth}
+              
               )`),
             "totalpoints",
           ],
