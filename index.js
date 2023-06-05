@@ -8,7 +8,7 @@ const { Server } = require("socket.io");
 const requestIp = require("request-ip");
 global.io = new Server(server, {
   cors: {
-    origin: [process.env.CLIENT_URL],
+    origin: ["http://localhost:3000", "https://momosz.com"],
   },
 });
 const db = require("./models");
