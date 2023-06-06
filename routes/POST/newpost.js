@@ -50,6 +50,13 @@ router.post("/", upload.single("media"), async (req, res) => {
       if (/^\s*$/.test(newtext)) {
         return res.status(400).send("Post cannot be empty");
       }
+
+      //send error if text is longer than 500 characters
+      if (newtext.length > 500) {
+        return res
+          .status(400)
+          .send("Text cannot be longer than 500 characters");
+      }
       // search for posts with same text and same user
       const existingPost = await posts.findOne({
         where: {
