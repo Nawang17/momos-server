@@ -21,6 +21,8 @@ router.post("/", async (req, res) => {
     return res.status(400).send("PostId is required");
   } else if (!gif && /^\s*$/.test(sanitizedText)) {
     return res.status(400).send("Comment cannot be empty");
+  } else if (sanitizedText.length > 255) {
+    return res.status(400).send("Comment cannot be longer than 255 characters");
   }
 
   try {

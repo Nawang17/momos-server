@@ -32,6 +32,7 @@ app.use(
     origin: ["http://localhost:3000", "https://momosz.com"],
   })
 );
+app.use(blacklistMiddleware);
 app.set("trust proxy", 4);
 app.use(express.json({ limit: "42mb" }));
 app.use(express.urlencoded({ limit: "42mb", extended: true }));
@@ -78,38 +79,39 @@ const likenestedcomment = require("./routes/POST/likenestedcomment");
 const userlevel = require("./routes/GET/userlevel");
 const reposts = require("./routes/GET/reposts");
 const chat = require("./routes/chat/chat");
+const editcomment = require("./routes/UPDATE/editcomments");
 
 app.use("/likedposts", tokenCheck, likedpost);
-app.use("/likepost", blacklistMiddleware, tokenCheck, likelimit, likepost);
-app.use("/pollvote", blacklistMiddleware, tokenCheck, pollvote);
+app.use("/likepost", tokenCheck, likelimit, likepost);
+app.use("/pollvote", tokenCheck, pollvote);
 app.use("/deletepost", tokenCheck, deletepost);
 app.use("/userinfo", tokenCheck, userinfo);
 app.use("/homeposts", homepost);
 app.use(
   "/newpost",
-  blacklistMiddleware,
+
   tokenCheck,
   tokennewpostLimit,
   newpostLimit,
   newpost
 );
 app.use("/auth/login", login);
-app.use("/auth/register", blacklistMiddleware, registerlimit, register);
-app.use("/auth/google", blacklistMiddleware, googleauth);
+app.use("/auth/register", registerlimit, register);
+app.use("/auth/google", googleauth);
 app.use("/profileinfo", profileinfo);
 app.use("/post", singlepost);
 app.use(
   "/newcomment",
-  blacklistMiddleware,
+
   tokenCheck,
   tokencommentlimit,
   commentlimit,
   newcomment
 );
-app.use("/deletecomment", blacklistMiddleware, tokenCheck, deletecomment);
+app.use("/deletecomment", tokenCheck, deletecomment);
 app.use(
   "/newnestedcomment",
-  blacklistMiddleware,
+
   tokenCheck,
   tokennestedcommentlimit,
   nestedcommentlimit,
@@ -117,33 +119,34 @@ app.use(
 );
 app.use(
   "/deletenestedcomment",
-  blacklistMiddleware,
+
   tokenCheck,
   deletenestedcomment
 );
 app.use("/notis", tokenCheck, notis);
-app.use("/follow", blacklistMiddleware, tokenCheck, followlimit, follow);
+app.use("/follow", tokenCheck, followlimit, follow);
 app.use("/suggestedusers", suggestedusers);
 app.use("/settingsinfo", tokenCheck, settingsinfo);
 app.use("/search", search);
 app.use("/leaderboard", leaderboard);
 app.use(
   "/likecomment",
-  blacklistMiddleware,
+
   tokenCheck,
   commentlikelimit,
   likecomment
 );
 app.use(
   "/likenestedcomment",
-  blacklistMiddleware,
+
   tokenCheck,
   nestedcommentlikelimit,
   likenestedcomment
 );
 app.use("/userlevel", tokenCheck, userlevel);
 app.use("/reposts", reposts);
-app.use("/chat", blacklistMiddleware, tokenCheck, chat);
+app.use("/chat", tokenCheck, chat);
+app.use("/editcomment", tokenCheck, editcomment);
 
 //initialize socket
 const { verify } = require("jsonwebtoken");
