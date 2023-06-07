@@ -181,6 +181,22 @@ router.post("/", async (req, res) => {
               userId: req.user.id,
               commentId: newComment.id,
             });
+            const findusersocketID = onlineusers
+              .filter(
+                (obj, index, self) =>
+                  self.findIndex((o) => o.socketid === obj.socketid) === index
+              )
+              .find((val) => val.userid === finduser.id);
+            if (findusersocketID) {
+              io.to(findusersocketID?.socketid).emit("newnotification", {
+                type: sanitizedText
+                  ? "commented: " + sanitizedText
+                  : "commented with a gif",
+                postId,
+                username: finduser?.username,
+                avatar: finduser?.avatar,
+              });
+            }
           }
         }
       });

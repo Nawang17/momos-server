@@ -7,6 +7,7 @@ const {
   nestedcomments,
   notis,
   commentlikes,
+  nestedcommentlikes,
 } = require("../../models");
 var filter = require("../../utils/bad-words-hacked");
 filter = new filter();
@@ -114,21 +115,35 @@ router.put("/", async (req, res) => {
       include: [
         {
           model: commentlikes,
+          seperate: true,
           include: [
             {
               model: users,
               attributes: ["username", "avatar", "verified", "id"],
             },
           ],
+          seperate: true,
         },
+
         {
           model: users,
           attributes: ["username", "avatar", "verified", "id"],
         },
         {
           model: nestedcomments,
-
+          seperate: true,
           include: [
+            {
+              model: nestedcommentlikes,
+              seperate: true,
+
+              include: [
+                {
+                  model: users,
+                  attributes: ["username", "avatar", "verified", "id"],
+                },
+              ],
+            },
             {
               model: users,
               as: "user",
@@ -151,30 +166,94 @@ router.put("/", async (req, res) => {
       .send({ message: "Comment updated successfully", updatedcomment });
 
     //do background job to update notifications
+    // send notification to post owner if not the same user
 
-    const findnoti = await notis.findOne({
+    //delete all old notifications for this comment
+
+    await notis.destroy({
       where: {
+        commentId: commentid,
+        userId: req.user.id,
+      },
+    });
+
+    // create new notification for this comment
+    if (req.user.id !== findpost.postUser) {
+      await notis.create({
         userId: req.user.id,
         type: "COMMENT",
         postId,
-        commentId: commentid,
-      },
-    });
-    if (findnoti) {
-      await notis.update(
-        {
-          text: updatedcomment?.text ? updatedcomment?.text : "with a gif",
-        },
-        {
+        targetuserId: findpost.postUser,
+        text: sanitizedText ? sanitizedText : "with a gif",
+        commentId: updatedcomment.id,
+      });
+      const findusersocketID = onlineusers
+        .filter(
+          (obj, index, self) =>
+            self.findIndex((o) => o.socketid === obj.socketid) === index
+        )
+        .find((val) => val.userid === findpost.postUser);
+      if (findusersocketID) {
+        const replyuser = await users.findOne({
           where: {
-            userId: req.user.id,
-            type: "COMMENT",
-            postId,
-            commentId: commentid,
+            id: req.user.id,
           },
-        }
-      );
+        });
+        io.to(findusersocketID?.socketid).emit("newnotification", {
+          type: sanitizedText
+            ? "commented: " + sanitizedText
+            : "commented with a gif",
+          postId,
+          username: replyuser?.username,
+          avatar: replyuser?.avatar,
+        });
+      }
     }
+
+    // send notifications to all users mentioned in the comment
+
+    const mentionsarr = sanitizedText?.match(/(@\w+)/gi);
+
+    let mentions = [];
+    mentionsarr?.map((val) => {
+      mentions?.push(val.slice(1));
+    });
+    mentions?.forEach(async (val) => {
+      const finduser = await users.findOne({
+        where: {
+          username: val,
+        },
+      });
+      if (finduser) {
+        if (finduser.id !== req.user.id && finduser.id !== findpost.postUser) {
+          notis.create({
+            type: "MENTION",
+            text: sanitizedText ? sanitizedText : "with a gif",
+            targetuserId: finduser.id,
+            postId: postId,
+            userId: req.user.id,
+            commentId: updatedcomment.id,
+          });
+
+          const findusersocketID = onlineusers
+            .filter(
+              (obj, index, self) =>
+                self.findIndex((o) => o.socketid === obj.socketid) === index
+            )
+            .find((val) => val.userid === finduser.id);
+          if (findusersocketID) {
+            io.to(findusersocketID?.socketid).emit("newnotification", {
+              type: sanitizedText
+                ? "commented: " + sanitizedText
+                : "commented with a gif",
+              postId,
+              username: finduser?.username,
+              avatar: finduser?.avatar,
+            });
+          }
+        }
+      }
+    });
 
     return;
   } catch (error) {

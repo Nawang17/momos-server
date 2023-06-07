@@ -47,7 +47,7 @@ const {
   commentlikelimit,
   nestedcommentlikelimit,
   tokennewpostLimit,
-
+  editcommentlimit,
   tokencommentlimit,
   tokennestedcommentlimit,
 } = require("./middleware/rateLimit");
@@ -80,7 +80,7 @@ const userlevel = require("./routes/GET/userlevel");
 const reposts = require("./routes/GET/reposts");
 const chat = require("./routes/chat/chat");
 const editcomment = require("./routes/UPDATE/editcomments");
-
+const editnestedcomment = require("./routes/UPDATE/editnestedcomments");
 app.use("/likedposts", tokenCheck, likedpost);
 app.use("/likepost", tokenCheck, likelimit, likepost);
 app.use("/pollvote", tokenCheck, pollvote);
@@ -146,7 +146,8 @@ app.use(
 app.use("/userlevel", tokenCheck, userlevel);
 app.use("/reposts", reposts);
 app.use("/chat", tokenCheck, chat);
-app.use("/editcomment", tokenCheck, editcomment);
+app.use("/editcomment", tokenCheck, editcommentlimit, editcomment);
+app.use("/editnestedcomment", tokenCheck, editcommentlimit, editnestedcomment);
 
 //initialize socket
 const { verify } = require("jsonwebtoken");

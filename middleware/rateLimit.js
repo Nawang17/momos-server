@@ -92,6 +92,12 @@ const tokenchatmessagelimit = rateLimit({
     "You are sending messages too fast. Please wait 1 minute to send again.", //err messasge
   skipFailedRequests: true,
 });
+const editcommentlimit = rateLimit({
+  windowMs: 1 * 60 * 1000, // 1 min
+  max: 4, // limit to 4 requests every 1 min per windows
+  message: "Edit comment limit reached. Please wait 1 minute to edit again.", //err messasge
+  skipFailedRequests: true,
+});
 module.exports = {
   newpostLimit,
   registerlimit,
@@ -108,4 +114,5 @@ module.exports = {
   tokenchatmessagelimit,
   tokencommentlimit,
   tokennestedcommentlimit,
+  editcommentlimit,
 };

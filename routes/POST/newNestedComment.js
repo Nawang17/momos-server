@@ -20,6 +20,9 @@ router.post("/", async (req, res) => {
   if (!sanitizedText && !gif) {
     return res.status(400).send("Reply cannot be empty");
   } else if (sanitizedText) {
+    if (sanitizedText.length > 255) {
+      return res.status(400).send("Reply cannot be longer than 255 characters");
+    }
     if (/^\s*$/.test(sanitizedText)) {
       return res.status(400).send("Invalid reply");
     }
@@ -175,6 +178,22 @@ router.post("/", async (req, res) => {
                 userId: req.user.id,
                 nestedcommentId: createNewNestedComment.id,
               });
+              const findusersocketID = onlineusers
+                .filter(
+                  (obj, index, self) =>
+                    self.findIndex((o) => o.socketid === obj.socketid) === index
+                )
+                .find((val) => val.userid === finduser?.id);
+              if (findusersocketID) {
+                io.to(findusersocketID?.socketid).emit("newnotification", {
+                  type: sanitizedText
+                    ? "replied: " + sanitizedText
+                    : "replied: with a gif",
+                  postId,
+                  username: finduser?.username,
+                  avatar: finduser?.avatar,
+                });
+              }
             }
           }
         });

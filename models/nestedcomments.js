@@ -1,7 +1,7 @@
 module.exports = (sequelize, DataTypes) => {
   const nestedcomments = sequelize.define("nestedcomments", {
     text: {
-      type: DataTypes.STRING,
+      type: DataTypes.STRING(255),
       allowNull: true,
       defaultValue: null,
     },
