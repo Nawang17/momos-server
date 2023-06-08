@@ -10,14 +10,14 @@ const tokennewpostLimit = rateLimit({
 const newpostLimit = rateLimit({
   //ip limit for new post
   windowMs: 1 * 60 * 1000, // 1 min
-  max: 4, // limit to 4 requests every 1 min per windows
+  max: 3, // limit to 3 requests every 1 min per windows
   message: "Post limit reached. Please wait 1 minute to post again.",
   skipFailedRequests: true,
 });
 const tokencommentlimit = rateLimit({
   keyGenerator: (req) => req.headers["authorization"],
   windowMs: 1 * 60 * 1000, // 1 min
-  max: 5, // limit to 5 requests every 1 min per windows
+  max: 3, // limit to 3 requests every 1 min per windows
   message: "Reply limit reached. Please wait 1 minute to reply again.", //err messasge
   skipFailedRequests: true,
 });
