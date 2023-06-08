@@ -4,7 +4,7 @@ const tokennewpostLimit = rateLimit({
   keyGenerator: (req) => req.headers["authorization"],
   windowMs: 1 * 60 * 1000, // 1 min
   message: "Post limit reached. Please wait 1 minute to post again.",
-  max: 4, // limit to 4 requests every 1 min per windows
+  max: 3, // limit to 3 requests every 1 min per windows
   skipFailedRequests: true,
 });
 const newpostLimit = rateLimit({
@@ -23,7 +23,7 @@ const tokencommentlimit = rateLimit({
 });
 const commentlimit = rateLimit({
   windowMs: 1 * 60 * 1000, // 1 min
-  max: 5, // limit to 5 requests every 1 min per windows
+  max: 3, // limit to 3 requests every 1 min per windows
   message: "Reply limit reached. Please wait 1 minute to reply again.", //err messasge
   skipFailedRequests: true,
 });
@@ -49,7 +49,7 @@ const followlimit = rateLimit({
 });
 const likelimit = rateLimit({
   windowMs: 1 * 60 * 1000, // 1 min
-  max: 50, // limit to 35 requests every 1 min per windows
+  max: 25, // limit to 25 requests every 1 min per windows
   message: "Like limit reached. Please wait 1 minute to like again.", //err messasge
   skipFailedRequests: true,
 });
@@ -67,13 +67,13 @@ const editprofilelimit = rateLimit({
 });
 const commentlikelimit = rateLimit({
   windowMs: 1 * 60 * 1000, // 1 min
-  max: 35, // limit to 35 requests every 1 min per windows
+  max: 25, // limit to 25 requests every 1 min per windows
   message: "Like limit reached. Please wait 1 minute to like again.", //err messasge
   skipFailedRequests: true,
 });
 const nestedcommentlikelimit = rateLimit({
   windowMs: 1 * 60 * 1000, // 1 min
-  max: 35, // limit to 35 requests every 1 min per windows
+  max: 25, // limit to 25 requests every 1 min per windows
   message: "Like limit reached. Please wait 1 minute to like again.", //err messasge
   skipFailedRequests: true,
 });
