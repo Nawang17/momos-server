@@ -7,6 +7,7 @@ var Filterer = require("bad-words");
 var filter = new Filterer();
 const { editprofilelimit } = require("../../middleware/rateLimit");
 const { restrictednames } = require("../../utils/restrictedusernames");
+const { deleteallcache } = require("../../utils/deletecache");
 router.get("/editprofileinfo", async (req, res) => {
   const { id } = req.user;
   try {
@@ -281,6 +282,7 @@ router.put("/updateprofileinfo", editprofilelimit, async (req, res) => {
         },
         attributes: ["username", "avatar"],
       });
+      deleteallcache();
       return res.status(200).send({
         message: "User profile updated successfully",
         newUserInfo,

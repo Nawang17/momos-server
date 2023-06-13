@@ -131,6 +131,11 @@ module.exports = (sequelize, DataTypes) => {
       onDelete: "CASCADE",
       foreignKeyConstraint: true,
     });
+    users.hasMany(models.bookmarks, {
+      foreignKey: "userId",
+      onDelete: "CASCADE",
+      foreignKeyConstraint: true,
+    });
   };
   return users;
 };

@@ -1,6 +1,22 @@
 "use strict";
 const router = require("express").Router();
-const { users, follows } = require("../../models");
+const {
+  users,
+  follows,
+  bookmarks,
+  posts,
+  likes,
+  comments,
+  nestedcomments,
+  previewlinks,
+  polls,
+  pollchoices,
+  pollvotes,
+  commentlikes,
+} = require("../../models");
+const sequelize = require("sequelize");
+const cache = require("../../utils/cache");
+
 router.get("/", async (req, res) => {
   const userFollowing = await follows.findAll({
     where: {
@@ -55,4 +71,144 @@ router.get("/suggestedusers/:name", async (req, res) => {
   });
 });
 
+router.get("/bookmarks/:type", async (req, res) => {
+  try {
+    const { type } = req.params;
+    if (type === "bookmarkids") {
+      const getbookmarks = await bookmarks.findAll({
+        where: {
+          userId: req.user.id,
+        },
+      });
+      const bookmarkIds = getbookmarks.map((z) => z.postId);
+      return res.status(200).send({
+        message: "bookmarks retrieved successfully",
+        bookmarkIds,
+      });
+    } else {
+      const bookmarkcache = cache.get(`bookmarkposts:${req.user.id}`);
+      if (bookmarkcache) {
+        return res.status(200).send({
+          cache: true,
+          message: "bookmarks retrieved successfully",
+          bookmarks: bookmarkcache,
+        });
+      }
+
+      const getbookmarks = await bookmarks.findAll({
+        where: {
+          userId: req.user.id,
+        },
+      });
+      const bookmarkIds = getbookmarks.map((z) => z.postId);
+
+      const bookmarkposts = await posts.findAll({
+        where: {
+          id: {
+            [sequelize.Op.in]: bookmarkIds,
+          },
+        },
+        attributes: {
+          exclude: ["updatedAt", "postUser"],
+          include: [
+            [
+              sequelize.literal(
+                "(SELECT COUNT(*) FROM postquotes WHERE postquotes.quotedPostId = posts.id)"
+              ),
+              "postquotesCount",
+            ],
+          ],
+        },
+        order: [["id", "DESC"]],
+        include: [
+          {
+            model: polls,
+            include: [
+              {
+                model: pollchoices,
+                include: [
+                  {
+                    model: pollvotes,
+                    include: [
+                      {
+                        model: users,
+                        attributes: ["username", "avatar", "verified", "id"],
+                      },
+                    ],
+                  },
+                ],
+              },
+            ],
+          },
+          {
+            model: previewlinks,
+          },
+          {
+            model: users,
+
+            attributes: ["username", "avatar", "verified", "id"],
+          },
+          {
+            model: likes,
+            include: [
+              {
+                model: users,
+                attributes: ["username", "avatar", "verified", "id"],
+              },
+            ],
+            seperate: true,
+          },
+          {
+            model: comments,
+
+            include: [
+              {
+                model: commentlikes,
+                seperate: true,
+                include: [
+                  {
+                    model: users,
+                    attributes: ["username", "avatar", "verified", "id"],
+                  },
+                ],
+                seperate: true,
+              },
+              {
+                model: users,
+
+                attributes: ["username", "avatar", "verified", "id"],
+              },
+              {
+                model: nestedcomments,
+                seperate: true,
+              },
+            ],
+            seperate: true,
+          },
+          {
+            model: posts,
+            include: [
+              {
+                model: users,
+                attributes: ["username", "avatar", "verified", "id"],
+              },
+            ],
+          },
+        ],
+      });
+      cache.set(
+        `bookmarkposts:${req.user.id}`,
+        JSON.parse(JSON.stringify(bookmarkposts))
+      );
+      return res.status(200).send({
+        cache: false,
+        message: "bookmarks retrieved successfully",
+        bookmarks: bookmarkposts,
+      });
+    }
+  } catch (error) {
+    console.log(error);
+    return res.status(500).send("Something went wrong");
+  }
+});
 module.exports = router;

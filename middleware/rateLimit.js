@@ -98,6 +98,13 @@ const editcommentlimit = rateLimit({
   message: "Edit comment limit reached. Please wait 1 minute to edit again.", //err messasge
   skipFailedRequests: true,
 });
+
+const bookmarklimit = rateLimit({
+  windowMs: 1 * 60 * 1000, // 1 min
+  max: 15, // limit to 15 requests every 1 min per windows
+  message: "Bookmakr limit reached. Please wait 1 minute to like again.", //err messasge
+  skipFailedRequests: true,
+});
 module.exports = {
   newpostLimit,
   registerlimit,
@@ -109,10 +116,10 @@ module.exports = {
   commentlikelimit,
   nestedcommentlikelimit,
   chatmessagelimit,
-
   tokennewpostLimit,
   tokenchatmessagelimit,
   tokencommentlimit,
   tokennestedcommentlimit,
   editcommentlimit,
+  bookmarklimit,
 };
