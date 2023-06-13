@@ -333,7 +333,7 @@ router.get("/:username", async (req, res) => {
       const replies = [...getcomments, ...getnestedcomments].sort(
         (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
       );
-      // set profileinfo cache for 8.3 minutes
+      // set profileinfo cache
       cache.set(
         `profileinfo:${username}`,
         JSON.parse(
@@ -346,9 +346,8 @@ router.get("/:username", async (req, res) => {
             likedpoststotalCount,
             userPoststotalCount,
           })
-        ),
-        500
-      ); //(8.3 minutes)
+        )
+      );
 
       return res.status(200).send({
         userPosts,
@@ -424,7 +423,7 @@ router.get("/followdata/:username", async (req, res) => {
       });
       const userfollowingarr = userFollowing.map((z) => z.following.username);
 
-      // set followinfo cache for 8.3 minutes
+      // set followinfo cache
       cache.set(
         `followinfo:${username}`,
         JSON.parse(
@@ -434,9 +433,8 @@ router.get("/followdata/:username", async (req, res) => {
             userfollowingarr,
             userfollowerarr,
           })
-        ),
-        500
-      ); //(8.3 minutes)
+        )
+      );
 
       return res.status(200).send({
         userFollowing,
@@ -538,12 +536,11 @@ router.get("/userposts/:userid", async (req, res) => {
       ],
     });
 
-    // set userposts cache for 8.3 minutes
+    // set userposts cache
     cache.set(
       `userposts:${userid}:${page}`,
-      JSON.parse(JSON.stringify(userPosts)),
-      500
-    ); //(8.3 minutes)
+      JSON.parse(JSON.stringify(userPosts))
+    );
 
     return res.status(200).send(userPosts);
   } catch (error) {
@@ -656,12 +653,11 @@ router.get("/likedposts/:userid", async (req, res) => {
         },
       ],
     });
-    // set likedposts cache for 8.3 minutes
+    // set likedposts cache
     cache.set(
       `likedposts:${userid}:${page}`,
-      JSON.parse(JSON.stringify(likedposts)),
-      500
-    ); //(8.3 minutes)
+      JSON.parse(JSON.stringify(likedposts))
+    );
     return res.status(200).send(likedposts);
   } catch (error) {
     console.log(error);

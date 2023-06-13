@@ -60,9 +60,9 @@ router.get("/", async (req, res) => {
         [sequelize.col("users.id"), "ASC"],
       ],
     });
-    // cache leaderboard and usersCount for 500 seconds (8.3 minutes)
-    cache.set(`leaderboard:${page}`, totalpoints, 500);
-    cache.set(`usersCount:${page}`, usersCount, 500);
+    // cache leaderboard and usersCount
+    cache.set(`leaderboard:${page}`, totalpoints);
+    cache.set(`usersCount:${page}`, usersCount);
 
     return res.status(200).send({
       cache: false,

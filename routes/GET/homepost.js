@@ -133,13 +133,12 @@ router.get("/", async (req, res) => {
             postCount = c;
           });
 
-          //set cache for latest homeposts 300 seconds (5 minutes)
+          //set cache for latest homeposts
           cache.set(
             `latestHomePosts:${page}`,
-            JSON.parse(JSON.stringify(homeposts)),
-            300
+            JSON.parse(JSON.stringify(homeposts))
           );
-          cache.set(`latestHomePostscount:${page}`, postCount, 300);
+          cache.set(`latestHomePostscount:${page}`, postCount);
 
           return res.status(200).send({
             message: "Latest posts",
@@ -274,13 +273,12 @@ router.get("/", async (req, res) => {
         await posts.count().then((c) => {
           postCount = c;
         });
-        //set cache for popular posts 300 seconds (5 minutes)
+        //set cache for popular posts
         cache.set(
           `popularHomePosts:${page}`,
-          JSON.parse(JSON.stringify(homeposts)),
-          300
+          JSON.parse(JSON.stringify(homeposts))
         );
-        cache.set(`popularHomePostscount:${page}`, postCount, 300);
+        cache.set(`popularHomePostscount:${page}`, postCount);
 
         return res.status(200).send({
           message: "Popular posts",

@@ -50,11 +50,10 @@ router.get("/", async (req, res) => {
         [sequelize.col("users.id"), "ASC"],
       ],
     });
-    // cache user level (8.3 minutes)
+    // cache user level
     cache.set(
       `userlevel:${req.user.id}`,
-      JSON.parse(JSON.stringify(userlevel)),
-      500
+      JSON.parse(JSON.stringify(userlevel))
     );
 
     res.status(200).send({
