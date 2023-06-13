@@ -2,7 +2,17 @@
 const router = require("express").Router();
 const { users } = require("../../models");
 const sequelize = require("sequelize");
+const cache = require("../../utils/cache");
+
 router.get("/", async (req, res) => {
+  const userlevelcache = cache.get(`userlevel:${req.user.id}`);
+  if (userlevelcache) {
+    return res.status(200).send({
+      cache: true,
+      userlevel: userlevelcache,
+    });
+  }
+
   try {
     const userlevel = await users.findOne({
       where: {
@@ -40,7 +50,15 @@ router.get("/", async (req, res) => {
         [sequelize.col("users.id"), "ASC"],
       ],
     });
+    // cache user level (8.3 minutes)
+    cache.set(
+      `userlevel:${req.user.id}`,
+      JSON.parse(JSON.stringify(userlevel)),
+      500
+    );
+
     res.status(200).send({
+      cache: false,
       message: "user retrieved successfully",
       userlevel,
     });

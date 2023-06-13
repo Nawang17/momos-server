@@ -2,6 +2,7 @@
 const router = require("express").Router();
 const { nestedcomments, notis } = require("../../models");
 
+const { deleteallcache } = require("../../utils/deletecache");
 router.delete("/:nestedcommentid", async (req, res) => {
   const { nestedcommentid } = req.params;
   if (!nestedcommentid) {
@@ -31,6 +32,7 @@ router.delete("/:nestedcommentid", async (req, res) => {
           });
 
           console.log("nested comment deleted successfully");
+          deleteallcache();
           return res.status(200).send("Nested comment deleted successfully");
         }
       }

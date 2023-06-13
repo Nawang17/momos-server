@@ -2,10 +2,21 @@
 const router = require("express").Router();
 const { users } = require("../../models");
 const sequelize = require("sequelize");
+const cache = require("../../utils/cache");
 
 router.get("/", async (req, res) => {
   try {
     const page = parseInt(req.query.page ? req.query.page : 0);
+    const leaderboardCache = cache.get(`leaderboard:${page}`);
+    const usersCountCache = cache.get(`usersCount:${page}`);
+    if (leaderboardCache && usersCountCache) {
+      return res.status(200).send({
+        cache: true,
+        usersCount: usersCountCache,
+        leaderboard: leaderboardCache,
+      });
+    }
+
     let usersCount;
     await users.count().then((c) => {
       usersCount = c;
@@ -49,8 +60,12 @@ router.get("/", async (req, res) => {
         [sequelize.col("users.id"), "ASC"],
       ],
     });
+    // cache leaderboard and usersCount for 500 seconds (8.3 minutes)
+    cache.set(`leaderboard:${page}`, totalpoints, 500);
+    cache.set(`usersCount:${page}`, usersCount, 500);
 
-    return res.json({
+    return res.status(200).send({
+      cache: false,
       usersCount,
       leaderboard: totalpoints,
     });

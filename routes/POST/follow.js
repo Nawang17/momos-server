@@ -3,7 +3,7 @@ const router = require("express").Router();
 const { follows, notis, users } = require("../../models");
 const asyncLock = require("async-lock");
 const lock = new asyncLock();
-
+const { deleteallcache } = require("../../utils/deletecache");
 //route handler for follow request
 router.post("/", async (req, res) => {
   try {
@@ -61,6 +61,9 @@ router.post("/", async (req, res) => {
                 userid: req.user.id,
               },
             });
+
+            deleteallcache();
+
             //return followed status as false
             return res.status(200).send({ followed: false });
           }
@@ -92,6 +95,7 @@ router.post("/", async (req, res) => {
                 },
               ],
             });
+            deleteallcache();
 
             //respond with followed status as true and new follow relationship details
             res.status(200).send({ followed: true, newFollowing });

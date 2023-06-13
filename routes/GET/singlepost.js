@@ -14,10 +14,23 @@ const {
   pollchoices,
   pollvotes,
 } = require("../../models");
+const cache = require("../../utils/cache");
 
 const sequelize = require("sequelize");
 router.get("/:postid", async (req, res) => {
   const { postid } = req.params;
+
+  // check cache
+  const singlepostcache = cache.get(`singlepost:${postid}`);
+  if (singlepostcache) {
+    return res.status(200).send({
+      cache: true,
+      message: "post retrieved successfully",
+
+      singlepost: singlepostcache,
+    });
+  }
+
   try {
     if (!postid) {
       res.status(400).send("postid is required");
@@ -143,9 +156,13 @@ router.get("/:postid", async (req, res) => {
       ],
     });
     if (singlepost.length === 0) {
-      res.status(400).send("Post not found");
+      return res.status(400).send("Post not found");
     } else {
-      res.status(200).send({
+      // set cache
+      cache.set(`singlepost:${postid}`, JSON.parse(JSON.stringify(singlepost)));
+
+      return res.status(200).send({
+        cache: false,
         message: "post retrieved successfully",
         singlepost,
       });

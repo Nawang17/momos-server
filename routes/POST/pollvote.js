@@ -8,7 +8,7 @@ const {
   pollvotes,
   pollchoices,
 } = require("../../models");
-
+const { deleteallcache } = require("../../utils/deletecache");
 router.post("/", async (req, res) => {
   try {
     const { pollid, pollchoiceid, postid } = req.body;
@@ -89,7 +89,7 @@ router.post("/", async (req, res) => {
     if (!newpollvote) {
       return res.status(500).send("Something went wrong");
     }
-
+    deleteallcache();
     return res.status(200).send({
       voted: true,
       newpollvote,

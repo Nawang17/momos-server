@@ -12,6 +12,7 @@ const {
 var filter = require("../../utils/bad-words-hacked");
 filter = new filter();
 const { Op } = require("sequelize");
+const cache = require("../../utils/cache");
 router.put("/", async (req, res) => {
   const { postId, commentid, text, gif } = req.body;
   const sanitizedText = filter.cleanHacked(
@@ -160,7 +161,7 @@ router.put("/", async (req, res) => {
         },
       ],
     });
-
+    cache.del(`singlepost:${postId}`);
     res
       .status(200)
       .send({ message: "Comment updated successfully", updatedcomment });

@@ -11,6 +11,8 @@ const {
 var filter = require("../../utils/bad-words-hacked");
 filter = new filter();
 const { sendmessage, sendchannelmessage } = require("../../utils/discordbot");
+const { deleteallcache } = require("../../utils/deletecache");
+
 router.post("/", async (req, res) => {
   const { text, commentId, replytouserId, postId, gif } = req.body;
 
@@ -113,7 +115,7 @@ router.post("/", async (req, res) => {
         });
 
         // send success response with new nested comment data
-
+        deleteallcache();
         res.status(200).send({
           message: "Nested Comment created successfully",
           nestedcomment,

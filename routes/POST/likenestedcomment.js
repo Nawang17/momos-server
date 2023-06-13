@@ -8,6 +8,7 @@ const {
 } = require("../../models");
 const asyncLock = require("async-lock");
 const lock = new asyncLock();
+const { deleteallcache } = require("../../utils/deletecache");
 router.post("/", async (req, res) => {
   try {
     const { nestedcommentId } = req.body;
@@ -45,11 +46,13 @@ router.post("/", async (req, res) => {
               userId: req.user.id,
             },
           });
+          deleteallcache();
+
           // Send a 200 OK response after deleting the like
           return res.status(200).send({ liked: false });
         }
         // Send a 201 Created response after creating a new like
-
+        deleteallcache();
         res.status(201).send({ liked: true });
 
         //do in background

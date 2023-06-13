@@ -3,7 +3,7 @@ const router = require("express").Router();
 const { likes, notis, posts, users } = require("../../models");
 const asyncLock = require("async-lock");
 const lock = new asyncLock();
-
+const { deleteallcache } = require("../../utils/deletecache");
 router.post("/", async (req, res) => {
   try {
     // Check if postId is provided in the request body
@@ -44,10 +44,12 @@ router.post("/", async (req, res) => {
               userId: req.user.id,
             },
           });
+          deleteallcache();
 
           // Send a 200 No Content response after deleting the like
           return res.status(200).send({ liked: false });
         }
+        deleteallcache();
         // Send a 201 Created response after creating a new like
         res.status(201).send({ liked: true });
 

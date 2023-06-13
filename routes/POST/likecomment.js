@@ -3,6 +3,7 @@ const router = require("express").Router();
 const { commentlikes, notis, comments, users } = require("../../models");
 const asyncLock = require("async-lock");
 const lock = new asyncLock();
+const { deleteallcache } = require("../../utils/deletecache");
 router.post("/", async (req, res) => {
   try {
     const { commentId } = req.body;
@@ -28,8 +29,11 @@ router.post("/", async (req, res) => {
 
         if (!created) {
           await commentlikes.destroy({ where: { id: like.id } });
+          deleteallcache();
+
           return res.status(200).send({ liked: false });
         }
+        deleteallcache();
         res.status(201).send({ liked: true });
 
         //do background task

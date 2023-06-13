@@ -11,7 +11,7 @@ const { Op } = require("sequelize");
 
 var filter = require("../../utils/bad-words-hacked");
 filter = new filter();
-
+const cache = require("../../utils/cache");
 router.put("/", async (req, res) => {
   const { text, commentId, replytouserId, postId, gif, nestedcommentId } =
     req.body;
@@ -130,7 +130,10 @@ router.put("/", async (req, res) => {
           },
         ],
       });
+      cache.del(`singlepost:${postId}`);
+
       // send success response with updated nested comment data
+
       res.status(200).send({
         message: "Nested Comment created successfully",
         updatedreply,

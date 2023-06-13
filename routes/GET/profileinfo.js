@@ -15,8 +15,27 @@ const {
   pollvotes,
 } = require("../../models");
 const sequelize = require("sequelize");
+const cache = require("../../utils/cache");
+
 router.get("/:username", async (req, res) => {
   const { username } = req.params;
+  const profileinfocache = cache.get(`profileinfo:${username}`);
+  if (profileinfocache) {
+    return res.status(200).send({
+      cache: true,
+      userPosts: profileinfocache.userPosts,
+      userInfo: profileinfocache.userInfo,
+      likedposts: profileinfocache.likedposts,
+      replies: profileinfocache.replies,
+      rankInfo: {
+        rank: profileinfocache.rankInfo.rank,
+        points: profileinfocache.rankInfo.points,
+      },
+      likedpoststotalCount: profileinfocache.likedpoststotalCount,
+      userPoststotalCount: profileinfocache.userPoststotalCount,
+    });
+  }
+
   try {
     if (!username) {
       return res.status(400).send("username is required");
@@ -314,6 +333,22 @@ router.get("/:username", async (req, res) => {
       const replies = [...getcomments, ...getnestedcomments].sort(
         (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
       );
+      // set profileinfo cache for 8.3 minutes
+      cache.set(
+        `profileinfo:${username}`,
+        JSON.parse(
+          JSON.stringify({
+            userPosts,
+            userInfo,
+            likedposts,
+            replies,
+            rankInfo: { rank, points },
+            likedpoststotalCount,
+            userPoststotalCount,
+          })
+        ),
+        500
+      ); //(8.3 minutes)
 
       return res.status(200).send({
         userPosts,
@@ -323,6 +358,7 @@ router.get("/:username", async (req, res) => {
         rankInfo: { rank, points },
         likedpoststotalCount,
         userPoststotalCount,
+        cache: false,
       });
     }
   } catch (error) {
@@ -332,6 +368,17 @@ router.get("/:username", async (req, res) => {
 });
 router.get("/followdata/:username", async (req, res) => {
   const { username } = req.params;
+
+  const followinfo = cache.get(`followinfo:${username}`); //get followinfo cache
+  if (followinfo) {
+    return res.status(200).send({
+      userFollowing: followinfo.userFollowing,
+      userFollowers: followinfo.userFollowers,
+      userfollowingarr: followinfo.userfollowingarr,
+      userfollowerarr: followinfo.userfollowerarr,
+      cache: true,
+    });
+  }
   try {
     if (!username) {
       return res.status(400).send("username is required");
@@ -377,11 +424,26 @@ router.get("/followdata/:username", async (req, res) => {
       });
       const userfollowingarr = userFollowing.map((z) => z.following.username);
 
+      // set followinfo cache for 8.3 minutes
+      cache.set(
+        `followinfo:${username}`,
+        JSON.parse(
+          JSON.stringify({
+            userFollowing,
+            userFollowers,
+            userfollowingarr,
+            userfollowerarr,
+          })
+        ),
+        500
+      ); //(8.3 minutes)
+
       return res.status(200).send({
         userFollowing,
         userFollowers,
         userfollowingarr,
         userfollowerarr,
+        cache: false,
       });
     }
   } catch (error) {
@@ -392,7 +454,10 @@ router.get("/followdata/:username", async (req, res) => {
 router.get("/userposts/:userid", async (req, res) => {
   const { userid } = req.params;
   const page = parseInt(req.query.page ? req.query.page : 1);
-
+  const userPosts = cache.get(`userposts:${userid}:${page}`); //get userposts cache
+  if (userPosts) {
+    return res.status(200).send(userPosts);
+  }
   try {
     const userPosts = await posts.findAll({
       offset: page * 10,
@@ -472,6 +537,14 @@ router.get("/userposts/:userid", async (req, res) => {
         },
       ],
     });
+
+    // set userposts cache for 8.3 minutes
+    cache.set(
+      `userposts:${userid}:${page}`,
+      JSON.parse(JSON.stringify(userPosts)),
+      500
+    ); //(8.3 minutes)
+
     return res.status(200).send(userPosts);
   } catch (error) {
     console.log(error);
@@ -483,6 +556,12 @@ router.get("/likedposts/:userid", async (req, res) => {
   try {
     const { userid } = req.params;
     const page = parseInt(req.query.page ? req.query.page : 1);
+
+    // get likedposts cache
+    const likedpostscache = cache.get(`likedposts:${userid}:${page}`);
+    if (likedpostscache) {
+      return res.status(200).send(likedpostscache);
+    }
 
     const likedpostsidarray = await likes
       .findAll({
@@ -577,7 +656,12 @@ router.get("/likedposts/:userid", async (req, res) => {
         },
       ],
     });
-
+    // set likedposts cache for 8.3 minutes
+    cache.set(
+      `likedposts:${userid}:${page}`,
+      JSON.parse(JSON.stringify(likedposts)),
+      500
+    ); //(8.3 minutes)
     return res.status(200).send(likedposts);
   } catch (error) {
     console.log(error);

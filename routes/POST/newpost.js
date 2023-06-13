@@ -19,7 +19,7 @@ const sequelize = require("sequelize");
 const upload = require("../../utils/multermediaupload");
 const { sendmessage, sendchannelmessage } = require("../../utils/discordbot");
 const { getLinkPreview } = require("link-preview-js");
-
+const { deleteallcache } = require("../../utils/deletecache");
 router.post("/", upload.single("media"), async (req, res) => {
   try {
     const media = req.file ? req.file : null;
@@ -198,6 +198,7 @@ router.post("/", upload.single("media"), async (req, res) => {
       postId: newPost?.id,
       userId: req.user.id,
     });
+    deleteallcache();
 
     // send success response
     res.status(201).send({
@@ -568,7 +569,7 @@ router.post("/addpoll", async (req, res) => {
         postId: createPost?.id,
         userId: req.user.id,
       });
-
+      deleteallcache();
       // send success response
       res.status(201).send({
         message: "Post created successfully",

@@ -2,7 +2,7 @@
 const router = require("express").Router();
 const { posts } = require("../../models");
 const { cloudinary } = require("../../utils/cloudinary");
-
+const { deleteallcache } = require("../../utils/deletecache");
 router.delete("/:postId", async (req, res) => {
   const { postId } = req.params;
   if (!postId) {
@@ -55,6 +55,7 @@ router.delete("/:postId", async (req, res) => {
               id: postId,
             },
           });
+          deleteallcache();
           res.status(200).send("Post deleted successfully");
           console.log("post deleted successfully");
           io.emit("post-deleted", postId);

@@ -1,7 +1,7 @@
 "use strict";
 const router = require("express").Router();
 const { comments } = require("../../models");
-
+const { deleteallcache } = require("../../utils/deletecache");
 router.delete("/:commentid", async (req, res) => {
   const { commentid } = req.params;
   if (!commentid) {
@@ -28,6 +28,7 @@ router.delete("/:commentid", async (req, res) => {
           });
 
           console.log("comment deleted successfully");
+          deleteallcache();
           return res.status(200).send("Comment deleted successfully");
         }
       }

@@ -15,118 +15,159 @@ const {
 } = require("../../models");
 const sequelize = require("sequelize");
 const { tokenCheck } = require("../../middleware/tokenCheck");
+const cache = require("../../utils/cache");
+
 router.get("/", async (req, res) => {
   try {
     const sortby = req.query.sortby ? req.query.sortby : "Latest";
     const page = parseInt(req.query.page ? req.query.page : 0);
+
     let homeposts;
     let postCount;
-    await posts.count().then((c) => {
-      postCount = c;
-    });
+
     if (sortby === "Latest") {
-      //sort by latest
-      homeposts = await posts.findAll({
-        limit: 10,
-        offset: page * 10,
-        attributes: {
-          exclude: ["updatedAt", "postUser"],
-          include: [
-            [
-              sequelize.literal(
-                "(SELECT COUNT(*) FROM postquotes WHERE postquotes.quotedPostId = posts.id)"
-              ),
-              "postquotesCount",
-            ],
-          ],
-        },
-        order: [["id", "DESC"]],
-        include: [
-          {
-            model: polls,
-            include: [
-              {
-                model: pollchoices,
-                include: [
-                  {
-                    model: pollvotes,
-                    include: [
-                      {
-                        model: users,
-                        attributes: ["username", "avatar", "verified", "id"],
-                      },
-                    ],
-                  },
-                ],
-              },
-            ],
-          },
-          {
-            model: previewlinks,
-          },
-          {
-            model: users,
-
-            attributes: ["username", "avatar", "verified", "id"],
-          },
-          {
-            model: likes,
-            include: [
-              {
-                model: users,
-                attributes: ["username", "avatar", "verified", "id"],
-              },
-            ],
-            seperate: true,
-          },
-          {
-            model: comments,
-
-            include: [
-              {
-                model: commentlikes,
-                seperate: true,
-                include: [
-                  {
-                    model: users,
-                    attributes: ["username", "avatar", "verified", "id"],
-                  },
-                ],
-                seperate: true,
-              },
-              {
-                model: users,
-
-                attributes: ["username", "avatar", "verified", "id"],
-              },
-              {
-                model: nestedcomments,
-                seperate: true,
-              },
-            ],
-            seperate: true,
-          },
-          {
-            model: posts,
-            include: [
-              {
-                model: users,
-                attributes: ["username", "avatar", "verified", "id"],
-              },
-            ],
-          },
-        ],
-      });
-      if (homeposts) {
-        res.status(200).send({
+      //check if cache exists
+      const cachedlatestposts = cache.get(`latestHomePosts:${page}`);
+      const cachedlatestpostscount = cache.get(`latestHomePostscount:${page}`);
+      if (cachedlatestposts && cachedlatestpostscount) {
+        return res.status(200).send({
           message: "Latest posts",
-          homeposts,
-          postCount,
+          homeposts: cachedlatestposts,
+          postCount: cachedlatestpostscount,
+          cached: true,
         });
       } else {
-        res.status(400).send("something went wrong");
+        homeposts = await posts.findAll({
+          limit: 10,
+          offset: page * 10,
+          attributes: {
+            exclude: ["updatedAt", "postUser"],
+            include: [
+              [
+                sequelize.literal(
+                  "(SELECT COUNT(*) FROM postquotes WHERE postquotes.quotedPostId = posts.id)"
+                ),
+                "postquotesCount",
+              ],
+            ],
+          },
+          order: [["id", "DESC"]],
+          include: [
+            {
+              model: polls,
+              include: [
+                {
+                  model: pollchoices,
+                  include: [
+                    {
+                      model: pollvotes,
+                      include: [
+                        {
+                          model: users,
+                          attributes: ["username", "avatar", "verified", "id"],
+                        },
+                      ],
+                    },
+                  ],
+                },
+              ],
+            },
+            {
+              model: previewlinks,
+            },
+            {
+              model: users,
+
+              attributes: ["username", "avatar", "verified", "id"],
+            },
+            {
+              model: likes,
+              include: [
+                {
+                  model: users,
+                  attributes: ["username", "avatar", "verified", "id"],
+                },
+              ],
+              seperate: true,
+            },
+            {
+              model: comments,
+
+              include: [
+                {
+                  model: commentlikes,
+                  seperate: true,
+                  include: [
+                    {
+                      model: users,
+                      attributes: ["username", "avatar", "verified", "id"],
+                    },
+                  ],
+                  seperate: true,
+                },
+                {
+                  model: users,
+
+                  attributes: ["username", "avatar", "verified", "id"],
+                },
+                {
+                  model: nestedcomments,
+                  seperate: true,
+                },
+              ],
+              seperate: true,
+            },
+            {
+              model: posts,
+              include: [
+                {
+                  model: users,
+                  attributes: ["username", "avatar", "verified", "id"],
+                },
+              ],
+            },
+          ],
+        });
+        if (homeposts) {
+          await posts.count().then((c) => {
+            postCount = c;
+          });
+
+          //set cache for latest homeposts 300 seconds (5 minutes)
+          cache.set(
+            `latestHomePosts:${page}`,
+            JSON.parse(JSON.stringify(homeposts)),
+            300
+          );
+          cache.set(`latestHomePostscount:${page}`, postCount, 300);
+
+          return res.status(200).send({
+            message: "Latest posts",
+            homeposts,
+            postCount,
+            cached: false,
+          });
+        } else {
+          res.status(400).send("something went wrong");
+        }
       }
+
+      //sort by latest
     } else if (sortby === "Popular") {
+      //check if cache exists
+      const cachedpopularposts = cache.get(`popularHomePosts:${page}`);
+      const cachedpopularpostscount = cache.get(
+        `popularHomePostscount:${page}`
+      );
+      if (cachedpopularposts && cachedpopularpostscount) {
+        return res.status(200).send({
+          message: "Popular posts",
+          homeposts: cachedpopularposts,
+          postCount: cachedpopularpostscount,
+          cached: true,
+        });
+      }
+
       //sort by likes
       homeposts = await posts.findAll({
         limit: 10,
@@ -230,10 +271,22 @@ router.get("/", async (req, res) => {
         ],
       });
       if (homeposts) {
-        res.status(200).send({
+        await posts.count().then((c) => {
+          postCount = c;
+        });
+        //set cache for popular posts 300 seconds (5 minutes)
+        cache.set(
+          `popularHomePosts:${page}`,
+          JSON.parse(JSON.stringify(homeposts)),
+          300
+        );
+        cache.set(`popularHomePostscount:${page}`, postCount, 300);
+
+        return res.status(200).send({
           message: "Popular posts",
           homeposts,
           postCount,
+          cached: false,
         });
       } else {
         res.status(400).send("something went wrong");
