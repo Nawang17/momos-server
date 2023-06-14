@@ -49,12 +49,17 @@ router.get("/", async (req, res) => {
                 AND notis.type = 'LIKE'
                 AND YEAR(notis.createdAt) = ${currentYear}
                 AND MONTH(notis.createdAt) = ${currentMonth}
+              
               )`),
             "totalpoints",
           ],
         ],
       },
-
+      where: {
+        id: {
+          [sequelize.Op.ne]: 6, // Exclude demo account from leaderboard
+        },
+      },
       order: [
         [sequelize.literal("totalpoints"), "DESC"],
         [sequelize.col("users.id"), "ASC"],

@@ -83,6 +83,7 @@ const chat = require("./routes/chat/chat");
 const editcomment = require("./routes/UPDATE/editcomments");
 const editnestedcomment = require("./routes/UPDATE/editnestedcomments");
 const bookmarkpost = require("./routes/POST/newbookmark");
+const adminroute = require("./routes/Admin/admin");
 
 app.use("/likedposts", tokenCheck, likedpost);
 app.use("/likepost", tokenCheck, likelimit, likepost);
@@ -152,6 +153,7 @@ app.use("/chat", tokenCheck, chat);
 app.use("/editcomment", tokenCheck, editcommentlimit, editcomment);
 app.use("/editnestedcomment", tokenCheck, editcommentlimit, editnestedcomment);
 app.use("/bookmarkpost", tokenCheck, bookmarklimit, bookmarkpost);
+app.use("/admin", tokenCheck, adminroute);
 
 //initialize socket
 const { verify } = require("jsonwebtoken");

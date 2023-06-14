@@ -3,6 +3,7 @@ const router = require("express").Router();
 const { users, follows } = require("../../models");
 const Sequelize = require("sequelize");
 const { Op } = require("sequelize");
+const sequelize = require("sequelize");
 
 router.get("/suggest/:name", async (req, res) => {
   const { name } = req.params;
@@ -105,7 +106,11 @@ router.get("/topuser", async (req, res) => {
           ],
         ],
       },
-
+      where: {
+        id: {
+          [sequelize.Op.ne]: 6, // Exclude demo account from leaderboard
+        },
+      },
       order: [
         [Sequelize.literal("totalpoints"), "DESC"],
         [Sequelize.col("users.id"), "ASC"],

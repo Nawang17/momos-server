@@ -59,43 +59,49 @@ router.get("/:username", async (req, res) => {
     } else if (userInfo.status === "inactive") {
       return res.status(400).send("User is inactive");
     } else {
-      let points;
-      const currentDate = new Date();
-      const currentYear = currentDate.getFullYear();
-      const currentMonth = currentDate.getMonth() + 1; // Adding 1 since months are zero-based
-      const rank = await users
-        .findAll({
-          attributes: {
-            include: [
-              // get count of total likes
+      let points = null;
+      let rank = null;
+      if (userInfo.id !== 6) {
+        // dont show rank for demo account
+        const currentDate = new Date();
+        const currentYear = currentDate.getFullYear();
+        const currentMonth = currentDate.getMonth() + 1; // Adding 1 since months are zero-based
+        rank = await users
+          .findAll({
+            attributes: {
+              include: [
+                // get count of total likes
 
-              [
-                sequelize.literal(`(
-                    SELECT COUNT(*)
-                    FROM notis
-                    WHERE
-                    notis.targetuserId = users.id
-                    AND notis.type = 'LIKE'
-                    AND YEAR(notis.createdAt) = ${currentYear}
-                    AND MONTH(notis.createdAt) = ${currentMonth}
-                  )`),
-                "totalpoints",
+                [
+                  sequelize.literal(`(
+                      SELECT COUNT(*)
+                      FROM notis
+                      WHERE
+                      notis.targetuserId = users.id
+                      AND notis.type = 'LIKE'
+                      AND YEAR(notis.createdAt) = ${currentYear}
+                      AND MONTH(notis.createdAt) = ${currentMonth}
+                    )`),
+                  "totalpoints",
+                ],
               ],
-            ],
-          },
+            },
 
-          order: [
-            [sequelize.literal("totalpoints"), "DESC"],
-            [sequelize.col("users.id"), "ASC"],
-          ],
-          raw: true,
-        })
-        .then(async (users) => {
-          points = await users[
-            users.findIndex((user) => user.id === userInfo.id)
-          ].totalpoints;
-          return (await users.findIndex((user) => user.id === userInfo.id)) + 1;
-        });
+            order: [
+              [sequelize.literal("totalpoints"), "DESC"],
+              [sequelize.col("users.id"), "ASC"],
+            ],
+            raw: true,
+          })
+          .then(async (users) => {
+            points = await users[
+              users.findIndex((user) => user.id === userInfo.id)
+            ].totalpoints;
+            return (
+              (await users.findIndex((user) => user.id === userInfo.id)) + 1
+            );
+          });
+      }
 
       let userPoststotalCount;
 
