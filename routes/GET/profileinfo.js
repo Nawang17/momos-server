@@ -87,6 +87,11 @@ router.get("/:username", async (req, res) => {
               ],
             },
 
+      where: {
+        id: {
+          [sequelize.Op.ne]: 6, // Exclude demo account from leaderboard
+        },
+      },
             order: [
               [sequelize.literal("totalpoints"), "DESC"],
               [sequelize.col("users.id"), "ASC"],
