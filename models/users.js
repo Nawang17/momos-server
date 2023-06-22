@@ -44,6 +44,11 @@ module.exports = (sequelize, DataTypes) => {
       allowNull: true,
       defaultValue: null,
     },
+    lastseen: {
+      type: DataTypes.DATE,
+      allowNull: true,
+      defaultValue: null,
+    },
   });
   users.associate = (models) => {
     users.hasMany(models.posts, {
