@@ -19,7 +19,7 @@ var filter = require("../../utils/bad-words-hacked");
 filter = new filter();
 const sequelize = require("sequelize");
 const upload = require("../../utils/multermediaupload");
-const { sendmessage, sendchannelmessage } = require("../../utils/discordbot");
+const { sendmessage } = require("../../utils/discordbot");
 const { getLinkPreview } = require("link-preview-js");
 const { deleteallcache } = require("../../utils/deletecache");
 router.post("/", upload.single("media"), async (req, res) => {
@@ -259,25 +259,25 @@ router.post("/", upload.single("media"), async (req, res) => {
 
     //find user who posted the post
 
-    const postuser = await users.findOne({
-      where: {
-        id: req.user.id,
-      },
-    });
+    // const postuser = await users.findOne({
+    //   where: {
+    //     id: req.user.id,
+    //   },
+    // });
     // eslint-disable-next-line no-undef
     if (process.env.NODE_ENV === "production") {
       //send discord channel message
 
-      await sendchannelmessage(
-        `📮 New post by ${postuser?.username}${
-          newPost?.text ? "\n" + "**" + newPost?.text + "**" : ""
-        }
-      
-      ${newPost?.image ? "\n**media added**" : ""}\nhttps://momosz.com/post/${
-          newPost?.id
-        }
-        `
-      );
+      // await sendchannelmessage(
+      //   `📮 New post by ${postuser?.username}${
+      //     newPost?.text ? "\n" + "**" + newPost?.text + "**" : ""
+      //   }
+
+      // ${newPost?.image ? "\n**media added**" : ""}\nhttps://momosz.com/post/${
+      //     newPost?.id
+      //   }
+      //   `
+      // );
 
       //send discord message
 
