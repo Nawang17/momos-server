@@ -655,25 +655,25 @@ router.post("/addpoll", async (req, res) => {
 
       //find user who posted the post
 
-      const postuser = await users.findOne({
-        where: {
-          id: req.user.id,
-        },
-      });
+      // const postuser = await users.findOne({
+      //   where: {
+      //     id: req.user.id,
+      //   },
+      // });
       // eslint-disable-next-line no-undef
       if (process.env.NODE_ENV === "production") {
         //send discord channel message
 
-        await sendchannelmessage(
-          `📮 New post by ${postuser?.username}${
-            createPost?.text ? "\n" + "**" + createPost?.text + "**" : ""
-          }
-        
-        ${
-          createPost?.image ? "\n**media added**" : ""
-        }\nhttps://momosz.com/post/${createPost?.id}
-          `
-        );
+        // await sendchannelmessage(
+        //   `📮 New post by ${postuser?.username}${
+        //     createPost?.text ? "\n" + "**" + createPost?.text + "**" : ""
+        //   }
+
+        // ${
+        //   createPost?.image ? "\n**media added**" : ""
+        // }\nhttps://momosz.com/post/${createPost?.id}
+        //   `
+        // );
 
         //send discord message
 

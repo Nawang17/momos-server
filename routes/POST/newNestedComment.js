@@ -1,3 +1,4 @@
+/* eslint-disable no-undef */
 "use strict";
 const router = require("express").Router();
 const {
@@ -6,6 +7,7 @@ const {
   nestedcommentlikes,
   comments,
   notis,
+  posts,
 } = require("../../models");
 
 var filter = require("../../utils/bad-words-hacked");
@@ -33,6 +35,20 @@ router.post("/", async (req, res) => {
     return res.status(400).send("Please provide all the required data");
   }
   try {
+    //find if post exists
+
+    const findpost = await posts.findOne({
+      where: {
+        id: postId,
+      },
+    });
+
+    // if post not found, send error
+
+    if (!findpost) {
+      return res.status(400).send("Post not found");
+    }
+
     // find comment that is being replied to
 
     const findcomment = await comments.findOne({
@@ -134,6 +150,7 @@ router.post("/", async (req, res) => {
             text: sanitizedText ? sanitizedText : "with a gif",
             nestedcommentId: createNewNestedComment.id,
           });
+          // eslint-disable-next-line no-undef
           const findusersocketID = onlineusers
             .filter(
               (obj, index, self) =>
@@ -201,19 +218,21 @@ router.post("/", async (req, res) => {
         });
         if (process.env.NODE_ENV === "production") {
           //send discord channel message
-
-          await sendchannelmessage(
-            `💬 New reply by ${nestedcomment?.user?.username}${
-              nestedcomment?.text
-                ? "\n" + "**" + nestedcomment?.text + "**"
-                : ""
-            }
-          
-          ${nestedcomment?.gif ? "\n**gif**" : ""}\nhttps://momosz.com/post/${
-              nestedcomment?.postId
-            }
-            `
-          );
+          //only send if post is not in a community
+          if (!findpost.communityid) {
+            await sendchannelmessage(
+              `💬 New reply by ${nestedcomment?.user?.username}${
+                nestedcomment?.text
+                  ? "\n" + "**" + nestedcomment?.text + "**"
+                  : ""
+              }
+            
+            ${nestedcomment?.gif ? "\n**gif**" : ""}\nhttps://momosz.com/post/${
+                nestedcomment?.postId
+              }
+              `
+            );
+          }
 
           //send discord message
           await sendmessage(

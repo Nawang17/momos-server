@@ -9,14 +9,13 @@ filter = new filter();
 const upload = require("../../utils/multermediaupload");
 const { sendmessage, sendchannelmessage } = require("../../utils/discordbot");
 const { newcommunitylimit } = require("../../middleware/rateLimit");
-
+const { avatarColor } = require("../../utils/randomColor");
 router.post(
   "/",
   newcommunitylimit,
   upload.single("media"),
   async (req, res) => {
     try {
-      console.log(req.file);
       const media = req.file ? req.file : null;
 
       let communityname = req.body.communityname
@@ -86,14 +85,23 @@ router.post(
         mediaurl = mediauploadresults[0];
         mediakey = mediauploadresults[1];
       }
+      let avatar;
+      if (!media) {
+        const randomAvatarColor =
+          avatarColor[Math.floor(avatarColor.length * Math.random())];
+        avatar = `https://ui-avatars.com/api/?background=${randomAvatarColor}&color=fff&name=${communityname.substring(
+          0,
+          1
+        )}&size=128`;
+      }
       //create new community
 
       const newCommunity = await communities.create({
         name: communityname,
         description: description,
         private: privacy === "Private" ? true : false,
-        banner: mediaurl,
-        bannerkey: mediakey,
+        banner: mediaurl ? mediaurl : avatar,
+        bannerkey: mediakey ? mediakey : null,
       });
       if (!newCommunity) {
         return res.status(500).send("Something went wrong");
@@ -123,7 +131,7 @@ router.post(
         await sendchannelmessage(
           `👨‍👩‍👦‍👦 New community created: ${newCommunity?.name}
       
-     \nhttps://momosz.com/communities/${newCommunity?.name}
+     \nhttps://momosz.com/communities
         `
         );
 
@@ -131,7 +139,7 @@ router.post(
 
         await sendmessage(
           req,
-          `${newCommunity?.name}\nhttps://momosz.com/communities/${newCommunity?.name}`,
+          `${newCommunity?.name}\nhttps://momosz.com/communities`,
           "community"
         );
       }

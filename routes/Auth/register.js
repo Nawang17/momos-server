@@ -1,3 +1,4 @@
+/* eslint-disable no-undef */
 "use strict";
 require("dotenv").config();
 const router = require("express").Router();

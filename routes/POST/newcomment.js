@@ -1,3 +1,4 @@
+/* eslint-disable no-undef */
 "use strict";
 const router = require("express").Router();
 const {
@@ -204,17 +205,17 @@ router.post("/", async (req, res) => {
 
       if (process.env.NODE_ENV === "production") {
         // send discord channel message for new comment on post to momos server
-
-        await sendchannelmessage(
-          `💬 New comment by ${comment?.user?.username}${
-            comment?.text ? "\n" + "**" + comment?.text + "**" : ""
-          }
-        
-        ${comment?.gif ? "\n**gif**" : ""}\nhttps://momosz.com/post/${
-            comment?.postId
-          }
-          `
-        );
+        //send only if post is not in a community
+        if (!findpost.communityid) {
+          await sendchannelmessage(
+            `💬 New comment by ${comment?.user?.username}${
+              comment?.text ? "\n" + "**" + comment?.text + "**" : ""
+            }
+  
+  ${comment?.gif ? "\n**gif**" : ""}\nhttps://momosz.com/post/${comment?.postId}
+    `
+          );
+        }
 
         //send discord message
         await sendmessage(
