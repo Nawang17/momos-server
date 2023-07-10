@@ -9,7 +9,6 @@ const {
   commentlikes,
   nestedcommentlikes,
   previewlinks,
-  postquotes,
   polls,
   pollchoices,
   pollvotes,
@@ -41,6 +40,7 @@ router.get("/:postid", async (req, res) => {
     const singlepost = await posts.findAll({
       where: {
         id: postid,
+        communityid: null,
       },
       attributes: {
         exclude: ["updatedAt", "postUser"],
@@ -115,7 +115,6 @@ router.get("/:postid", async (req, res) => {
                   attributes: ["username", "avatar", "verified", "id"],
                 },
               ],
-              seperate: true,
             },
 
             {

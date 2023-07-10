@@ -1,3 +1,4 @@
+/* eslint-disable no-undef */
 "use strict";
 require("dotenv").config();
 const express = require("express");
@@ -52,6 +53,8 @@ const {
   tokencommentlimit,
   tokennestedcommentlimit,
   bookmarklimit,
+  newcommunitypostLimit,
+  tokennewcommunitypostLimit,
 } = require("./middleware/rateLimit");
 
 const register = require("./routes/Auth/register");
@@ -85,6 +88,9 @@ const editcomment = require("./routes/UPDATE/editcomments");
 const editnestedcomment = require("./routes/UPDATE/editnestedcomments");
 const bookmarkpost = require("./routes/POST/newbookmark");
 const adminroute = require("./routes/Admin/admin");
+const newCommunity = require("./routes/POST/newCommunity");
+const getcommunity = require("./routes/GET/communities");
+const newCommunitypost = require("./routes/POST/newCommunityPost");
 
 app.use("/likedposts", tokenCheck, likedpost);
 app.use("/likepost", tokenCheck, likelimit, likepost);
@@ -155,7 +161,15 @@ app.use("/editcomment", tokenCheck, editcommentlimit, editcomment);
 app.use("/editnestedcomment", tokenCheck, editcommentlimit, editnestedcomment);
 app.use("/bookmarkpost", tokenCheck, bookmarklimit, bookmarkpost);
 app.use("/admin", tokenCheck, adminroute);
-
+app.use("/newcommunity", tokenCheck, newCommunity);
+app.use("/getcommunities", getcommunity);
+app.use(
+  "/newcommunitypost",
+  tokenCheck,
+  tokennewcommunitypostLimit,
+  newcommunitypostLimit,
+  newCommunitypost
+);
 //initialize socket
 const { verify } = require("jsonwebtoken");
 const { users } = require("./models");

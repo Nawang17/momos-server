@@ -32,6 +32,12 @@ module.exports = (sequelize, DataTypes) => {
     },
   });
   posts.associate = (models) => {
+    posts.belongsTo(models.communities, {
+      foreignKey: "communityid",
+
+      onDelete: "CASCADE",
+      foreignKeyConstraint: true,
+    });
     posts.belongsTo(models.users, {
       foreignKey: "postUser",
 

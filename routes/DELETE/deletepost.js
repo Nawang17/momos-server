@@ -26,6 +26,7 @@ router.delete("/:postId", async (req, res) => {
                 findPost.imagekey,
                 {
                   resource_type: "video",
+                  // eslint-disable-next-line no-undef
                   upload_preset: process.env.CLOUDINARY_UPLOAD_PRESET,
                 },
                 (err, result) => {
@@ -39,6 +40,7 @@ router.delete("/:postId", async (req, res) => {
               await cloudinary.uploader.destroy(
                 findPost.imagekey,
                 {
+                  // eslint-disable-next-line no-undef
                   upload_preset: process.env.CLOUDINARY_UPLOAD_PRESET,
                 },
                 (err, result) => {
@@ -58,6 +60,7 @@ router.delete("/:postId", async (req, res) => {
           deleteallcache();
           res.status(200).send("Post deleted successfully");
           console.log("post deleted successfully");
+          // eslint-disable-next-line no-undef
           io.emit("post-deleted", postId);
           return;
         }

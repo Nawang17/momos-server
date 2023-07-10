@@ -8,7 +8,7 @@ const {
   follows,
   nestedcomments,
   previewlinks,
-  postquotes,
+
   profilebanners,
   polls,
   pollchoices,
@@ -87,11 +87,11 @@ router.get("/:username", async (req, res) => {
               ],
             },
 
-      where: {
-        id: {
-          [sequelize.Op.ne]: 6, // Exclude demo account from leaderboard
-        },
-      },
+            where: {
+              id: {
+                [sequelize.Op.ne]: 6, // Exclude demo account from leaderboard
+              },
+            },
             order: [
               [sequelize.literal("totalpoints"), "DESC"],
               [sequelize.col("users.id"), "ASC"],
@@ -114,6 +114,7 @@ router.get("/:username", async (req, res) => {
         .count({
           where: {
             postUser: userInfo.id,
+            communityid: null,
           },
         })
         .then((c) => {
@@ -124,6 +125,7 @@ router.get("/:username", async (req, res) => {
         limit: 10,
         where: {
           postUser: userInfo.id,
+          communityid: null,
         },
         attributes: {
           exclude: ["updatedAt", "postUser"],
@@ -218,6 +220,7 @@ router.get("/:username", async (req, res) => {
             id: {
               [sequelize.Op.in]: likedpostsidarray,
             },
+            communityid: null,
           },
         })
         .then((c) => {
@@ -229,6 +232,7 @@ router.get("/:username", async (req, res) => {
           id: {
             [sequelize.Op.in]: likedpostsidarray,
           },
+          communityid: null,
         },
         attributes: {
           exclude: ["updatedAt", "postUser"],
@@ -311,6 +315,9 @@ router.get("/:username", async (req, res) => {
           },
           {
             model: posts,
+            where: {
+              communityid: null,
+            },
             include: [
               {
                 model: users,
@@ -336,6 +343,12 @@ router.get("/:username", async (req, res) => {
             as: "repliedtouser",
 
             attributes: ["username", "avatar", "verified", "id"],
+          },
+          {
+            model: posts,
+            where: {
+              communityid: null,
+            },
           },
         ],
       });

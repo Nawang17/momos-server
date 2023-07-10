@@ -7,7 +7,7 @@ const {
   comments,
   nestedcomments,
   previewlinks,
-  postquotes,
+
   polls,
   pollchoices,
   pollvotes,
@@ -17,7 +17,11 @@ const sequelize = require("sequelize");
 
 router.get("/trending", async (req, res) => {
   try {
-    const allPosts = await posts.findAll();
+    const allPosts = await posts.findAll({
+      where: {
+        communityid: null,
+      },
+    });
     const hashtagCounts = {};
 
     allPosts?.forEach((post) => {
@@ -51,6 +55,7 @@ router.get("/getposts/:value", async (req, res) => {
         text: {
           [Op.like]: "%" + value + "%",
         },
+        communityid: null,
       },
       attributes: {
         include: [
@@ -138,6 +143,7 @@ router.get("/getposts/:value", async (req, res) => {
         text: {
           [Op.like]: "%" + value + "%",
         },
+        communityid: null,
       },
       attributes: {
         include: [

@@ -105,7 +105,32 @@ const bookmarklimit = rateLimit({
   message: "Bookmakr limit reached. Please wait 1 minute to like again.", //err messasge
   skipFailedRequests: true,
 });
+const newcommunitylimit = rateLimit({
+  windowMs: 10 * 60 * 1000, // 10 min
+  max: 5, // limit to 15 requests every 1 min per windows
+  message:
+    "Creating community limit reached. Please wait 10 minutes to create again.", //err messasge
+  skipFailedRequests: true,
+});
+const tokennewcommunitypostLimit = rateLimit({
+  //token limit for new post
+  keyGenerator: (req) => req.headers["authorization"],
+  windowMs: 1 * 60 * 1000, // 1 min
+  message: "Post limit reached. Please wait 1 minute to post again.",
+  max: 3, // limit to 3 requests every 1 min per windows
+  skipFailedRequests: true,
+});
+const newcommunitypostLimit = rateLimit({
+  //ip limit for new post
+  windowMs: 1 * 60 * 1000, // 1 min
+  max: 3, // limit to 3 requests every 1 min per windows
+  message: "Post limit reached. Please wait 1 minute to post again.",
+  skipFailedRequests: true,
+});
 module.exports = {
+  tokennewcommunitypostLimit,
+  newcommunitypostLimit,
+  newcommunitylimit,
   newpostLimit,
   registerlimit,
   commentlimit,

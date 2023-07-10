@@ -39,11 +39,7 @@ module.exports = (sequelize, DataTypes) => {
       allowNull: false,
       defaultValue: "active",
     },
-    imagekey: {
-      type: DataTypes.STRING,
-      allowNull: true,
-      defaultValue: null,
-    },
+
     lastseen: {
       type: DataTypes.DATE,
       allowNull: true,
@@ -51,6 +47,11 @@ module.exports = (sequelize, DataTypes) => {
     },
   });
   users.associate = (models) => {
+    users.hasMany(models.communitymembers, {
+      foreignKey: "userId",
+      onDelete: "CASCADE",
+      foreignKeyConstraint: true,
+    });
     users.hasMany(models.posts, {
       foreignKey: "postUser",
       onDelete: "CASCADE",

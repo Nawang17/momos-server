@@ -10,6 +10,8 @@ const {
   likes,
   polls,
   pollchoices,
+  communities,
+  communitymembers,
 } = require("../../models");
 const fs = require("fs");
 const { cloudinary } = require("../../utils/cloudinary");
@@ -22,6 +24,31 @@ const { getLinkPreview } = require("link-preview-js");
 const { deleteallcache } = require("../../utils/deletecache");
 router.post("/", upload.single("media"), async (req, res) => {
   try {
+    const communityname = req.body.communityname
+      ? req.body.communityname
+      : null;
+    if (!communityname) {
+      return res.status(400).send("Community name cannot be empty");
+    }
+    const community = await communities.findOne({
+      where: {
+        name: communityname,
+      },
+    });
+    if (!community) {
+      return res.status(400).send("Community does not exist");
+    }
+    //check if user is a member of the community
+    const isMember = await communitymembers.findOne({
+      where: {
+        communityId: community.id,
+        userId: req.user.id,
+      },
+    });
+    if (!isMember) {
+      return res.status(400).send("You are not a member of this community");
+    }
+
     const media = req.file ? req.file : null;
     let quoteExists = null;
     let newtext = req.body.text ? req.body.text : null;
@@ -62,7 +89,7 @@ router.post("/", upload.single("media"), async (req, res) => {
         where: {
           text: newtext,
           postUser: req.user.id,
-          communityid: null,
+          communityid: community.id,
         },
       });
       //send error if post with same text and user already exists
@@ -115,6 +142,7 @@ router.post("/", upload.single("media"), async (req, res) => {
       quoteId: quoteExists ? Number(quoteid) : null,
       hasquote: quoteExists ? true : false,
       gif: gif ? gif : null,
+      communityid: community.id,
     });
 
     if (newPost) {
@@ -177,13 +205,23 @@ router.post("/", upload.single("media"), async (req, res) => {
 
             findmentionedUsers?.forEach(async (user) => {
               if (user.id !== req.user.id) {
-                await notis.create({
-                  type: "MENTION",
-                  text: newtext ? newtext : null,
-                  targetuserId: user?.id,
-                  postId: newPost?.id,
-                  userId: req.user.id,
+                //check if target user is member  in community
+                const member = await communitymembers.findOne({
+                  where: {
+                    communityId: community.id,
+                    userId: user.id,
+                  },
                 });
+                if (member) {
+                  await notis.create({
+                    type: "MENTION",
+                    text: newtext ? newtext : null,
+                    targetuserId: user?.id,
+                    postId: newPost?.id,
+                    userId: req.user.id,
+                    communityid: community.id,
+                  });
+                }
               }
             });
           }
@@ -395,8 +433,29 @@ router.post("/addpoll", async (req, res) => {
       durationday,
       durationhour,
       durationminute,
+      communityName,
     } = req.body;
-
+    if (!communityName) {
+      return res.status(400).send("Community name cannot be empty");
+    }
+    const community = await communities.findOne({
+      where: {
+        name: communityName,
+      },
+    });
+    if (!community) {
+      return res.status(400).send("Community does not exist");
+    }
+    //check if user is a member of the community
+    const isMember = await communitymembers.findOne({
+      where: {
+        communityId: community.id,
+        userId: req.user.id,
+      },
+    });
+    if (!isMember) {
+      return res.status(400).send("You are not a member of this community");
+    }
     if (question.length > 255) {
       return res.status(400).send("Question cannot exceed 255 characters");
     }
@@ -488,7 +547,7 @@ router.post("/addpoll", async (req, res) => {
       where: {
         text: cleanQuestion,
         postUser: req.user.id,
-        communityid: null,
+        communityid: community.id,
       },
     });
     if (existingPost) {
@@ -497,6 +556,7 @@ router.post("/addpoll", async (req, res) => {
     const createPost = await posts.create({
       postUser: req.user.id,
       text: cleanQuestion,
+      communityid: community.id,
     });
     if (createPost) {
       const createPoll = await polls.create({
@@ -555,14 +615,23 @@ router.post("/addpoll", async (req, res) => {
             // send notification to mentioned users
 
             findmentionedUsers?.forEach(async (user) => {
-              if (user.id !== req.user.id) {
-                await notis.create({
-                  type: "MENTION",
-                  text: cleanQuestion ? cleanQuestion : null,
-                  targetuserId: user?.id,
-                  postId: createPost?.id,
-                  userId: req.user.id,
-                });
+              const member = await communitymembers.findOne({
+                where: {
+                  communityId: community.id,
+                  userId: user.id,
+                },
+              });
+              if (member) {
+                if (user.id !== req.user.id) {
+                  await notis.create({
+                    type: "MENTION",
+                    text: cleanQuestion ? cleanQuestion : null,
+                    targetuserId: user?.id,
+                    postId: createPost?.id,
+                    userId: req.user.id,
+                    communityid: community.id,
+                  });
+                }
               }
             });
           }

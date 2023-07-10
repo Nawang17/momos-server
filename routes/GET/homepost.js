@@ -40,6 +40,9 @@ router.get("/", async (req, res) => {
         homeposts = await posts.findAll({
           limit: 10,
           offset: page * 10,
+          where: {
+            communityid: null,
+          },
           attributes: {
             exclude: ["updatedAt", "postUser"],
             include: [
@@ -103,7 +106,6 @@ router.get("/", async (req, res) => {
                       attributes: ["username", "avatar", "verified", "id"],
                     },
                   ],
-                  seperate: true,
                 },
                 {
                   model: users,
@@ -171,6 +173,9 @@ router.get("/", async (req, res) => {
       homeposts = await posts.findAll({
         limit: 10,
         offset: page * 10,
+        where: {
+          communityid: null,
+        },
         attributes: {
           exclude: ["updatedAt", "postUser"],
 
@@ -244,7 +249,6 @@ router.get("/", async (req, res) => {
                     attributes: ["username", "avatar", "verified", "id"],
                   },
                 ],
-                seperate: true,
               },
               {
                 model: users,
@@ -318,6 +322,7 @@ router.get("/followingposts", tokenCheck, async (req, res) => {
           postUser: {
             [sequelize.Op.in]: followingids,
           },
+          communityid: null,
         },
       })
       .then((c) => {
@@ -328,6 +333,7 @@ router.get("/followingposts", tokenCheck, async (req, res) => {
         postUser: {
           [sequelize.Op.in]: followingids,
         },
+        communityid: null,
       },
       limit: 10,
       offset: page * 10,
@@ -393,7 +399,6 @@ router.get("/followingposts", tokenCheck, async (req, res) => {
                   attributes: ["username", "avatar", "verified", "id"],
                 },
               ],
-              seperate: true,
             },
             {
               model: users,

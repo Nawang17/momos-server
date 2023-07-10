@@ -1,16 +1,16 @@
 "use strict";
 const router = require("express").Router();
-const { posts, users, nestedcomments, notis } = require("../../models");
-const cache = require("../../utils/cache");
+const { posts, users, notis } = require("../../models");
+// const cache = require("../../utils/cache");
 
 router.get("/", async (req, res) => {
-  const noticache = cache.get(`notis:${req.user.id}`);
-  if (noticache) {
-    return res.status(200).send({
-      cache: true,
-      notis: noticache,
-    });
-  }
+  // const noticache = cache.get(`notis:${req.user.id}`);
+  // if (noticache) {
+  //   return res.status(200).send({
+  //     cache: true,
+  //     notis: noticache,
+  //   });
+  // }
 
   try {
     const findNotis = await notis.findAll({
@@ -37,7 +37,7 @@ router.get("/", async (req, res) => {
         },
       ],
     });
-    cache.set(`notis:${req.user.id}`, JSON.parse(JSON.stringify(findNotis)));
+    // cache.set(`notis:${req.user.id}`, JSON.parse(JSON.stringify(findNotis)));
     return res.status(200).send({ cache: false, notis: findNotis });
   } catch (error) {
     console.log(error);

@@ -8,6 +8,7 @@ const tokenCheck = (req, res, next) => {
   if (token == null) {
     return res.status(401).send("You are not logged in");
   }
+  // eslint-disable-next-line no-undef
   verify(token, process.env.JWT_SECRET, async (err, user) => {
     if (err) {
       return res.status(401).send("Token is not valid");
