@@ -6,12 +6,12 @@ const {
   likes,
   comments,
   nestedcomments,
-
   previewlinks,
-  postquotes,
   polls,
   pollchoices,
   pollvotes,
+  communities,
+  communitymembers,
 } = require("../../models");
 
 //get reposts
@@ -42,6 +42,16 @@ router.get("/:postid", async (req, res) => {
       },
       order: [["id", "DESC"]],
       include: [
+        {
+          model: communities,
+          as: "comshare",
+          include: [
+            {
+              model: communitymembers,
+              attributes: ["communityId", "isadmin", "isOwner"],
+            },
+          ],
+        },
         {
           model: polls,
           include: [

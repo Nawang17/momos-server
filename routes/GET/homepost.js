@@ -12,6 +12,8 @@ const {
   pollchoices,
   pollvotes,
   commentlikes,
+  communities,
+  communitymembers,
 } = require("../../models");
 const sequelize = require("sequelize");
 const { tokenCheck } = require("../../middleware/tokenCheck");
@@ -56,6 +58,16 @@ router.get("/", async (req, res) => {
           },
           order: [["id", "DESC"]],
           include: [
+            {
+              model: communities,
+              as: "comshare",
+              include: [
+                {
+                  model: communitymembers,
+                  attributes: ["communityId", "isadmin", "isOwner"],
+                },
+              ],
+            },
             {
               model: polls,
               include: [
@@ -200,6 +212,16 @@ router.get("/", async (req, res) => {
         },
         order: [[sequelize.literal("likescount"), "DESC"]],
         include: [
+          {
+            model: communities,
+            as: "comshare",
+            include: [
+              {
+                model: communitymembers,
+                attributes: ["communityId", "isadmin", "isOwner"],
+              },
+            ],
+          },
           {
             model: polls,
             include: [
@@ -351,8 +373,19 @@ router.get("/followingposts", tokenCheck, async (req, res) => {
       order: [["id", "DESC"]],
       include: [
         {
+          model: communities,
+          as: "comshare",
+          include: [
+            {
+              model: communitymembers,
+              attributes: ["communityId", "isadmin", "isOwner"],
+            },
+          ],
+        },
+        {
           model: previewlinks,
         },
+
         {
           model: polls,
           include: [

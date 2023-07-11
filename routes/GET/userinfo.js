@@ -13,6 +13,8 @@ const {
   pollchoices,
   pollvotes,
   commentlikes,
+  communities,
+  communitymembers,
 } = require("../../models");
 const sequelize = require("sequelize");
 const cache = require("../../utils/cache");
@@ -59,7 +61,7 @@ router.get("/suggestedusers/:name", async (req, res) => {
   const suggestedusers = await users.findAll({
     where: {
       username: {
-        [Op.notIn]: followingarr,
+        [sequelize.Op.notIn]: followingarr,
       },
     },
     attributes: ["username", "avatar", "verified", "id"],
@@ -122,6 +124,16 @@ router.get("/bookmarks/:type", async (req, res) => {
         order: [["id", "DESC"]],
         include: [
           {
+            model: communities,
+            as: "comshare",
+            include: [
+              {
+                model: communitymembers,
+                attributes: ["communityId", "isadmin", "isOwner"],
+              },
+            ],
+          },
+          {
             model: polls,
             include: [
               {
@@ -171,7 +183,6 @@ router.get("/bookmarks/:type", async (req, res) => {
                     attributes: ["username", "avatar", "verified", "id"],
                   },
                 ],
-                seperate: true,
               },
               {
                 model: users,

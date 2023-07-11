@@ -7,10 +7,11 @@ const {
   comments,
   nestedcomments,
   previewlinks,
-
   polls,
   pollchoices,
   pollvotes,
+  communities,
+  communitymembers,
 } = require("../../models");
 const { Op } = require("sequelize");
 const sequelize = require("sequelize");
@@ -79,6 +80,16 @@ router.get("/getposts/:value", async (req, res) => {
       },
 
       include: [
+        {
+          model: communities,
+          as: "comshare",
+          include: [
+            {
+              model: communitymembers,
+              attributes: ["communityId", "isadmin", "isOwner"],
+            },
+          ],
+        },
         {
           model: polls,
           include: [
@@ -168,6 +179,16 @@ router.get("/getposts/:value", async (req, res) => {
       order: [[sequelize.literal("likescount"), "DESC"]],
 
       include: [
+        {
+          model: communities,
+          as: "comshare",
+          include: [
+            {
+              model: communitymembers,
+              attributes: ["communityId", "isadmin", "isOwner"],
+            },
+          ],
+        },
         {
           model: polls,
           include: [

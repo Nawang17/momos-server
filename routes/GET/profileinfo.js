@@ -8,11 +8,12 @@ const {
   follows,
   nestedcomments,
   previewlinks,
-
   profilebanners,
   polls,
   pollchoices,
   pollvotes,
+  communitymembers,
+  communities,
 } = require("../../models");
 const sequelize = require("sequelize");
 const cache = require("../../utils/cache");
@@ -141,6 +142,16 @@ router.get("/:username", async (req, res) => {
         order: [["id", "DESC"]],
         include: [
           {
+            model: communities,
+            as: "comshare",
+            include: [
+              {
+                model: communitymembers,
+                attributes: ["communityId", "isadmin", "isOwner"],
+              },
+            ],
+          },
+          {
             model: polls,
             include: [
               {
@@ -247,6 +258,16 @@ router.get("/:username", async (req, res) => {
         },
         order: [["id", "DESC"]],
         include: [
+          {
+            model: communities,
+            as: "comshare",
+            include: [
+              {
+                model: communitymembers,
+                attributes: ["communityId", "isadmin", "isOwner"],
+              },
+            ],
+          },
           {
             model: polls,
             include: [
@@ -501,6 +522,16 @@ router.get("/userposts/:userid", async (req, res) => {
       order: [["id", "DESC"]],
       include: [
         {
+          model: communities,
+          as: "comshare",
+          include: [
+            {
+              model: communitymembers,
+              attributes: ["communityId", "isadmin", "isOwner"],
+            },
+          ],
+        },
+        {
           model: polls,
           include: [
             {
@@ -619,6 +650,16 @@ router.get("/likedposts/:userid", async (req, res) => {
       },
       order: [["id", "DESC"]],
       include: [
+        {
+          model: communities,
+          as: "comshare",
+          include: [
+            {
+              model: communitymembers,
+              attributes: ["communityId", "isadmin", "isOwner"],
+            },
+          ],
+        },
         {
           model: polls,
           include: [

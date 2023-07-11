@@ -12,6 +12,8 @@ const {
   polls,
   pollchoices,
   pollvotes,
+  communities,
+  communitymembers,
 } = require("../../models");
 const cache = require("../../utils/cache");
 
@@ -55,6 +57,16 @@ router.get("/:postid", async (req, res) => {
       },
 
       include: [
+        {
+          model: communities,
+          as: "comshare",
+          include: [
+            {
+              model: communitymembers,
+              attributes: ["communityId", "isadmin", "isOwner"],
+            },
+          ],
+        },
         {
           model: polls,
           include: [

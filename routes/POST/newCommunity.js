@@ -19,7 +19,7 @@ router.post(
       const media = req.file ? req.file : null;
 
       let communityname = req.body.communityname
-        ? req.body.communityname
+        ? req.body.communityname.trim()
         : null;
       let description = req.body.description ? req.body.description : null;
       let privacy = req.body.privacy ? req.body.privacy : "Public";
@@ -50,14 +50,9 @@ router.post(
       }
 
       if (communityname) {
-        //filter name for bad words and keep only 3 newlines max in a row and trim whitespace
-        communityname = filter.cleanHacked(
-          communityname
-            ?.trim()
-            .replace(/(\r?\n){4,}/g, "$1$1$1")
-            .replace(/(\r?\n){3,}/g, "$1$1$1")
-        );
-
+        if (filter.isProfane(communityname)) {
+          return res.status(400).send("Community name is not available");
+        }
         //send error if text contains only whitespace
         if (/^\s*$/.test(communityname)) {
           return res.status(400).send("Community name cannot be empty");

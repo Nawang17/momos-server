@@ -92,7 +92,7 @@ router.get("/allcommunities", async (_, res) => {
   });
 });
 
-router.get("/communityProfile/:name", tokenCheck, async (req, res) => {
+router.get("/communityProfile/:name", async (req, res) => {
   const community = await communities.findOne({
     where: {
       name: req.params.name,
@@ -114,18 +114,8 @@ router.get("/communityProfile/:name", tokenCheck, async (req, res) => {
   if (!community) {
     return res.status(404).send("Community not found");
   }
-  //check if user is a member of community
-  const communitymember = await communitymembers.findOne({
-    where: {
-      userId: req.user.id,
-      communityId: community.id,
-    },
-  });
-  if (!communitymember) {
-    return res.status(400).send("You are not a member of this community");
-  } else {
-    return res.status(200).send(community);
-  }
+
+  return res.status(200).send(community);
 });
 
 router.get("/communityPosts/:name", tokenCheck, async (req, res) => {
@@ -166,6 +156,16 @@ router.get("/communityPosts/:name", tokenCheck, async (req, res) => {
     },
     order: [["id", "DESC"]],
     include: [
+      {
+        model: communities,
+        as: "comshare",
+        include: [
+          {
+            model: communitymembers,
+            attributes: ["communityId", "isadmin", "isOwner"],
+          },
+        ],
+      },
       {
         model: previewlinks,
       },
@@ -270,6 +270,16 @@ router.get("/singlepost/:postid", tokenCheck, async (req, res) => {
       },
 
       include: [
+        {
+          model: communities,
+          as: "comshare",
+          include: [
+            {
+              model: communitymembers,
+              attributes: ["communityId", "isadmin", "isOwner"],
+            },
+          ],
+        },
         {
           model: polls,
           include: [

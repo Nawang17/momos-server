@@ -28,6 +28,11 @@ module.exports = (sequelize, DataTypes) => {
     },
   });
   communities.associate = (models) => {
+    communities.hasMany(models.posts, {
+      foreignKey: "comshareid",
+      onDelete: "CASCADE",
+      foreignKeyConstraint: true,
+    });
     communities.hasMany(models.communitymembers, {
       foreignKey: "communityId",
       onDelete: "CASCADE",

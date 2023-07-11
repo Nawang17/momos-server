@@ -33,6 +33,13 @@ module.exports = (sequelize, DataTypes) => {
   });
   posts.associate = (models) => {
     posts.belongsTo(models.communities, {
+      as: "comshare",
+      foreignKey: "comshareid",
+      foreignKeyConstraint: true,
+      onDelete: "CASCADE",
+    });
+    posts.belongsTo(models.communities, {
+      as: "community",
       foreignKey: "communityid",
 
       onDelete: "CASCADE",

@@ -56,6 +56,7 @@ router.post("/", upload.single("media"), async (req, res) => {
     let gif = req.body.gif ? req.body.gif : null;
     let mediaurl;
     let mediakey;
+    let comshareid;
 
     //check if all the values are empty
     if (!media && !newtext && !gif) {
@@ -131,6 +132,36 @@ router.post("/", upload.single("media"), async (req, res) => {
       mediaurl = mediauploadresults[0];
       mediakey = mediauploadresults[1];
     }
+
+    //check if link provided is for community
+    if (newtext && !mediaurl) {
+      const extractLinksFromString = () => {
+        const pattern =
+          /(https:\/\/momosz\.com\/community\/\w+|http:\/\/localhost:3000\/community\/\w+)/g;
+        const matches = newtext.match(pattern);
+        newtext = newtext.replace(pattern, "");
+
+        return matches || [];
+      };
+
+      const link = extractLinksFromString();
+
+      if (link[0]) {
+        const pattern =
+          /^(https:\/\/momosz\.com\/community\/|http:\/\/localhost:3000\/community\/)\w+$/; // check if link is in the correct format for a community link
+        if (pattern.test(link[0])) {
+          const community = await communities.findOne({
+            where: {
+              name: link[0].split("/")[4],
+            },
+          });
+          if (community) {
+            comshareid = community.id;
+          }
+        }
+      }
+    }
+
     //create new post
 
     const newPost = await posts.create({
@@ -143,6 +174,7 @@ router.post("/", upload.single("media"), async (req, res) => {
       hasquote: quoteExists ? true : false,
       gif: gif ? gif : null,
       communityid: community.id,
+      comshareid,
     });
 
     if (newPost) {
@@ -229,7 +261,7 @@ router.post("/", upload.single("media"), async (req, res) => {
       }
     }
     //check if text contains a link and add preview link to database if it does
-    if (!newPost?.image) {
+    if (!newPost?.image && !newPost.comshareid) {
       await addpreviewlink(newPost);
     }
 
