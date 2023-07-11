@@ -114,8 +114,111 @@ router.get("/communityProfile/:name", async (req, res) => {
   if (!community) {
     return res.status(404).send("Community not found");
   }
+  if (!community.private) {
+    const communityPosts = await posts.findAll({
+      where: {
+        communityid: community.id,
+      },
 
-  return res.status(200).send(community);
+      attributes: {
+        exclude: ["updatedAt", "postUser"],
+        include: [
+          [
+            sequelize.literal(
+              "(SELECT COUNT(*) FROM postquotes WHERE postquotes.quotedPostId = posts.id)"
+            ),
+            "postquotesCount",
+          ],
+        ],
+      },
+      order: [["id", "DESC"]],
+      include: [
+        {
+          model: communities,
+          as: "comshare",
+          include: [
+            {
+              model: communitymembers,
+              attributes: ["communityId", "isadmin", "isOwner"],
+            },
+          ],
+        },
+        {
+          model: previewlinks,
+        },
+        {
+          model: polls,
+          include: [
+            {
+              model: pollchoices,
+              include: [
+                {
+                  model: pollvotes,
+                  include: [
+                    {
+                      model: users,
+                      attributes: ["username", "avatar", "verified", "id"],
+                    },
+                  ],
+                },
+              ],
+            },
+          ],
+        },
+        {
+          model: users,
+
+          attributes: ["username", "avatar", "verified", "id"],
+        },
+        {
+          model: likes,
+          include: [
+            {
+              model: users,
+              attributes: ["username", "avatar", "verified", "id"],
+            },
+          ],
+          seperate: true,
+        },
+        {
+          model: comments,
+          include: [
+            {
+              model: commentlikes,
+              seperate: true,
+              include: [
+                {
+                  model: users,
+                  attributes: ["username", "avatar", "verified", "id"],
+                },
+              ],
+            },
+            {
+              model: users,
+
+              attributes: ["username", "avatar", "verified", "id"],
+            },
+            {
+              model: nestedcomments,
+              seperate: true,
+            },
+          ],
+          seperate: true,
+        },
+        {
+          model: posts,
+          include: [
+            {
+              model: users,
+              attributes: ["username", "avatar", "verified", "id"],
+            },
+          ],
+        },
+      ],
+    });
+    return res.status(200).send({ community, communityPosts });
+  }
+  return res.status(200).send({ community });
 });
 
 router.get("/communityPosts/:name", tokenCheck, async (req, res) => {
@@ -137,110 +240,113 @@ router.get("/communityPosts/:name", tokenCheck, async (req, res) => {
   if (!communitymember) {
     return res.status(400).send("You are not a member of this community");
   }
+  if (findcommunity.private) {
+    const communityPosts = await posts.findAll({
+      where: {
+        communityid: findcommunity.id,
+      },
 
-  const communityPosts = await posts.findAll({
-    where: {
-      communityid: findcommunity.id,
-    },
-
-    attributes: {
-      exclude: ["updatedAt", "postUser"],
+      attributes: {
+        exclude: ["updatedAt", "postUser"],
+        include: [
+          [
+            sequelize.literal(
+              "(SELECT COUNT(*) FROM postquotes WHERE postquotes.quotedPostId = posts.id)"
+            ),
+            "postquotesCount",
+          ],
+        ],
+      },
+      order: [["id", "DESC"]],
       include: [
-        [
-          sequelize.literal(
-            "(SELECT COUNT(*) FROM postquotes WHERE postquotes.quotedPostId = posts.id)"
-          ),
-          "postquotesCount",
-        ],
+        {
+          model: communities,
+          as: "comshare",
+          include: [
+            {
+              model: communitymembers,
+              attributes: ["communityId", "isadmin", "isOwner"],
+            },
+          ],
+        },
+        {
+          model: previewlinks,
+        },
+        {
+          model: polls,
+          include: [
+            {
+              model: pollchoices,
+              include: [
+                {
+                  model: pollvotes,
+                  include: [
+                    {
+                      model: users,
+                      attributes: ["username", "avatar", "verified", "id"],
+                    },
+                  ],
+                },
+              ],
+            },
+          ],
+        },
+        {
+          model: users,
+
+          attributes: ["username", "avatar", "verified", "id"],
+        },
+        {
+          model: likes,
+          include: [
+            {
+              model: users,
+              attributes: ["username", "avatar", "verified", "id"],
+            },
+          ],
+          seperate: true,
+        },
+        {
+          model: comments,
+          include: [
+            {
+              model: commentlikes,
+              seperate: true,
+              include: [
+                {
+                  model: users,
+                  attributes: ["username", "avatar", "verified", "id"],
+                },
+              ],
+            },
+            {
+              model: users,
+
+              attributes: ["username", "avatar", "verified", "id"],
+            },
+            {
+              model: nestedcomments,
+              seperate: true,
+            },
+          ],
+          seperate: true,
+        },
+        {
+          model: posts,
+          include: [
+            {
+              model: users,
+              attributes: ["username", "avatar", "verified", "id"],
+            },
+          ],
+        },
       ],
-    },
-    order: [["id", "DESC"]],
-    include: [
-      {
-        model: communities,
-        as: "comshare",
-        include: [
-          {
-            model: communitymembers,
-            attributes: ["communityId", "isadmin", "isOwner"],
-          },
-        ],
-      },
-      {
-        model: previewlinks,
-      },
-      {
-        model: polls,
-        include: [
-          {
-            model: pollchoices,
-            include: [
-              {
-                model: pollvotes,
-                include: [
-                  {
-                    model: users,
-                    attributes: ["username", "avatar", "verified", "id"],
-                  },
-                ],
-              },
-            ],
-          },
-        ],
-      },
-      {
-        model: users,
-
-        attributes: ["username", "avatar", "verified", "id"],
-      },
-      {
-        model: likes,
-        include: [
-          {
-            model: users,
-            attributes: ["username", "avatar", "verified", "id"],
-          },
-        ],
-        seperate: true,
-      },
-      {
-        model: comments,
-        include: [
-          {
-            model: commentlikes,
-            seperate: true,
-            include: [
-              {
-                model: users,
-                attributes: ["username", "avatar", "verified", "id"],
-              },
-            ],
-          },
-          {
-            model: users,
-
-            attributes: ["username", "avatar", "verified", "id"],
-          },
-          {
-            model: nestedcomments,
-            seperate: true,
-          },
-        ],
-        seperate: true,
-      },
-      {
-        model: posts,
-        include: [
-          {
-            model: users,
-            attributes: ["username", "avatar", "verified", "id"],
-          },
-        ],
-      },
-    ],
-  });
-
-  return res.status(200).send(communityPosts);
+    });
+    return res
+      .status(200)
+      .send({ communityPosts: communityPosts, private: true });
+  }
+  return res.status(200).send({ communityPosts: [], private: false });
 });
 
 router.get("/singlepost/:postid", tokenCheck, async (req, res) => {
