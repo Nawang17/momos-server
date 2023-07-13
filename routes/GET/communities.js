@@ -144,6 +144,10 @@ router.get("/communityProfile/:name", async (req, res) => {
           ],
         },
         {
+          model: communities,
+          as: "community",
+        },
+        {
           model: previewlinks,
         },
         {
@@ -270,6 +274,10 @@ router.get("/communityPosts/:name", tokenCheck, async (req, res) => {
           ],
         },
         {
+          model: communities,
+          as: "community",
+        },
+        {
           model: previewlinks,
         },
         {
@@ -385,6 +393,10 @@ router.get("/singlepost/:postid", tokenCheck, async (req, res) => {
               attributes: ["communityId", "isadmin", "isOwner"],
             },
           ],
+        },
+        {
+          model: communities,
+          as: "community",
         },
         {
           model: polls,

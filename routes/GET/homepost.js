@@ -466,5 +466,159 @@ router.get("/followingposts", tokenCheck, async (req, res) => {
     return res.status(500).send("Something went wrong");
   }
 });
+router.get("/communityposts", tokenCheck, async (req, res) => {
+  try {
+    let postCount;
+
+    const page = parseInt(req.query.page ? req.query.page : 0);
+
+    //get all communities user is in
+
+    const mycommunities = await communitymembers.findAll({
+      where: {
+        userId: req.user.id,
+      },
+      include: [
+        {
+          model: communities,
+          attributes: ["name"],
+        },
+      ],
+    });
+
+    const communityids = mycommunities.map(
+      (community) => community.communityId
+    );
+
+    await posts
+      .count({
+        where: {
+          communityid: {
+            [sequelize.Op.in]: communityids,
+          },
+        },
+      })
+      .then((c) => {
+        postCount = c;
+      });
+    const homeposts = await posts.findAll({
+      where: {
+        communityid: {
+          [sequelize.Op.in]: communityids,
+        },
+      },
+      limit: 10,
+      offset: page * 10,
+      attributes: {
+        exclude: ["updatedAt", "postUser"],
+        include: [
+          [
+            sequelize.literal(
+              "(SELECT COUNT(*) FROM postquotes WHERE postquotes.quotedPostId = posts.id)"
+            ),
+            "postquotesCount",
+          ],
+        ],
+      },
+      order: [["id", "DESC"]],
+      include: [
+        {
+          model: communities,
+          as: "comshare",
+          include: [
+            {
+              model: communitymembers,
+              attributes: ["communityId", "isadmin", "isOwner"],
+            },
+          ],
+        },
+        {
+          model: communities,
+          as: "community",
+        },
+        {
+          model: previewlinks,
+        },
+
+        {
+          model: polls,
+          include: [
+            {
+              model: pollchoices,
+              include: [
+                {
+                  model: pollvotes,
+                  include: [
+                    {
+                      model: users,
+                      attributes: ["username", "avatar", "verified", "id"],
+                    },
+                  ],
+                },
+              ],
+            },
+          ],
+        },
+        {
+          model: users,
+
+          attributes: ["username", "avatar", "verified", "id"],
+        },
+        {
+          model: likes,
+          include: [
+            {
+              model: users,
+              attributes: ["username", "avatar", "verified", "id"],
+            },
+          ],
+          seperate: true,
+        },
+        {
+          model: comments,
+          include: [
+            {
+              model: commentlikes,
+              seperate: true,
+              include: [
+                {
+                  model: users,
+                  attributes: ["username", "avatar", "verified", "id"],
+                },
+              ],
+            },
+            {
+              model: users,
+
+              attributes: ["username", "avatar", "verified", "id"],
+            },
+            {
+              model: nestedcomments,
+              seperate: true,
+            },
+          ],
+          seperate: true,
+        },
+        {
+          model: posts,
+          include: [
+            {
+              model: users,
+              attributes: ["username", "avatar", "verified", "id"],
+            },
+          ],
+        },
+      ],
+    });
+    res.status(200).send({
+      message: "Following users posts",
+      homeposts,
+      postCount,
+    });
+  } catch (error) {
+    console.log(error);
+    return res.status(500).send("Something went wrong");
+  }
+});
 
 module.exports = router;
