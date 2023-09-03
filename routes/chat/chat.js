@@ -144,6 +144,13 @@ router.get("/get/chatrooms", async (req, res) => {
           model: chats,
           order: [["createdAt", "DESC"]],
           limit: 1,
+          include: [
+            {
+              model: users,
+
+              attributes: ["username", "avatar", "verified", "id"],
+            },
+          ],
         },
       ],
     });
@@ -195,6 +202,7 @@ router.post(
         ],
       });
       if (!findnewmessage) return res.status(500).send("something went wrong");
+      // eslint-disable-next-line no-undef
       io.in(findchatroom.roomid).emit("newmessage", findnewmessage);
       return res.status(200).send({ message: findnewmessage });
     } catch (error) {
@@ -203,5 +211,28 @@ router.post(
     }
   }
 );
+
+router.delete("/deletemessage/:msgid", async (req, res) => {
+  try {
+    const msgid = req.params.msgid;
+    if (!msgid) return res.status(400).send("no message id provided");
+    const findmessage = await chats.findOne({
+      where: {
+        id: msgid,
+        userid: req.user.id,
+      },
+    });
+    if (!findmessage) return res.status(400).send("message not found");
+    await chats.destroy({
+      where: {
+        id: msgid,
+      },
+    });
+    return res.status(200).send("message deleted");
+  } catch (error) {
+    console.log(error);
+    return res.status(500).send("Something went wrong");
+  }
+});
 
 module.exports = router;
