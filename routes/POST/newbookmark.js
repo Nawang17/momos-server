@@ -44,6 +44,7 @@ router.post("/", async (req, res) => {
         if (bookmarkcache) {
           cache.del(`bookmarkposts:${req.user.id}`);
         }
+        cache.del(`bookmarkids:${req.user.id}`);
 
         // If bookmark already exists, destroy it
         if (!created) {

@@ -77,15 +77,25 @@ router.get("/bookmarks/:type", async (req, res) => {
   try {
     const { type } = req.params;
     if (type === "bookmarkids") {
+      const bookmarkidscache = cache.get(`bookmarkids:${req.user.id}`);
+      if (bookmarkidscache) {
+        return res.status(200).send({
+          cache: true,
+          message: "bookmarks retrieved successfully",
+          bookmarkIds: bookmarkidscache,
+        });
+      }
       const getbookmarks = await bookmarks.findAll({
         where: {
           userId: req.user.id,
         },
       });
       const bookmarkIds = getbookmarks.map((z) => z.postId);
+      cache.set(`bookmarkids:${req.user.id}`, bookmarkIds);
       return res.status(200).send({
         message: "bookmarks retrieved successfully",
         bookmarkIds,
+        cache: false,
       });
     } else {
       const bookmarkcache = cache.get(`bookmarkposts:${req.user.id}`);

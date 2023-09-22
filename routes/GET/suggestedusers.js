@@ -4,9 +4,19 @@ const { users, follows } = require("../../models");
 const Sequelize = require("sequelize");
 const { Op } = require("sequelize");
 const sequelize = require("sequelize");
+const cache = require("../../utils/cache");
 
 router.get("/suggest/:name", async (req, res) => {
   const { name } = req.params;
+  const cachedsuggestedusers = cache.get(`suggestedusers:${name}`);
+
+  if (name && cachedsuggestedusers) {
+    return res.status(200).send({
+      message: "user retrieved successfully",
+      suggestedusers: cachedsuggestedusers,
+      cached: true,
+    });
+  }
   const finduser = await users.findOne({
     where: {
       username: name ? name : "no",
@@ -35,9 +45,16 @@ router.get("/suggest/:name", async (req, res) => {
     attributes: ["username", "avatar", "verified", "id", "description"],
     limit: 30,
   });
+  if (name) {
+    cache.set(
+      `suggestedusers:${name}`,
+      JSON.parse(JSON.stringify(suggestedusers))
+    );
+  }
   res.status(200).send({
     message: "user retrieved successfully",
     suggestedusers,
+    cached: false,
   });
 });
 router.get("/allsuggested/:name", async (req, res) => {
