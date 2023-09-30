@@ -4,8 +4,18 @@ const cache = require("../../utils/cache");
 const axios = require("axios");
 
 router.get("/Top", async (_, res) => {
-  const [day, month, year] = new Date().toLocaleDateString("en-US").split("/");
-  const date = `${day}/${month}/${year}`;
+  const newYorkTimeOptions = { timeZone: "America/New_York" };
+  const currentDate = new Date().toLocaleDateString(
+    "en-US",
+    newYorkTimeOptions
+  );
+  const currentHour = new Date().toLocaleTimeString("en-US", {
+    hour: "2-digit",
+    hour12: false,
+    timeZone: "America/New_York",
+  });
+
+  const date = `${currentDate}-${currentHour}`;
   const cachedNews = await cache.get(`TopNews-${date}`);
 
   if (cachedNews) {
