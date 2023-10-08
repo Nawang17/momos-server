@@ -133,11 +133,9 @@ router.get("/get/chatrooms", async (req, res) => {
           as: "userone",
           attributes: ["username", "avatar", "verified", "id"],
         },
-
         {
           model: users,
           as: "usertwo",
-
           attributes: ["username", "avatar", "verified", "id"],
         },
         {
@@ -147,14 +145,41 @@ router.get("/get/chatrooms", async (req, res) => {
           include: [
             {
               model: users,
-
               attributes: ["username", "avatar", "verified", "id"],
             },
           ],
         },
       ],
     });
-    res.status(200).send({ chatrooms: getchatrooms });
+    if (!getchatrooms.length > 1)
+      return res.status(400).send({ chatrooms: getchatrooms });
+
+    // Function to compare chat objects by createdAt date
+    const compareChats = (a, b) => {
+      return new Date(b.createdAt) - new Date(a.createdAt);
+    };
+
+    // Sort the chatrooms array based on the createdAt date of the latest chat in each chatroom
+    getchatrooms.sort((a, b) => {
+      const aChat = a.chats[0];
+      const bChat = b.chats[0];
+
+      if (!aChat && !bChat) {
+        // If both chat arrays are empty, compare based on chatroom createdAt date
+        return compareChats(a, b);
+      } else if (!aChat) {
+        // If only the chat array of the first chatroom is empty, it comes after the second one
+        return 1;
+      } else if (!bChat) {
+        // If only the chat array of the second chatroom is empty, it comes after the first one
+        return -1;
+      } else {
+        // Otherwise, compare based on the createdAt date of the latest chat in each chatroom
+        return compareChats(aChat, bChat);
+      }
+    });
+
+    return res.status(200).send({ chatrooms: getchatrooms });
   } catch (error) {
     console.log(error);
     return res.status(500).send("Something went wrong");
