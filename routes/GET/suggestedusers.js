@@ -93,9 +93,8 @@ router.get("/allsuggested/:name", async (req, res) => {
 });
 router.get("/topuser", async (req, res) => {
   try {
-    const currentDate = new Date();
-    const currentYear = currentDate.getFullYear();
-    const currentMonth = currentDate.getMonth() + 1; // Adding 1 since months are zero-based
+    //top user of all time
+
     const gettopuser = await users.findAll({
       limit: 1,
       attributes: {
@@ -116,8 +115,7 @@ router.get("/topuser", async (req, res) => {
                 WHERE
                 notis.targetuserId = users.id
                 AND notis.type = 'LIKE'
-                AND YEAR(notis.createdAt) = ${currentYear}
-                AND MONTH(notis.createdAt) = ${currentMonth}
+             
               )`),
             "totalpoints",
           ],
