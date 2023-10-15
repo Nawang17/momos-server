@@ -6,14 +6,16 @@ const cache = require("../../utils/cache");
 
 router.get("/", async (req, res) => {
   try {
+    const type = req.query.type ? req.query.type : "allTime";
     const page = parseInt(req.query.page ? req.query.page : 0);
-    const leaderboardCache = cache.get(`leaderboard:${page}`);
-    const usersCountCache = cache.get(`usersCount:${page}`);
+    const leaderboardCache = cache.get(`leaderboard-${type}:${page}`);
+    const usersCountCache = cache.get(`usersCount-${type}:${page}`);
     if (leaderboardCache && usersCountCache) {
       return res.status(200).send({
         cache: true,
         usersCount: usersCountCache,
         leaderboard: leaderboardCache,
+        type,
       });
     }
 
@@ -24,6 +26,59 @@ router.get("/", async (req, res) => {
     const currentDate = new Date();
     const currentYear = currentDate.getFullYear();
     const currentMonth = currentDate.getMonth() + 1; // Adding 1 since months are zero-based
+
+    const allTimeQuery = `(
+      SELECT COUNT(*)
+      FROM notis
+      WHERE
+      notis.targetuserId = users.id
+      AND notis.type = 'LIKE'
+    )`;
+    const currentMonthQuery = `(
+      SELECT COUNT(*)
+      FROM notis
+      WHERE
+      notis.targetuserId = users.id
+      AND notis.type = 'LIKE'
+      AND YEAR(notis.createdAt) = ${currentYear}
+      AND MONTH(notis.createdAt) = ${currentMonth}
+    
+    )`;
+    const lastMonthQuery = `(
+      SELECT COUNT(*)
+      FROM notis
+      WHERE
+      notis.targetuserId = users.id
+      AND notis.type = 'LIKE'
+      AND YEAR(notis.createdAt) = ${currentYear}
+      AND MONTH(notis.createdAt) = ${currentMonth - 1}
+    
+    )`;
+    const currentYearQuery = `(
+      SELECT COUNT(*)
+      FROM notis
+      WHERE
+      notis.targetuserId = users.id
+      AND notis.type = 'LIKE'
+      AND YEAR(notis.createdAt) = ${currentYear}
+    
+    )`;
+    const lastYearQuery = `(
+      SELECT COUNT(*)
+      FROM notis
+      WHERE
+      notis.targetuserId = users.id
+      AND notis.type = 'LIKE'
+      AND YEAR(notis.createdAt) = ${currentYear - 1}
+    
+    )`;
+    const queries = {
+      allTime: allTimeQuery,
+      currentMonth: currentMonthQuery,
+      lastMonth: lastMonthQuery,
+      currentYear: currentYearQuery,
+      lastYear: lastYearQuery,
+    };
     const totalpoints = await users.findAll({
       limit: 20,
       offset: page * 20,
@@ -39,20 +94,9 @@ router.get("/", async (req, res) => {
         ],
         include: [
           // get count of total likes
+          // get different query based on type
 
-          [
-            sequelize.literal(`(
-                SELECT COUNT(*)
-                FROM notis
-                WHERE
-                notis.targetuserId = users.id
-                AND notis.type = 'LIKE'
-                AND YEAR(notis.createdAt) = ${currentYear}
-                AND MONTH(notis.createdAt) = ${currentMonth}
-              
-              )`),
-            "totalpoints",
-          ],
+          [sequelize.literal(queries[type] || allTimeQuery), "totalpoints"],
         ],
       },
       where: {
@@ -66,13 +110,14 @@ router.get("/", async (req, res) => {
       ],
     });
     // cache leaderboard and usersCount
-    cache.set(`leaderboard:${page}`, totalpoints);
-    cache.set(`usersCount:${page}`, usersCount);
+    cache.set(`leaderboard-${type}:${page}`, totalpoints);
+    cache.set(`usersCount-${type}:${page}`, usersCount);
 
     return res.status(200).send({
       cache: false,
       usersCount,
       leaderboard: totalpoints,
+      type,
     });
   } catch (error) {
     console.log(error);
