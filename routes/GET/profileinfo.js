@@ -64,9 +64,7 @@ router.get("/:username", async (req, res) => {
       let rank = null;
       if (userInfo.id !== 6) {
         // dont show rank for demo account
-        const currentDate = new Date();
-        const currentYear = currentDate.getFullYear();
-        const currentMonth = currentDate.getMonth() + 1; // Adding 1 since months are zero-based
+
         rank = await users
           .findAll({
             attributes: {
@@ -80,8 +78,7 @@ router.get("/:username", async (req, res) => {
                       WHERE
                       notis.targetuserId = users.id
                       AND notis.type = 'LIKE'
-                      AND YEAR(notis.createdAt) = ${currentYear}
-                      AND MONTH(notis.createdAt) = ${currentMonth}
+                     
                     )`),
                   "totalpoints",
                 ],
