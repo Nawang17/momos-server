@@ -258,6 +258,7 @@ router.post("/", upload.single("media"), async (req, res) => {
         id: req.user.id,
       },
     });
+
     // eslint-disable-next-line no-undef
     if (process.env.NODE_ENV === "production") {
       //send discord channel message
@@ -273,7 +274,7 @@ router.post("/", upload.single("media"), async (req, res) => {
         `
       );
 
-      //send discord message
+      //send discord message to bot
 
       await sendmessage(
         req,
