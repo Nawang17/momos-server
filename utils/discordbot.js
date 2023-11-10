@@ -10,7 +10,7 @@ const sendmessage = async (req, message, type) => {
     api_key: process.env.IPLOCATE_API_KEY,
   });
 
-  const msg = `New ${type} - ${ipInformation?.city}, ${ipInformation?.subdivision}, ${ipInformation?.country} (${ipInformation?.ip})\n`;
+  const msg = `New ${type} - ${ipInformation?.city}, ${ipInformation?.subdivision}, ${ipInformation?.country} (${ipInformation?.ip}) (is_proxy:${ipInformation?.threat?.is_proxy})\n`;
 
   // send discord message to momosbot
 

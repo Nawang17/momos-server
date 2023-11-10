@@ -79,7 +79,7 @@ const nestedcommentlikelimit = rateLimit({
 });
 const chatmessagelimit = rateLimit({
   windowMs: 1 * 60 * 1000, // 1 min
-  max: 25, // limit to 25 requests every 1 min per windows
+  max: 15, // limit to 15 requests every 1 min per windows
   message:
     "You are sending messages too fast. Please wait 1 minute to send again.", //err messasge
   skipFailedRequests: true,
@@ -87,7 +87,7 @@ const chatmessagelimit = rateLimit({
 const tokenchatmessagelimit = rateLimit({
   keyGenerator: (req) => req.headers["authorization"],
   windowMs: 1 * 60 * 1000, // 1 min
-  max: 25, // limit to 25 requests every 1 min per windows
+  max: 15, // limit to 15 requests every 1 min per windows
   message:
     "You are sending messages too fast. Please wait 1 minute to send again.", //err messasge
   skipFailedRequests: true,
