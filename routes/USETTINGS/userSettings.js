@@ -25,6 +25,9 @@ router.put("/updatePassword", async (req, res) => {
         .status(400)
         .send("Your new password must be at least 6 characters");
     }
+    if (req.user.id === 6) {
+      return res.status(400).send("You cannot change this account's password");
+    }
     const user = await users.findOne({
       where: {
         id: req.user.id,
