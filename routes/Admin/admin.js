@@ -140,7 +140,7 @@ router.delete("/deleteUser/:userId", async (req, res) => {
               },
               (err, result) => {
                 if (err) {
-                  res.status(500).send(err);
+                  return res.status(500).send(err);
                 }
                 console.log("video deleted from cloudinary", result);
               }
@@ -153,7 +153,7 @@ router.delete("/deleteUser/:userId", async (req, res) => {
               },
               (err, result) => {
                 if (err) {
-                  res.status(500).send(err);
+                  return res.status(500).send(err);
                 }
                 console.log("Image deleted from cloudinary", result);
               }

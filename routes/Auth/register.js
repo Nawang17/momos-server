@@ -26,8 +26,8 @@ router.post("/", async (req, res) => {
     return res.status(400).send("Username must contain at least one letter");
   } else if (restrictednames.includes(username.toUpperCase())) {
     return res.status(400).send("Username is not available");
-  } else if (password.length < 4) {
-    return res.status(400).send("Password must be at least 4 characters");
+  } else if (password.length < 6) {
+    return res.status(400).send("Password must be at least 6 characters");
   } else if (filter.isProfane(username)) {
     return res.status(400).send("Username is not available");
   } else {

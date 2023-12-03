@@ -92,6 +92,7 @@ const newCommunity = require("./routes/POST/newCommunity");
 const getcommunity = require("./routes/GET/communities");
 const newCommunitypost = require("./routes/POST/newCommunityPost");
 const getnews = require("./routes/GET/news");
+const userSettings = require("./routes/USETTINGS/userSettings");
 app.use("/likedposts", tokenCheck, likedpost);
 app.use("/likepost", tokenCheck, likelimit, likepost);
 app.use("/pollvote", tokenCheck, pollvote);
@@ -171,6 +172,7 @@ app.use(
   newCommunitypost
 );
 app.use("/news", getnews);
+app.use("/usersettings", tokenCheck, userSettings);
 
 //initialize socket
 const { verify } = require("jsonwebtoken");
