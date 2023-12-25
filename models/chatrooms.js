@@ -5,6 +5,14 @@ module.exports = (sequelize, DataTypes) => {
       allowNull: false,
       unique: "roomid",
     },
+    user1Closed: {
+      type: DataTypes.BOOLEAN,
+      defaultValue: true,
+    },
+    user2Closed: {
+      type: DataTypes.BOOLEAN,
+      defaultValue: true,
+    },
   });
   chatrooms.associate = (models) => {
     chatrooms.belongsTo(models.users, {

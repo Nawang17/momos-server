@@ -24,6 +24,31 @@ router.get("/:id1", async (req, res) => {
     });
     if (findchatroom) {
       chatroomid = findchatroom.roomid;
+
+      if (findchatroom.user1 === userId2 && findchatroom?.user1Closed) {
+        await chatrooms.update(
+          {
+            user1Closed: false,
+          },
+          {
+            where: {
+              roomid: chatroomid,
+            },
+          }
+        );
+      }
+      if (findchatroom.user2 === userId2 && findchatroom.user2Closed) {
+        await chatrooms.update(
+          {
+            user2Closed: false,
+          },
+          {
+            where: {
+              roomid: chatroomid,
+            },
+          }
+        );
+      }
     }
     if (!findchatroom) {
       const finduser1 = await users.findOne({
@@ -125,7 +150,10 @@ router.get("/get/chatrooms", async (req, res) => {
   try {
     const getchatrooms = await chatrooms.findAll({
       where: {
-        [Op.or]: [{ user1: req.user.id }, { user2: req.user.id }],
+        [Op.or]: [
+          { user1: req.user.id, user1Closed: false },
+          { user2: req.user.id, user2Closed: false },
+        ],
       },
       include: [
         {
@@ -209,6 +237,19 @@ router.post(
           [Op.or]: [{ user1: req.user.id }, { user2: req.user.id }],
         },
       });
+      if (findchatroom) {
+        await chatrooms.update(
+          {
+            user1Closed: false,
+            user2Closed: false,
+          },
+          {
+            where: {
+              roomid: findchatroom?.roomid,
+            },
+          }
+        );
+      }
       if (!findchatroom) return res.status(400).send("chatroom not found");
       const newmessage = await chats.create({
         message: message,
@@ -254,6 +295,48 @@ router.delete("/deletemessage/:msgid", async (req, res) => {
       },
     });
     return res.status(200).send("message deleted");
+  } catch (error) {
+    console.log(error);
+    return res.status(500).send("Something went wrong");
+  }
+});
+
+router.put("/closechat", async (req, res) => {
+  try {
+    const roomid = req.body.roomid;
+    if (!roomid) return res.status(400).send("no room id provided");
+    const findchatroom = await chatrooms.findOne({
+      where: {
+        roomid: roomid,
+        [Op.or]: [{ user1: req.user.id }, { user2: req.user.id }],
+      },
+    });
+    if (!findchatroom) return res.status(400).send("chatroom not found");
+    if (findchatroom.user1 === req.user.id) {
+      await chatrooms.update(
+        {
+          user1Closed: true,
+        },
+        {
+          where: {
+            roomid: roomid,
+          },
+        }
+      );
+    }
+    if (findchatroom.user2 === req.user.id) {
+      await chatrooms.update(
+        {
+          user2Closed: true,
+        },
+        {
+          where: {
+            roomid: roomid,
+          },
+        }
+      );
+    }
+    return res.status(200).send("chat closed");
   } catch (error) {
     console.log(error);
     return res.status(500).send("Something went wrong");

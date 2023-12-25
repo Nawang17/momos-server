@@ -8,6 +8,8 @@ const createnewchatroom = async (id1, id2) => {
       roomid: `${id1}-${id2}`,
       user1: id1,
       user2: id2,
+      user1Closed: true,
+      user2Closed: false,
     });
     return newchatroom.roomid;
   } catch (error) {
