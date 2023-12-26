@@ -33,6 +33,7 @@ app.use(
   cors({
     origin: process.env.ORIGINS.split(" "),
   })
+);
 app.use(blacklistMiddleware);
 app.set("trust proxy", 4);
 app.use(express.json({ limit: "42mb" }));
