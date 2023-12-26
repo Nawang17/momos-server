@@ -99,11 +99,7 @@ router.get("/", async (req, res) => {
           [sequelize.literal(queries[type] || allTimeQuery), "totalpoints"],
         ],
       },
-      where: {
-        id: {
-          [sequelize.Op.ne]: 6, // Exclude demo account from leaderboard
-        },
-      },
+
       order: [
         [sequelize.literal("totalpoints"), "DESC"],
         [sequelize.col("users.id"), "ASC"],
