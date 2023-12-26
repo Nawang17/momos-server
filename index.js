@@ -8,7 +8,11 @@ const server = http.createServer(app);
 const { fn } = require("sequelize");
 const { Server } = require("socket.io");
 const requestIp = require("request-ip");
-global.io = new Server(server);
+global.io = new Server(server, {
+  cors: {
+    origin: process.env.ORIGINS.split(" "),
+  },
+});
 const db = require("./models");
 const cors = require("cors");
 const port = process.env.PORT || 3001;
@@ -26,8 +30,9 @@ const blacklistMiddleware = (req, res, next) => {
 };
 
 app.use(
-  cors()
-);
+  cors({
+    origin: process.env.ORIGINS.split(" "),
+  })
 app.use(blacklistMiddleware);
 app.set("trust proxy", 4);
 app.use(express.json({ limit: "42mb" }));
