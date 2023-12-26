@@ -62,8 +62,7 @@ router.get("/:username", async (req, res) => {
     } else {
       let points = null;
       let rank = null;
-      if (userInfo.id !== 6) {
-        // dont show rank for demo account
+      
 
         rank = await users
           .findAll({
@@ -99,7 +98,7 @@ router.get("/:username", async (req, res) => {
               (await users.findIndex((user) => user.id === userInfo.id)) + 1
             );
           });
-      }
+    
 
       let userPoststotalCount;
 
