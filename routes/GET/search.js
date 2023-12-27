@@ -76,6 +76,16 @@ router.get("/getposts/:value", async (req, res) => {
                 )`),
             "likescount",
           ],
+          [
+            sequelize.literal(
+              `(SELECT COUNT(*)
+              FROM notis
+              WHERE
+              notis.targetuserId = posts.postUser
+              AND notis.type = 'LIKE')`
+            ),
+            "usertotalpoints",
+          ],
         ],
       },
 
@@ -173,6 +183,16 @@ router.get("/getposts/:value", async (req, res) => {
                         
                 )`),
             "likescount",
+          ],
+          [
+            sequelize.literal(
+              `(SELECT COUNT(*)
+              FROM notis
+              WHERE
+              notis.targetuserId = posts.postUser
+              AND notis.type = 'LIKE')`
+            ),
+            "usertotalpoints",
           ],
         ],
       },
