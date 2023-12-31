@@ -2,6 +2,7 @@
 const router = require("express").Router();
 const cache = require("../../utils/cache");
 const axios = require("axios");
+require("dotenv").config();
 
 router.get("/Top", async (_, res) => {
   const newYorkTimeOptions = { timeZone: "America/New_York" };
@@ -27,7 +28,7 @@ router.get("/Top", async (_, res) => {
   }
 
   const news = await axios.get(
-    "https://api.thenewsapi.com/v1/news/top?api_token=pKmGDf94fEZ1xb789WHrvXBjtO9TzpeD583fpGbY&locale=us&limit=1"
+    `https://api.thenewsapi.com/v1/news/top?api_token=${process.env.NEWS_API_TOKEN}`
   );
   const newsData = news.data;
   cache.set(`TopNews-${date}`, newsData);
