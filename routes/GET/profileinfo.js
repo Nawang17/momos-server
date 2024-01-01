@@ -76,6 +76,7 @@ router.get("/:username", async (req, res) => {
                       WHERE
                       notis.targetuserId = users.id
                       AND notis.type = 'LIKE'
+                      AND notis.likeId IS NOT NULL
                      
                     )`),
                 "totalpoints",
@@ -123,16 +124,6 @@ router.get("/:username", async (req, res) => {
                 "(SELECT COUNT(*) FROM postquotes WHERE postquotes.quotedPostId = posts.id)"
               ),
               "postquotesCount",
-            ],
-            [
-              sequelize.literal(
-                `(SELECT COUNT(*)
-                FROM notis
-                WHERE
-                notis.targetuserId = posts.postUser
-                AND notis.type = 'LIKE')`
-              ),
-              "usertotalpoints",
             ],
           ],
         },
@@ -250,16 +241,6 @@ router.get("/:username", async (req, res) => {
                 "(SELECT COUNT(*) FROM postquotes WHERE postquotes.quotedPostId = posts.id)"
               ),
               "postquotesCount",
-            ],
-            [
-              sequelize.literal(
-                `(SELECT COUNT(*)
-                FROM notis
-                WHERE
-                notis.targetuserId = posts.postUser
-                AND notis.type = 'LIKE')`
-              ),
-              "usertotalpoints",
             ],
           ],
         },
@@ -524,16 +505,6 @@ router.get("/userposts/:userid", async (req, res) => {
             ),
             "postquotesCount",
           ],
-          [
-            sequelize.literal(
-              `(SELECT COUNT(*)
-              FROM notis
-              WHERE
-              notis.targetuserId = posts.postUser
-              AND notis.type = 'LIKE')`
-            ),
-            "usertotalpoints",
-          ],
         ],
       },
       order: [["id", "DESC"]],
@@ -662,16 +633,6 @@ router.get("/likedposts/:userid", async (req, res) => {
               "(SELECT COUNT(*) FROM postquotes WHERE postquotes.quotedPostId = posts.id)"
             ),
             "postquotesCount",
-          ],
-          [
-            sequelize.literal(
-              `(SELECT COUNT(*)
-              FROM notis
-              WHERE
-              notis.targetuserId = posts.postUser
-              AND notis.type = 'LIKE')`
-            ),
-            "usertotalpoints",
           ],
         ],
       },

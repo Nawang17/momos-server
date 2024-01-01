@@ -53,16 +53,6 @@ router.get("/:postid", async (req, res) => {
             ),
             "postquotesCount",
           ],
-          [
-            sequelize.literal(
-              `(SELECT COUNT(*)
-              FROM notis
-              WHERE
-              notis.targetuserId = posts.postUser
-              AND notis.type = 'LIKE')`
-            ),
-            "usertotalpoints",
-          ],
         ],
       },
 

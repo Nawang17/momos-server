@@ -129,16 +129,6 @@ router.get("/communityProfile/:name", async (req, res) => {
             ),
             "postquotesCount",
           ],
-          [
-            sequelize.literal(
-              `(SELECT COUNT(*)
-              FROM notis
-              WHERE
-              notis.targetuserId = posts.postUser
-              AND notis.type = 'LIKE')`
-            ),
-            "usertotalpoints",
-          ],
         ],
       },
       order: [["id", "DESC"]],
@@ -269,16 +259,6 @@ router.get("/communityPosts/:name", tokenCheck, async (req, res) => {
             ),
             "postquotesCount",
           ],
-          [
-            sequelize.literal(
-              `(SELECT COUNT(*)
-              FROM notis
-              WHERE
-              notis.targetuserId = posts.postUser
-              AND notis.type = 'LIKE')`
-            ),
-            "usertotalpoints",
-          ],
         ],
       },
       order: [["id", "DESC"]],
@@ -399,16 +379,6 @@ router.get("/singlepost/:postid", tokenCheck, async (req, res) => {
               "(SELECT COUNT(*) FROM postquotes WHERE postquotes.quotedPostId = posts.id)"
             ),
             "postquotesCount",
-          ],
-          [
-            sequelize.literal(
-              `(SELECT COUNT(*)
-              FROM notis
-              WHERE
-              notis.targetuserId = posts.postUser
-              AND notis.type = 'LIKE')`
-            ),
-            "usertotalpoints",
           ],
         ],
       },
