@@ -38,7 +38,9 @@ router.get("/", async (req, res) => {
                 WHERE
                 notis.targetuserId = users.id
                 AND notis.type = 'LIKE'
-                AND notis.likeId IS NOT NULL 
+                AND notis.likeId IS NOT NULL
+                AND notis.userId != 6 
+                
               
               )`),
             "totalpoints",

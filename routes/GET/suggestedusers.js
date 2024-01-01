@@ -116,6 +116,7 @@ router.get("/topuser", async (req, res) => {
                 notis.targetuserId = users.id
                 AND notis.type = 'LIKE'
                 AND notis.likeId IS NOT NULL
+                AND notis.userId != 6
              
               )`),
             "totalpoints",

@@ -34,6 +34,7 @@ router.get("/", async (req, res) => {
       notis.targetuserId = users.id
       AND notis.type = 'LIKE'
       AND notis.likeId IS NOT NULL
+      AND notis.userId != 6
     )`;
     const currentMonthQuery = `(
       SELECT COUNT(*)
@@ -42,6 +43,7 @@ router.get("/", async (req, res) => {
       notis.targetuserId = users.id
       AND notis.type = 'LIKE'
       AND notis.likeId IS NOT NULL
+      AND notis.userId != 6
       AND YEAR(notis.createdAt) = ${currentYear}
       AND MONTH(notis.createdAt) = ${currentMonth}
     
@@ -53,6 +55,7 @@ router.get("/", async (req, res) => {
       notis.targetuserId = users.id
       AND notis.type = 'LIKE'
       AND notis.likeId IS NOT NULL
+      AND notis.userId != 6
       AND YEAR(notis.createdAt) = ${currentYear}
       AND MONTH(notis.createdAt) = ${currentMonth - 1}
     
@@ -64,6 +67,7 @@ router.get("/", async (req, res) => {
       notis.targetuserId = users.id
       AND notis.type = 'LIKE'
       AND notis.likeId IS NOT NULL
+      AND notis.userId != 6
       AND YEAR(notis.createdAt) = ${currentYear}
     
     )`;
@@ -74,6 +78,7 @@ router.get("/", async (req, res) => {
       notis.targetuserId = users.id
       AND notis.type = 'LIKE'
       AND notis.likeId IS NOT NULL
+      AND notis.userId != 6
       AND YEAR(notis.createdAt) = ${currentYear - 1}
     
     )`;
