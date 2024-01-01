@@ -1,9 +1,8 @@
 "use strict";
-const router = require("express").Router();
-const { nestedcomments, notis } = require("../../models");
+const { nestedcomments } = require("../../models");
 
 const { deleteallcache } = require("../../utils/deletecache");
-router.delete("/:nestedcommentid", async (req, res) => {
+const deleteNestedComment = async (req, res) => {
   const { nestedcommentid } = req.params;
   if (!nestedcommentid) {
     return res.status(400).send("Nested comment id is required");
@@ -41,6 +40,6 @@ router.delete("/:nestedcommentid", async (req, res) => {
       return res.status(500).send("Something went wrong");
     }
   }
-});
+};
 
-module.exports = router;
+module.exports = deleteNestedComment;

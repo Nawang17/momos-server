@@ -1,5 +1,4 @@
 "use strict";
-const router = require("express").Router();
 const {
   comments,
   posts,
@@ -13,7 +12,7 @@ var filter = require("../../utils/bad-words-hacked");
 filter = new filter();
 const { Op } = require("sequelize");
 const cache = require("../../utils/cache");
-router.put("/", async (req, res) => {
+const editComment = async (req, res) => {
   const { postId, commentid, text, gif } = req.body;
   const sanitizedText = filter.cleanHacked(
     text?.trim().replace(/\n{2,}/g, "\n")
@@ -261,6 +260,6 @@ router.put("/", async (req, res) => {
     console.log(error);
     return res.status(500).send("Something went wrong");
   }
-});
+};
 
-module.exports = router;
+module.exports = editComment;

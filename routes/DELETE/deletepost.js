@@ -1,9 +1,8 @@
 "use strict";
-const router = require("express").Router();
 const { posts } = require("../../models");
 const { cloudinary } = require("../../utils/cloudinary");
 const { deleteallcache } = require("../../utils/deletecache");
-router.delete("/:postId", async (req, res) => {
+const deletePost = async (req, res) => {
   const { postId } = req.params;
   if (!postId) {
     res.status(400).send("Post id is required");
@@ -70,6 +69,6 @@ router.delete("/:postId", async (req, res) => {
       return res.status(500).send("Something went wrong");
     }
   }
-});
+};
 
-module.exports = router;
+module.exports = deletePost;

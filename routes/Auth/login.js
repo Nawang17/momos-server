@@ -1,12 +1,11 @@
 "use strict";
 require("dotenv").config();
-const router = require("express").Router();
 const { users } = require("../../models");
 const { compare } = require("bcryptjs");
 const { sign } = require("jsonwebtoken");
 const { sendmessage } = require("../../utils/discordbot");
 
-router.post("/", async (req, res) => {
+const login = async (req, res) => {
   const { username, password } = req.body;
   if (!username || !password) {
     res.status(400).send("Please fill all fields");
@@ -26,6 +25,7 @@ router.post("/", async (req, res) => {
               {
                 id: user.id,
               },
+              // eslint-disable-next-line no-undef
               process.env.JWT_SECRET
             );
             res.status(200).send({
@@ -37,6 +37,7 @@ router.post("/", async (req, res) => {
               },
             });
 
+            // eslint-disable-next-line no-undef
             if (process.env.NODE_ENV === "production") {
               //send discord message
               await sendmessage(
@@ -55,6 +56,6 @@ router.post("/", async (req, res) => {
       return res.status(400).send(error);
     }
   }
-});
+};
 
-module.exports = router;
+module.exports = login;

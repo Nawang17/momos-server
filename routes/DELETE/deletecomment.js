@@ -1,8 +1,7 @@
 "use strict";
-const router = require("express").Router();
 const { comments } = require("../../models");
 const { deleteallcache } = require("../../utils/deletecache");
-router.delete("/:commentid", async (req, res) => {
+const deleteComment = async (req, res) => {
   const { commentid } = req.params;
   if (!commentid) {
     return res.status(400).send("Comment id is required");
@@ -37,6 +36,6 @@ router.delete("/:commentid", async (req, res) => {
       return res.status(500).send("Something went wrong");
     }
   }
-});
+};
 
-module.exports = router;
+module.exports = deleteComment;

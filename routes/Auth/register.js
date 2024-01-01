@@ -1,7 +1,6 @@
 /* eslint-disable no-undef */
 "use strict";
 require("dotenv").config();
-const router = require("express").Router();
 const { users, profilebanners } = require("../../models");
 const bcrypt = require("bcryptjs");
 const { sign } = require("jsonwebtoken");
@@ -11,7 +10,7 @@ const { restrictednames } = require("../../utils/restrictedusernames");
 const { avatarColor } = require("../../utils/randomColor");
 
 const { sendmessage, sendchannelmessage } = require("../../utils/discordbot");
-router.post("/", async (req, res) => {
+const register = async (req, res) => {
   const { username, password } = req.body;
 
   if (!username || !password) {
@@ -103,6 +102,6 @@ router.post("/", async (req, res) => {
       return res.status(500).send("Something went wrong");
     }
   }
-});
+};
 
-module.exports = router;
+module.exports = register;

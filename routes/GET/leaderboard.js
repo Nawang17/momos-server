@@ -33,7 +33,7 @@ router.get("/", async (req, res) => {
       WHERE
       notis.targetuserId = users.id
       AND notis.type = 'LIKE'
-      AND notis.likeId IS NOT NULL
+      AND text = 'liked your post.'
       AND notis.userId != 6
     )`;
     const currentMonthQuery = `(
@@ -42,7 +42,7 @@ router.get("/", async (req, res) => {
       WHERE
       notis.targetuserId = users.id
       AND notis.type = 'LIKE'
-      AND notis.likeId IS NOT NULL
+      AND text = 'liked your post.'
       AND notis.userId != 6
       AND YEAR(notis.createdAt) = ${currentYear}
       AND MONTH(notis.createdAt) = ${currentMonth}
@@ -54,7 +54,7 @@ router.get("/", async (req, res) => {
       WHERE
       notis.targetuserId = users.id
       AND notis.type = 'LIKE'
-      AND notis.likeId IS NOT NULL
+      AND text = 'liked your post.'
       AND notis.userId != 6
       AND YEAR(notis.createdAt) = ${currentYear}
       AND MONTH(notis.createdAt) = ${currentMonth - 1}
@@ -66,7 +66,7 @@ router.get("/", async (req, res) => {
       WHERE
       notis.targetuserId = users.id
       AND notis.type = 'LIKE'
-      AND notis.likeId IS NOT NULL
+      AND text = 'liked your post.'
       AND notis.userId != 6
       AND YEAR(notis.createdAt) = ${currentYear}
     
@@ -77,7 +77,7 @@ router.get("/", async (req, res) => {
       WHERE
       notis.targetuserId = users.id
       AND notis.type = 'LIKE'
-      AND notis.likeId IS NOT NULL
+      AND text = 'liked your post.'
       AND notis.userId != 6
       AND YEAR(notis.createdAt) = ${currentYear - 1}
     

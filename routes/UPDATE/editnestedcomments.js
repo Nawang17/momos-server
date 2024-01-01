@@ -12,7 +12,7 @@ const { Op } = require("sequelize");
 var filter = require("../../utils/bad-words-hacked");
 filter = new filter();
 const cache = require("../../utils/cache");
-router.put("/", async (req, res) => {
+const editNestedComment = async (req, res) => {
   const { text, commentId, replytouserId, postId, gif, nestedcommentId } =
     req.body;
 
@@ -233,6 +233,6 @@ router.put("/", async (req, res) => {
     console.log(error);
     return res.status(500).send("Something went wrong");
   }
-});
+};
 
-module.exports = router;
+module.exports = editNestedComment;

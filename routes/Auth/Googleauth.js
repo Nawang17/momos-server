@@ -1,15 +1,17 @@
+/* eslint-disable no-undef */
 "use strict";
 require("dotenv").config();
-const router = require("express").Router();
+// const router = require("express").Router();
 const { users, profilebanners } = require("../../models");
 const { getColorFromURL } = require("color-thief-node");
 const { sign } = require("jsonwebtoken");
 var Filterer = require("bad-words");
+// eslint-disable-next-line no-unused-vars
 var filter = new Filterer();
 const { restrictednames } = require("../../utils/restrictedusernames");
 const { avatarColor } = require("../../utils/randomColor");
 const { sendmessage, sendchannelmessage } = require("../../utils/discordbot");
-router.post("/", async (req, res) => {
+const googleAuth = async (req, res) => {
   try {
     const { username, email, avatar } = req.body;
 
@@ -51,6 +53,7 @@ router.post("/", async (req, res) => {
 
     // Chekcl if values are valid
 
+    // eslint-disable-next-line no-useless-escape
     if (!/^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/g.test(email)) {
       res.status(400).send("Please enter a valid email");
     } else if (restrictednames.includes(username.toUpperCase())) {
@@ -152,5 +155,5 @@ router.post("/", async (req, res) => {
     console.log(error);
     return res.status(500).send("Something went wrong");
   }
-});
-module.exports = router;
+};
+module.exports = googleAuth;
