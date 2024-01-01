@@ -13,19 +13,27 @@ const sendmessage = async (req, message, type) => {
   const msg = `New ${type} - ${ipInformation?.city}, ${ipInformation?.subdivision}, ${ipInformation?.country} (${ipInformation?.ip}) (is_proxy:${ipInformation?.threat?.is_proxy})\n`;
 
   // send discord message to momosbot
+  try {
+    await client?.users?.send(
+      process.env.USERID,
+      `${msg}${message?.replace(/@/g, "")} `
+    );
+  } catch (error) {
+    console.log(error);
+  }
 
-  await client.users.send(
-    process.env.USERID,
-    `${msg}${message.replace(/@/g, "")} `
-  );
   return;
 };
 
 const sendchannelmessage = async (message) => {
   //send message to momos server channel
-  await client.channels.cache
-    .get(process.env.CHANNEL_ID)
-    .send(message.replace(/@/g, ""));
+  try {
+    await client?.channels?.cache
+      ?.get(process.env.CHANNEL_ID)
+      ?.send(message?.replace(/@/g, ""));
+  } catch (error) {
+    console.log(error);
+  }
   return;
 };
 
