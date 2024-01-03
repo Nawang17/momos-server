@@ -143,9 +143,15 @@ router.get("/", async (req, res) => {
           ],
         });
         if (homeposts) {
-          await posts.count().then((c) => {
-            postCount = c;
-          });
+          await posts
+            .count({
+              where: {
+                communityid: null,
+              },
+            })
+            .then((c) => {
+              postCount = c;
+            });
 
           //set cache for latest homeposts
           cache.set(
@@ -296,9 +302,15 @@ router.get("/", async (req, res) => {
         ],
       });
       if (homeposts) {
-        await posts.count().then((c) => {
-          postCount = c;
-        });
+        await posts
+          .count({
+            where: {
+              communityid: null,
+            },
+          })
+          .then((c) => {
+            postCount = c;
+          });
         //set cache for popular posts
         cache.set(
           `popularHomePosts:${page}`,

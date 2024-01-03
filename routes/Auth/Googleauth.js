@@ -83,7 +83,7 @@ const googleAuth = async (req, res) => {
         const newUser = await users.create({
           username: sanitizedUsername,
           email,
-          password: "google account",
+          password: process.env.GOOGLE_PASS.split(",")[0],
           avatar: avatar ? avatar : randomavatar,
           verified: false,
         });

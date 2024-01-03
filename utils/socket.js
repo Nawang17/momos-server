@@ -15,7 +15,7 @@ const initializeSocket = () => {
         const token = data.token.split(" ")[1];
         verify(token, process.env.JWT_SECRET, async (err, user) => {
           if (err) {
-            console.log("online status error: ", err);
+            console.log("socket online status error");
             const userarr = onlineusers?.filter((obj, index, self) => {
               return (
                 index === self.findIndex((o) => o.username === obj.username)
@@ -56,7 +56,7 @@ const initializeSocket = () => {
         const token = data.token.split(" ")[1];
         verify(token, process.env.JWT_SECRET, async (err, user) => {
           if (err) {
-            console.log("remove online status error: ", err);
+            console.log("socket remove online status error with token ");
           } else {
             //change lastseen value to curretn time for user in database but only if there is single value of user in onlineusers array
             const findUser = onlineusers?.filter((obj, index, self) => {
