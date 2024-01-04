@@ -7,6 +7,7 @@ const bcrypt = require("bcryptjs");
 const { profilebanners, users, posts } = require("../../models");
 const { cloudinary } = require("../../utils/cloudinary");
 const { deleteallcache } = require("../../utils/deletecache");
+const sequelize = require("sequelize");
 
 //get user info
 
@@ -73,9 +74,26 @@ router.put("/updateEmail", async (req, res) => {
           if (!isValidEmail(email)) {
             return res.status(400).send("Invalid email address");
           }
-          //check if email already exists
+
+          //check if email already is the same as the current email
           if (email === user.email) {
             return res.status(400).send("This is your current email");
+          }
+
+          // check if email is already in use by another user
+          const findSimilarEmail = await users.findOne({
+            where: {
+              email: email,
+              id: {
+                [sequelize.Op.ne]: req.user.id, // Exclude the current user from the search
+              },
+            },
+          });
+
+          if (findSimilarEmail) {
+            return res
+              .status(400)
+              .send("Email is already in use by another user");
           }
 
           //update email
