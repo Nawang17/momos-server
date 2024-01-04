@@ -11,7 +11,6 @@ const blacklist = process.env.BLACKLISTED_IPS.split(" ");
 
 const blacklistMiddleware = (req, res, next) => {
   const ip = requestIp.getClientIp(req);
-  console.log(ip);
   if (blacklist.includes(ip)) {
     return res.status(403).send("Access denied");
   }

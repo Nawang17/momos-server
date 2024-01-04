@@ -47,14 +47,6 @@ function isValidEmail(email) {
   return emailRegex.test(email);
 }
 
-// Example usage
-const email = "test@example.com";
-if (isValidEmail(email)) {
-  console.log("Valid email address");
-} else {
-  console.log("Invalid email address");
-}
-
 //update email
 
 router.put("/updateEmail", async (req, res) => {
