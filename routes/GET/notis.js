@@ -3,19 +3,7 @@ const router = require("express").Router();
 
 const {
   users,
-  follows,
-  bookmarks,
   posts,
-  likes,
-  comments,
-  nestedcomments,
-  previewlinks,
-  polls,
-  pollchoices,
-  pollvotes,
-  commentlikes,
-  communities,
-  communitymembers,
   notis
 } = require("../../models");
 
@@ -49,90 +37,7 @@ router.get("/", async (req, res) => {
            
           },
         
-          include: [
-            {
-              model: communities,
-              as: "comshare",
-              include: [
-                {
-                  model: communitymembers,
-                  attributes: ["communityId", "isadmin", "isOwner"],
-                },
-              ],
-            },
-            {
-              model: polls,
-              include: [
-                {
-                  model: pollchoices,
-                  include: [
-                    {
-                      model: pollvotes,
-                      include: [
-                        {
-                          model: users,
-                          attributes: ["username", "avatar", "verified", "id"],
-                        },
-                      ],
-                    },
-                  ],
-                },
-              ],
-            },
-            {
-              model: previewlinks,
-            },
-            {
-              model: users,
-  
-              attributes: ["username", "avatar", "verified", "id"],
-            },
-            {
-              model: likes,
-              include: [
-                {
-                  model: users,
-                  attributes: ["username", "avatar", "verified", "id"],
-                },
-              ],
-              seperate: true,
-            },
-            {
-              model: comments,
-  
-              include: [
-                {
-                  model: commentlikes,
-                  seperate: true,
-                  include: [
-                    {
-                      model: users,
-                      attributes: ["username", "avatar", "verified", "id"],
-                    },
-                  ],
-                },
-                {
-                  model: users,
-  
-                  attributes: ["username", "avatar", "verified", "id"],
-                },
-                {
-                  model: nestedcomments,
-                  seperate: true,
-                },
-              ],
-              seperate: true,
-            },
-            {
-              model: posts,
-              include: [
-                {
-                  model: users,
-                  attributes: ["username", "avatar", "verified", "id"],
-                },
-              ],
-            },
-          ],
+      
         },
 
         {
