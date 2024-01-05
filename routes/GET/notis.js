@@ -18,7 +18,7 @@ const {
   communitymembers,
   notis
 } = require("../../models");
-const sequelize = require("sequelize");
+
 // const cache = require("../../utils/cache");
 
 router.get("/", async (req, res) => {
@@ -46,14 +46,7 @@ router.get("/", async (req, res) => {
           model: posts,
           attributes: {
             exclude: ["updatedAt", "postUser"],
-            include: [
-              [
-                sequelize.literal(
-                  "(SELECT COUNT(*) FROM postquotes WHERE postquotes.quotedPostId = posts.id)"
-                ),
-                "postquotesCount",
-              ],
-            ],
+           
           },
         
           include: [
