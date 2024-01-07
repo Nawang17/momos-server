@@ -10,8 +10,9 @@ const { restrictednames } = require("../../utils/restrictedusernames");
 const { avatarColor } = require("../../utils/randomColor");
 
 const { sendmessage, sendchannelmessage } = require("../../utils/discordbot");
+const { isValidEmail } = require("../../utils/validations");
 const register = async (req, res) => {
-  const { username, password } = req.body;
+  const { username, password, email } = req.body;
 
   if (!username || !password) {
     res.status(400).send("Please fill all fields");
@@ -30,6 +31,11 @@ const register = async (req, res) => {
   } else if (filter.isProfane(username)) {
     return res.status(400).send("Username is not available");
   } else {
+    if (email) {
+      if (!isValidEmail(email)) {
+        return res.status(400).send("Invalid email format");
+      }
+    }
     try {
       const user = await users.findOne({
         where: {
@@ -50,6 +56,7 @@ const register = async (req, res) => {
             username,
             password: hash,
             avatar,
+            email: email ? email : null,
           });
         });
         if (newUser) {

@@ -127,6 +127,13 @@ const newcommunitypostLimit = rateLimit({
   message: "Post limit reached. Please wait 1 minute to post again.",
   skipFailedRequests: true,
 });
+const resetPasswordtokenrequest = rateLimit({
+  //ip limit for reset password token request
+  windowMs: 1 * 60 * 1000, // 1 min
+  max: 4, // limit to 4 requests every 1 min per windows
+  message: "Request limit reached. Please wait 1 minute to request again.",
+  skipFailedRequests: true,
+});
 module.exports = {
   tokennewcommunitypostLimit,
   newcommunitypostLimit,
@@ -147,4 +154,5 @@ module.exports = {
   tokennestedcommentlimit,
   editcommentlimit,
   bookmarklimit,
+  resetPasswordtokenrequest,
 };
