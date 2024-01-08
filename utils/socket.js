@@ -32,6 +32,7 @@ const initializeSocket = () => {
               userid: finduser?.id,
               username: finduser?.username,
               avatar: finduser?.avatar,
+              verified: finduser?.verified,
               description: finduser?.description,
               socketid: socket.id,
             });
