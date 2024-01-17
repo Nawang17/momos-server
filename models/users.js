@@ -45,6 +45,12 @@ module.exports = (sequelize, DataTypes) => {
       allowNull: true,
       defaultValue: null,
     },
+    link: {
+      type: DataTypes.STRING,
+      allowNull: true,
+      defaultValue: null,
+    },
+
   });
   users.associate = (models) => {
     users.hasMany(models.communitymembers, {
