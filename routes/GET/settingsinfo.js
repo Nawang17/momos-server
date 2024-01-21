@@ -8,6 +8,8 @@ var filter = new Filterer();
 const { editprofilelimit } = require("../../middleware/rateLimit");
 const { restrictednames } = require("../../utils/restrictedusernames");
 const { deleteallcache } = require("../../utils/deletecache");
+const validator = require("validator");
+
 router.get("/editprofileinfo", async (req, res) => {
   const { id } = req.user;
   try {
@@ -15,7 +17,7 @@ router.get("/editprofileinfo", async (req, res) => {
       where: {
         id: id,
       },
-      attributes: ["username", "description", "avatar", "verified"],
+      attributes: ["username", "description", "avatar", "verified", "link"],
       include: [
         {
           model: profilebanners,
@@ -38,7 +40,7 @@ router.get("/editprofileinfo", async (req, res) => {
 });
 
 router.put("/updateprofileinfo", editprofilelimit, async (req, res) => {
-  const { username, description, avatar, banner } = req.body;
+  const { username, description, avatar, banner, link } = req.body;
   const { id } = req.user;
   try {
     const finduser = await users.findOne({
@@ -87,6 +89,9 @@ router.put("/updateprofileinfo", editprofilelimit, async (req, res) => {
         } else {
           if (username !== finduser?.username) {
             if (finduser?.username === "Demo") {
+              return res
+                .status(400)
+                .send("Username cannot be changed for demo account");
             } else {
               try {
                 await users.update(
@@ -108,7 +113,49 @@ router.put("/updateprofileinfo", editprofilelimit, async (req, res) => {
           }
         }
       }
-
+      if (link?.length > 100) {
+        return res.status(400).send("Link must be less than 100 characters");
+      }
+      if (link.length > 0) {
+        if (!validator.isURL(link)) {
+          return res.status(400).send("Invalid link");
+        }
+        if (link !== finduser?.link) {
+          try {
+            await users.update(
+              {
+                link: link,
+              },
+              {
+                where: {
+                  id: id,
+                },
+              }
+            );
+            console.log("link updated successfully");
+          } catch (error) {
+            console.log(error);
+            return res.status(400).send("Something went wrong");
+          }
+        }
+      } else {
+        try {
+          await users.update(
+            {
+              link: link,
+            },
+            {
+              where: {
+                id: id,
+              },
+            }
+          );
+          console.log("link updated successfully");
+        } catch (error) {
+          console.log(error);
+          return res.status(400).send("Something went wrong");
+        }
+      }
       if (description?.length > 160) {
         return res
           .status(400)
