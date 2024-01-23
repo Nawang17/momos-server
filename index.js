@@ -74,7 +74,9 @@ const auth = require("./routes/Auth/auth");
 const deletetions = require("./routes/DELETE/delete");
 const updates = require("./routes/UPDATE/update");
 const admin = require("./routes/Admin/admin");
-
+const { addPostTranslations } = require("./utils/cronjobs");
+// add post translations every 15 minutes cron job
+addPostTranslations.start();
 app.use("/likedposts", tokenCheck, likedpost);
 app.use("/likepost", tokenCheck, likelimit, likepost);
 app.use("/pollvote", tokenCheck, pollvote);

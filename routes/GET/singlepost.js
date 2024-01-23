@@ -14,6 +14,7 @@ const {
   pollvotes,
   communities,
   communitymembers,
+  translations,
 } = require("../../models");
 const cache = require("../../utils/cache");
 
@@ -57,6 +58,10 @@ router.get("/:postid", async (req, res) => {
       },
 
       include: [
+        {
+          model: translations,
+          attributes: ["translatedText", "language"],
+        },
         {
           model: communities,
           as: "comshare",

@@ -12,6 +12,7 @@ const {
   pollvotes,
   communities,
   communitymembers,
+  translations,
 } = require("../../models");
 const { Op } = require("sequelize");
 const sequelize = require("sequelize");
@@ -80,6 +81,10 @@ router.get("/getposts/:value", async (req, res) => {
       },
 
       include: [
+        {
+          model: translations,
+          attributes: ["translatedText", "language"],
+        },
         {
           model: communities,
           as: "comshare",
@@ -179,6 +184,10 @@ router.get("/getposts/:value", async (req, res) => {
       order: [[sequelize.literal("likescount"), "DESC"]],
 
       include: [
+        {
+          model: translations,
+          attributes: ["translatedText", "language"],
+        },
         {
           model: communities,
           as: "comshare",

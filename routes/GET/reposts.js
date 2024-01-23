@@ -12,6 +12,7 @@ const {
   pollvotes,
   communities,
   communitymembers,
+  translations,
 } = require("../../models");
 
 //get reposts
@@ -42,6 +43,10 @@ router.get("/:postid", async (req, res) => {
       },
       order: [["id", "DESC"]],
       include: [
+        {
+          model: translations,
+          attributes: ["translatedText", "language"],
+        },
         {
           model: communities,
           as: "comshare",

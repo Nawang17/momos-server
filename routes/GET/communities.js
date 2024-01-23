@@ -15,6 +15,7 @@ const {
   communities,
   communitymembers,
   notis,
+  translations,
 } = require("../../models");
 const { tokenCheck } = require("../../middleware/tokenCheck");
 const sequelize = require("sequelize");
@@ -142,6 +143,10 @@ router.get("/communityProfile/:name", async (req, res) => {
               attributes: ["communityId", "isadmin", "isOwner"],
             },
           ],
+        },
+        {
+          model: translations,
+          attributes: ["translatedText", "language"],
         },
         {
           model: communities,
@@ -274,6 +279,10 @@ router.get("/communityPosts/:name", tokenCheck, async (req, res) => {
           ],
         },
         {
+          model: translations,
+          attributes: ["translatedText", "language"],
+        },
+        {
           model: communities,
           as: "community",
         },
@@ -397,6 +406,10 @@ router.get("/singlepost/:postid", tokenCheck, async (req, res) => {
         {
           model: communities,
           as: "community",
+        },
+        {
+          model: translations,
+          attributes: ["translatedText", "language"],
         },
         {
           model: polls,

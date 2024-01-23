@@ -15,6 +15,7 @@ const {
   commentlikes,
   communities,
   communitymembers,
+  translations,
 } = require("../../models");
 const sequelize = require("sequelize");
 const cache = require("../../utils/cache");
@@ -133,6 +134,10 @@ router.get("/bookmarks/:type", async (req, res) => {
         },
         order: [["id", "DESC"]],
         include: [
+          {
+            model: translations,
+            attributes: ["translatedText", "language"],
+          },
           {
             model: communities,
             as: "comshare",

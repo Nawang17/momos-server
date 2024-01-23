@@ -14,6 +14,7 @@ const {
   pollvotes,
   communitymembers,
   communities,
+  translations,
 } = require("../../models");
 const sequelize = require("sequelize");
 const cache = require("../../utils/cache");
@@ -129,6 +130,10 @@ router.get("/:username", async (req, res) => {
         },
         order: [["id", "DESC"]],
         include: [
+          {
+            model: translations,
+            attributes: ["translatedText", "language"],
+          },
           {
             model: communities,
             as: "comshare",
@@ -246,6 +251,10 @@ router.get("/:username", async (req, res) => {
         },
         order: [["id", "DESC"]],
         include: [
+          {
+            model: translations,
+            attributes: ["translatedText", "language"],
+          },
           {
             model: communities,
             as: "comshare",
@@ -510,6 +519,10 @@ router.get("/userposts/:userid", async (req, res) => {
       order: [["id", "DESC"]],
       include: [
         {
+          model: translations,
+          attributes: ["translatedText", "language"],
+        },
+        {
           model: communities,
           as: "comshare",
           include: [
@@ -638,6 +651,10 @@ router.get("/likedposts/:userid", async (req, res) => {
       },
       order: [["id", "DESC"]],
       include: [
+        {
+          model: translations,
+          attributes: ["translatedText", "language"],
+        },
         {
           model: communities,
           as: "comshare",

@@ -30,6 +30,11 @@ module.exports = (sequelize, DataTypes) => {
       allowNull: true,
       defaultValue: null,
     },
+    language: {
+      type: DataTypes.STRING,
+      allowNull: true,
+      defaultValue: null,
+    },
   });
   posts.associate = (models) => {
     posts.belongsTo(models.communities, {
@@ -97,6 +102,11 @@ module.exports = (sequelize, DataTypes) => {
       foreignKeyConstraint: true,
     });
     posts.hasMany(models.bookmarks, {
+      foreignKey: "postId",
+      onDelete: "CASCADE",
+      foreignKeyConstraint: true,
+    });
+    posts.hasMany(models.translations, {
       foreignKey: "postId",
       onDelete: "CASCADE",
       foreignKeyConstraint: true,

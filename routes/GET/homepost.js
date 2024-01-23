@@ -14,6 +14,7 @@ const {
   commentlikes,
   communities,
   communitymembers,
+  translations,
 } = require("../../models");
 const sequelize = require("sequelize");
 const { tokenCheck } = require("../../middleware/tokenCheck");
@@ -58,6 +59,10 @@ router.get("/", async (req, res) => {
           },
           order: [["id", "DESC"]],
           include: [
+            {
+              model: translations,
+              attributes: ["translatedText", "language"],
+            },
             {
               model: communities,
               as: "comshare",
@@ -218,6 +223,10 @@ router.get("/", async (req, res) => {
         },
         order: [[sequelize.literal("likescount"), "DESC"]],
         include: [
+          {
+            model: translations,
+            attributes: ["translatedText", "language"],
+          },
           {
             model: communities,
             as: "comshare",
@@ -385,6 +394,10 @@ router.get("/followingposts", tokenCheck, async (req, res) => {
       order: [["id", "DESC"]],
       include: [
         {
+          model: translations,
+          attributes: ["translatedText", "language"],
+        },
+        {
           model: communities,
           as: "comshare",
           include: [
@@ -534,6 +547,10 @@ router.get("/communityposts", tokenCheck, async (req, res) => {
       },
       order: [["id", "DESC"]],
       include: [
+        {
+          model: translations,
+          attributes: ["translatedText", "language"],
+        },
         {
           model: communities,
           as: "comshare",
