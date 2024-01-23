@@ -1,7 +1,7 @@
 module.exports = (sequelize, DataTypes) => {
   const translations = sequelize.define("translations", {
     translatedText: {
-      type: DataTypes.STRING,
+      type: DataTypes.STRING(1000),
       allowNull: false,
     },
     language: {
