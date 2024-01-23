@@ -13,6 +13,7 @@ const addPostTranslations = cron.schedule("*/15 * * * *", async () => {
           [Op.ne]: null,
         },
       },
+      order: [["id", "DESC"]], //order by id desc to get the latest posts first
     });
     const converted = JSON.parse(JSON.stringify(postData));
     //for each posts get the translations and update the post language wiht the src language and if src lang is en then make another translation to ko and add that to trnaslations table
