@@ -2,8 +2,8 @@ const cron = require("node-cron");
 const { posts, translations } = require("../models");
 const { translate } = require("@vitalets/google-translate-api");
 const { Op } = require("sequelize");
-// this cron job will run every 15 minutes
-const addPostTranslations = cron.schedule("*/15 * * * *", async () => {
+// this cron job will run once every hour
+const addPostTranslations = cron.schedule("0 * * * *", async () => {
   try {
     //get all posts
     const postData = await posts.findAll({
