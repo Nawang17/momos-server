@@ -19,7 +19,7 @@ const addPostTranslations = cron.schedule("0 * * * *", async () => {
     //for each posts get the translations and update the post language wiht the src language and if src lang is en then make another translation to ko and add that to trnaslations table
     for (let i = 0; i < converted.length; i++) {
       const currentpost = converted[i];
-      if (currentpost.text === null || currentpost?.language) {
+      if (!currentpost || currentpost?.text === null || currentpost?.language) {
         continue;
       }
       await translate(currentpost?.text).then(async (res) => {
