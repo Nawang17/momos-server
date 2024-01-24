@@ -3,8 +3,8 @@ const { posts, translations } = require("../models");
 const { translate } = require("@vitalets/google-translate-api");
 const { Op } = require("sequelize");
 
-// This cron job will run once every hour
-const addPostTranslations = cron.schedule("0 * * * *", async () => {
+// This cron job will run every 2 hours
+const addPostTranslations = cron.schedule("0 */2 * * *", async () => {
   try {
     // Get all posts
     const postData = await posts.findAll({
