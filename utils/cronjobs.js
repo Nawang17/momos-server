@@ -69,15 +69,18 @@ const addPostTranslations = cron.schedule("0 */2 * * *", async () => {
               await translations.destroy({
                 where: { postId: currentpost.id },
               });
+               return;
     
             }
           }
          
         } else {
           console.error('Translation response is missing expected properties:', res);
+          
         }
       } catch (error) {
         console.error('Translation error:', error);
+         return;
       }
     }
 
