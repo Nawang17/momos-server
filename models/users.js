@@ -50,7 +50,11 @@ module.exports = (sequelize, DataTypes) => {
       allowNull: true,
       defaultValue: null,
     },
-
+    emailNotification: {
+      type: DataTypes.BOOLEAN,
+      allowNull: false,
+      defaultValue: true,
+    },
   });
   users.associate = (models) => {
     users.hasMany(models.communitymembers, {

@@ -4,10 +4,11 @@
 require("dotenv").config();
 const { users, passwordresets } = require("../../models");
 const { sign, verify } = require("jsonwebtoken");
-const nodemailer = require("nodemailer");
+
 const { isValidEmail } = require("../../utils/validations");
 const bcrypt = require("bcryptjs");
 const { compare } = require("bcryptjs");
+const transporter = require("../../utils/nodemailersetup");
 
 const forgotPassword = async (req, res) => {
   try {
@@ -224,18 +225,6 @@ const resetPassword = async (req, res) => {
     return res.status(500).send("Something went wrong");
   }
 };
-const transporter = nodemailer.createTransport({
-  host: "smtp.gmail.com",
-  port: 465,
-  secure: true,
-
-  from: process.env.EMAIL_USER,
-  auth: {
-    user: process.env.EMAIL_USER,
-
-    pass: process.env.EMAIL_PASS,
-  },
-});
 
 //
 function sendEmail(link, email) {
