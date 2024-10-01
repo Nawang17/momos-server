@@ -100,7 +100,7 @@ const addPostTranslations = cron.schedule("0 */2 * * *", async () => {
 
 //send email end  of month to all users with the websites monthly report like total users , total posts, top psots etc
 
-const runonceon7pm = cron.schedule("38 19 * * *", async () => {
+const runonceon7pm = cron.schedule("44 19 * * *", async () => {
   try {
     sendMonthlySummaryEmailfunc();
     console.log("runonceon7 38pm executed");
