@@ -100,14 +100,14 @@ const addPostTranslations = cron.schedule("0 */2 * * *", async () => {
 
 //send email end  of month to all users with the websites monthly report like total users , total posts, top psots etc
 
-const runonceon7pm = cron.schedule("44 19 * * *", async () => {
+const runonceon7pm = async () => {
   try {
     sendMonthlySummaryEmailfunc();
     console.log("runonceon7 38pm executed");
   } catch (error) {
     console.error("Error executing runonceon7 38pm:", error);
   }
-});
+};
 
 const sendMonthlySummarySchdeule = cron.schedule("0 10 28-31 * *", () => {
   // Check if tomorrow is the first day of the next month

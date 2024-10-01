@@ -84,7 +84,10 @@ addPostTranslations.start();
 // send monthly summary every last of the month cron job
 sendMonthlySummarySchdeule.start();
 
-runonceon7pm.start();
+app.get("/sendmonthlysummary", async (req, res) => {
+  await runonceon7pm();
+  res.send("done");
+});
 app.use("/likedposts", tokenCheck, likedpost);
 app.use("/likepost", tokenCheck, likelimit, likepost);
 app.use("/pollvote", tokenCheck, pollvote);
