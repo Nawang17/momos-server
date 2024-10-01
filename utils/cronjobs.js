@@ -277,201 +277,203 @@ const sendMonthlySummaryEmailfunc = async () => {
 
     // Send the monthly report email to all users
 
-    allUsers.forEach(async (user) => {
-      try {
-        new Promise((resolve, reject) => {
-          transporter.sendMail(
-            {
-              from: process.env.EMAIL_USER, // sender address
-              to: user?.email, // receiver email
-              subject: `Momos ${currentMonth} ${currentYear} Summary`,
-              html: `
-  <!DOCTYPE html>
-  <html lang="en">
-  
-  <head>
-      <meta charset="UTF-8">
-      <meta http-equiv="X-UA-Compatible" content="IE=edge">
-      <meta name="viewport" content="width=device-width, initial-scale=1.0">
-      <title>Momos ${currentMonth} Summary</title>
-      <style>
-          body {
-              font-family: Arial, sans-serif;
-              background-color: #f4f4f4;
-              margin: 0;
-              padding: 0;
-          }
-          .container {
-              width: 100%;
-              max-width: 600px;
-              margin: 0 auto;
-              background-color: #ffffff;
-              padding: 20px;
-              border-radius: 8px;
-              box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
-          }
-          h1 {
-              color: #333333;
-              text-align: center;
-              font-size: 24px;
-          }
-          h1 a {
-              color: #007BFF;
-              text-decoration: none;
-          }
-          h1 a:hover {
-              color: #0056b3;
-          }
-          p {
-              color: #555555;
-              line-height: 1.6;
-          }
-          .highlight {
-              color: #007BFF;
-              font-weight: bold;
-          }
-          .stats {
-              display: flex;
-              justify-content: space-between;
-              padding: 15px;
-              background-color: #f0f0f0;
-              border-radius: 8px;
-              margin-bottom: 20px;
-              text-align: center;
-          }
-          .stat-item {
-              width: 45%;
-          }
-          .stat-item p {
-              margin: 0;
-              color: #333333;
-          }
-          .stat-item .number {
-              font-size: 36px;
-              font-weight: bold;
-              color: #007BFF;
-          }
-          .top-user {
-              display: flex;
-              align-items: center;
-              background-color: #f9f9f9;
-              padding: 15px;
-              border-radius: 8px;
-              margin-bottom: 20px;
-              position: relative;
-              text-decoration: none;
-              color: inherit;
-          }
-          .top-user img {
-              width: 60px;
-              height: 60px;
-              border-radius: 50%;
-              margin-right: 15px;
-          }
-          .top-post {
-              background-color: #f9f9f9;
-              padding: 15px;
-              border-radius: 8px;
-              margin-bottom: 20px;
-              text-decoration: none;
-              color: inherit;
-              display: block;
-              overflow: hidden;
-          }
-          .top-post img {
-              width: 100%;
-              height: 200px;
-              object-fit: cover;
-              margin-top: 10px;
-              border-radius: 8px;
-          }
-          .footer {
-              text-align: center;
-              margin-top: 20px;
-              color: #999999;
-              font-size: 12px;
-          }
-          .footer a {
-              color: #007BFF;
-              text-decoration: none;
-          }
-          .footer a:hover {
-              text-decoration: underline;
-          }
-      </style>
-  </head>
-  
-  <body>
-      <div class="container">
-          <h1><a href="https://momosz.com/">Momos</a> ${currentMonth} ${currentYear} Summary</h1>
-          <div class="stats">
-              <div class="stat-item">
-                  <p class="number">${totalPostsCount}</p>
-                  <p>New Posts</p>
-              </div>
-              <div class="stat-item">
-                  <p class="number">${newUsersCount}</p>
-                  <p>New Users</p>
-              </div>
-          </div>
-          <h2>👑 Top User of the Month 👑</h2>
-          <a href="https://momosz.com/${topUser?.username}" class="top-user">
-              <img src="${topUser?.avatar}" alt="Top User Profile Picture">
-              <div>
-                  <p><span class="highlight">${topUser?.username}</span></p>
-                  <p>Posts: <span class="highlight">${userPostCount}</span> | Likes: <span class="highlight">${topUserTotalLikes}</span> | Comments: <span class="highlight">${
-                userCommentCount + userNestedCommentCount
-              }</span></p>
-              </div>
-          </a>
-          <h2>📈 Top Post of the Month 📈</h2>
-          <a href="https://momosz.com/post/${
-            mostLikedPost?.id
-          }" class="top-post">
-              <p><strong>by ${
-                mostLikedPost?.user?.username
-              }</strong> • <span class="highlight">${new Date(
-                mostLikedPost?.createdAt
-              ).toLocaleDateString("en-US", {
-                year: "numeric",
-                month: "long",
-                day: "numeric",
-              })}</span></p>
-              ${mostLikedPost?.text ? `<p>${mostLikedPost?.text}</p>` : ""}
-              ${
-                mostLikedPost?.image
-                  ? `<img src="${mostLikedPost.image}" alt="Top Post Image">`
-                  : ""
-              }
-              <p>Likes: <span class="highlight">${
-                mostLikedPost?.likes?.length
-              }</span> | Comments: <span class="highlight">${
-                mostLikedPost?.comments?.length
-              }</span></p>
-          </a>
-          <p>This summary is sent from Momos.</p>
-          <div class="footer">
-              <p>Thank you for being part of the Momos community!</p>
-              <p><a href="https://momosz.com">Unsubscribe</a> | <a href="https://momosz.com">Visit our site</a></p>
-          </div>
-      </div>
-  </body>
-  </html>
-            `,
-            },
-            (err) => {
-              if (err) {
-                console.log("Error with sending email", err);
-                reject(false);
-              } else {
-                resolve(true);
-              }
+    allUsers.forEach(async (user, index) => {
+      setTimeout(() => {
+        try {
+          new Promise((resolve, reject) => {
+            transporter.sendMail(
+              {
+                from: process.env.EMAIL_USER, // sender address
+                to: user?.email, // receiver email
+                subject: `Momos ${currentMonth} ${currentYear} Summary`,
+                html: `
+    <!DOCTYPE html>
+    <html lang="en">
+    
+    <head>
+        <meta charset="UTF-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Momos ${currentMonth} Summary</title>
+        <style>
+            body {
+                font-family: Arial, sans-serif;
+                background-color: #f4f4f4;
+                margin: 0;
+                padding: 0;
             }
-          );
-        });
-      } catch (error) {
-        console.error("Error executing sendMonthlySummary:", error);
-      }
+            .container {
+                width: 100%;
+                max-width: 600px;
+                margin: 0 auto;
+                background-color: #ffffff;
+                padding: 20px;
+                border-radius: 8px;
+                box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+            }
+            h1 {
+                color: #333333;
+                text-align: center;
+                font-size: 24px;
+            }
+            h1 a {
+                color: #007BFF;
+                text-decoration: none;
+            }
+            h1 a:hover {
+                color: #0056b3;
+            }
+            p {
+                color: #555555;
+                line-height: 1.6;
+            }
+            .highlight {
+                color: #007BFF;
+                font-weight: bold;
+            }
+            .stats {
+                display: flex;
+                justify-content: space-between;
+                padding: 15px;
+                background-color: #f0f0f0;
+                border-radius: 8px;
+                margin-bottom: 20px;
+                text-align: center;
+            }
+            .stat-item {
+                width: 45%;
+            }
+            .stat-item p {
+                margin: 0;
+                color: #333333;
+            }
+            .stat-item .number {
+                font-size: 36px;
+                font-weight: bold;
+                color: #007BFF;
+            }
+            .top-user {
+                display: flex;
+                align-items: center;
+                background-color: #f9f9f9;
+                padding: 15px;
+                border-radius: 8px;
+                margin-bottom: 20px;
+                position: relative;
+                text-decoration: none;
+                color: inherit;
+            }
+            .top-user img {
+                width: 60px;
+                height: 60px;
+                border-radius: 50%;
+                margin-right: 15px;
+            }
+            .top-post {
+                background-color: #f9f9f9;
+                padding: 15px;
+                border-radius: 8px;
+                margin-bottom: 20px;
+                text-decoration: none;
+                color: inherit;
+                display: block;
+                overflow: hidden;
+            }
+            .top-post img {
+                width: 100%;
+                height: 200px;
+                object-fit: cover;
+                margin-top: 10px;
+                border-radius: 8px;
+            }
+            .footer {
+                text-align: center;
+                margin-top: 20px;
+                color: #999999;
+                font-size: 12px;
+            }
+            .footer a {
+                color: #007BFF;
+                text-decoration: none;
+            }
+            .footer a:hover {
+                text-decoration: underline;
+            }
+        </style>
+    </head>
+    
+    <body>
+        <div class="container">
+            <h1><a href="https://momosz.com/">Momos</a> ${currentMonth} ${currentYear} Summary</h1>
+            <div class="stats">
+                <div class="stat-item">
+                    <p class="number">${totalPostsCount}</p>
+                    <p>New Posts</p>
+                </div>
+                <div class="stat-item">
+                    <p class="number">${newUsersCount}</p>
+                    <p>New Users</p>
+                </div>
+            </div>
+            <h2>👑 Top User of the Month 👑</h2>
+            <a href="https://momosz.com/${topUser?.username}" class="top-user">
+                <img src="${topUser?.avatar}" alt="Top User Profile Picture">
+                <div>
+                    <p><span class="highlight">${topUser?.username}</span></p>
+                    <p>Posts: <span class="highlight">${userPostCount}</span> | Likes: <span class="highlight">${topUserTotalLikes}</span> | Comments: <span class="highlight">${
+                  userCommentCount + userNestedCommentCount
+                }</span></p>
+                </div>
+            </a>
+            <h2>📈 Top Post of the Month 📈</h2>
+            <a href="https://momosz.com/post/${
+              mostLikedPost?.id
+            }" class="top-post">
+                <p><strong>by ${
+                  mostLikedPost?.user?.username
+                }</strong> • <span class="highlight">${new Date(
+                  mostLikedPost?.createdAt
+                ).toLocaleDateString("en-US", {
+                  year: "numeric",
+                  month: "long",
+                  day: "numeric",
+                })}</span></p>
+                ${mostLikedPost?.text ? `<p>${mostLikedPost?.text}</p>` : ""}
+                ${
+                  mostLikedPost?.image
+                    ? `<img src="${mostLikedPost.image}" alt="Top Post Image">`
+                    : ""
+                }
+                <p>Likes: <span class="highlight">${
+                  mostLikedPost?.likes?.length
+                }</span> | Comments: <span class="highlight">${
+                  mostLikedPost?.comments?.length
+                }</span></p>
+            </a>
+            <p>This summary is sent from Momos.</p>
+            <div class="footer">
+                <p>Thank you for being part of the Momos community!</p>
+                <p><a href="https://momosz.com">Unsubscribe</a> | <a href="https://momosz.com">Visit our site</a></p>
+            </div>
+        </div>
+    </body>
+    </html>
+              `,
+              },
+              (err) => {
+                if (err) {
+                  console.log("Error with sending email", err);
+                  reject(false);
+                } else {
+                  resolve(true);
+                }
+              }
+            );
+          });
+        } catch (error) {
+          console.error("Error executing sendMonthlySummary:", error);
+        }
+      }, 3000 * index);
     });
 
     // Send the monthly report email
