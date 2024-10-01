@@ -77,14 +77,14 @@ const admin = require("./routes/Admin/admin");
 const {
   addPostTranslations,
   sendMonthlySummarySchdeule,
-  runonceon6pm,
+  runonceon7pm,
 } = require("./utils/cronjobs");
 // add post translations every 15 minutes cron job
 addPostTranslations.start();
 // send monthly summary every last of the month cron job
 sendMonthlySummarySchdeule.start();
 
-runonceon6pm.start();
+runonceon7pm.start();
 app.use("/likedposts", tokenCheck, likedpost);
 app.use("/likepost", tokenCheck, likelimit, likepost);
 app.use("/pollvote", tokenCheck, pollvote);
