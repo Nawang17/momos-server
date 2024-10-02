@@ -82,10 +82,7 @@ const {
 // add post translations every 15 minutes cron job
 addPostTranslations.start();
 
-app.get("/sendemail", async (req, res) => {
-  runonceon7pm()
-  res.send("email sent");
-});
+
 // send monthly summary every last of the month cron job
 // sendMonthlySummarySchdeule.start();
 
