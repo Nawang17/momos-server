@@ -484,6 +484,6 @@ const sendMonthlySummaryEmailfunc = async () => {
 
 module.exports = {
   addPostTranslations,
-  sendMonthlySummarySchdeule,
+
   runonceon7pm,
 };
