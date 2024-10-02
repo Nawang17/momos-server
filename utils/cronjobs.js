@@ -473,7 +473,7 @@ const sendMonthlySummaryEmailfunc = async () => {
         } catch (error) {
           console.error("Error executing sendMonthlySummary:", error);
         }
-      }, 3000 * index);
+      }, 20000 * index); //send email every 20 seconds
     });
 
     // Send the monthly report email
